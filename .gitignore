@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.tgz
+.env
+.env.*
+!.env.example
+.eslintcache
+coverage/
+.tmp/
+.worktrees/
+# Internal coordination notes are local-only, not public SDK source.
+plans/
