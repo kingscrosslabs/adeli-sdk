@@ -43,6 +43,7 @@ test('generation is standalone and ignores an invalid ADELI_CORE_DIR', async () 
   }
 });
 
+// Two real generator subprocesses can exceed the unit-test budget on CI runners.
 test('API-reference reproducibility checks do not mutate the checked document, including stale failure', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'adeli-api-reference-test-'));
   const path = join(directory, 'api-reference.md');
@@ -65,4 +66,4 @@ test('API-reference reproducibility checks do not mutate the checked document, i
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
-});
+}, 30_000);

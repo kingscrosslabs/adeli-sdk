@@ -33,6 +33,7 @@ describe('packed example typecheck tooling', () => {
     }
   }, 30_000);
 
+  // Packing/installing and invoking tsc needs the same budget as the positive case.
   it('rejects an example that is invalid against the packed declarations', () => {
     const root = mkdtempSync(join(tmpdir(), 'adeli-example-negative-'));
     try {
@@ -43,5 +44,5 @@ describe('packed example typecheck tooling', () => {
     } finally {
       rmSync(root, { recursive: true, force: true });
     }
-  });
+  }, 30_000);
 });
