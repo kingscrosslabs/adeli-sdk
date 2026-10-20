@@ -52,9 +52,9 @@ try {
   writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
 
   writeFileSync(join(consumer, 'esm.mjs'), `
-import * as sdk from '@adeli/node';
-import * as helpers from '@adeli/node/helpers';
-import '@adeli/node/uploads';
+import * as sdk from '@adeli/sdk';
+import * as helpers from '@adeli/sdk/helpers';
+import '@adeli/sdk/uploads';
 const details = { reconnect: { action: 'restart_oauth' } };
 if (!sdk.isPermissionRequiredDetails(details)) throw new Error('permission detail guard export is missing');
 const client = { getConnection: async () => ({ data: { status: 'pending_authorization' }, status: 200, headers: new Headers() }) };
@@ -68,9 +68,9 @@ try {
   execFileSync(node, [join(consumer, 'esm.mjs')], { cwd: consumer, stdio: 'inherit' });
 
   writeFileSync(join(consumer, 'cjs.cjs'), `
-const sdk = require('@adeli/node');
-const helpers = require('@adeli/node/helpers');
-require('@adeli/node/uploads');
+const sdk = require('@adeli/sdk');
+const helpers = require('@adeli/sdk/helpers');
+require('@adeli/sdk/uploads');
 const details = { reconnect: { action: 'restart_oauth' } };
 if (!sdk.isPermissionRequiredDetails(details)) throw new Error('permission detail guard export is missing');
 const client = { getConnection: async () => ({ data: { status: 'pending_authorization' }, status: 200, headers: new Headers() }) };
@@ -81,9 +81,9 @@ helpers.waitForConnection(client, { path: { profileId: 'profile', connectionSess
 `);
   execFileSync(node, [join(consumer, 'cjs.cjs')], { cwd: consumer, stdio: 'inherit' });
 
-  writeFileSync(join(consumer, 'consumer.mts'), `import { Adeli, isPermissionRequiredDetails, type PermissionRequiredDetails } from '@adeli/node';\nimport { waitForConnection } from '@adeli/node/helpers';\nconst details: PermissionRequiredDetails = { reconnect: { action: 'restart_oauth' } };\nnew Adeli({ apiKey: 'test' });\nvoid isPermissionRequiredDetails(details);\nvoid waitForConnection;\n`);
-  writeFileSync(join(consumer, 'consumer.cts'), `import { Adeli, isPermissionRequiredDetails, type PermissionRequiredDetails } from '@adeli/node';\nimport { waitForConnection } from '@adeli/node/helpers';\nconst details: PermissionRequiredDetails = { reconnect: { action: 'restart_oauth' } };\nnew Adeli({ apiKey: 'test' });\nvoid isPermissionRequiredDetails(details);\nvoid waitForConnection;\n`);
-  writeFileSync(join(consumer, 'consumer-bundler.ts'), `import { Adeli, isPermissionRequiredDetails, type PermissionRequiredDetails } from '@adeli/node';\nimport { waitForConnection } from '@adeli/node/helpers';\nimport '@adeli/node/uploads';\nconst details: PermissionRequiredDetails = { reconnect: { action: 'restart_oauth' } };\nnew Adeli({ apiKey: 'test' });\nvoid isPermissionRequiredDetails(details);\nvoid waitForConnection;\n`);
+  writeFileSync(join(consumer, 'consumer.mts'), `import { Adeli, isPermissionRequiredDetails, type PermissionRequiredDetails } from '@adeli/sdk';\nimport { waitForConnection } from '@adeli/sdk/helpers';\nconst details: PermissionRequiredDetails = { reconnect: { action: 'restart_oauth' } };\nnew Adeli({ apiKey: 'test' });\nvoid isPermissionRequiredDetails(details);\nvoid waitForConnection;\n`);
+  writeFileSync(join(consumer, 'consumer.cts'), `import { Adeli, isPermissionRequiredDetails, type PermissionRequiredDetails } from '@adeli/sdk';\nimport { waitForConnection } from '@adeli/sdk/helpers';\nconst details: PermissionRequiredDetails = { reconnect: { action: 'restart_oauth' } };\nnew Adeli({ apiKey: 'test' });\nvoid isPermissionRequiredDetails(details);\nvoid waitForConnection;\n`);
+  writeFileSync(join(consumer, 'consumer-bundler.ts'), `import { Adeli, isPermissionRequiredDetails, type PermissionRequiredDetails } from '@adeli/sdk';\nimport { waitForConnection } from '@adeli/sdk/helpers';\nimport '@adeli/sdk/uploads';\nconst details: PermissionRequiredDetails = { reconnect: { action: 'restart_oauth' } };\nnew Adeli({ apiKey: 'test' });\nvoid isPermissionRequiredDetails(details);\nvoid waitForConnection;\n`);
   writeFileSync(join(consumer, 'tsconfig.nodenext.json'), JSON.stringify({ compilerOptions: { target: 'ES2022', module: 'NodeNext', moduleResolution: 'NodeNext', strict: true, noEmit: true, types: ['node'] }, include: ['consumer.mts', 'consumer.cts'] }));
   writeFileSync(join(consumer, 'tsconfig.bundler.json'), JSON.stringify({ compilerOptions: { target: 'ES2022', module: 'ESNext', moduleResolution: 'Bundler', strict: true, noEmit: true, types: ['node'] }, include: ['consumer-bundler.ts'] }));
   const tsc = join(consumer, 'node_modules', '.bin', process.platform === 'win32' ? 'tsc.cmd' : 'tsc');

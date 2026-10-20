@@ -1,5 +1,5 @@
-import { Adeli } from '@adeli/node';
-import { waitForConnection } from '@adeli/node/helpers';
+import { Adeli } from '@adeli/sdk';
+import { waitForConnection } from '@adeli/sdk/helpers';
 
 export async function connectAccount(input: {
   profileId: string;

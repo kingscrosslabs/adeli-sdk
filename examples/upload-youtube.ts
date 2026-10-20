@@ -1,6 +1,6 @@
-import { Adeli } from '@adeli/node';
-import { waitForYouTubeVideo } from '@adeli/node/helpers';
-import { fileFromPath } from '@adeli/node/uploads';
+import { Adeli } from '@adeli/sdk';
+import { waitForYouTubeVideo } from '@adeli/sdk/helpers';
+import { fileFromPath } from '@adeli/sdk/uploads';
 
 export async function uploadYouTube(input: {
   accountId: string;

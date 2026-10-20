@@ -1,9 +1,9 @@
 # Client and request semantics
 
-`@adeli/node` is a server-only SDK for Node.js 22+. It is not supported in browsers, Bun, Deno, or edge runtimes. Construct `Adeli` only in a caller-invoked server function; module import does not read environment variables or make requests.
+`@adeli/sdk` is a server-only SDK for Node.js 22+. It is not supported in browsers, Bun, Deno, or edge runtimes. Construct `Adeli` only in a caller-invoked server function; module import does not read environment variables or make requests.
 
 ```ts
-import { Adeli } from '@adeli/node';
+import { Adeli } from '@adeli/sdk';
 const client = new Adeli({ apiKey: process.env.ADELI_API_KEY });
 ```
 
@@ -20,7 +20,7 @@ Most operations require a profile or connected account scope. Organization-wide 
 Polling helpers are explicit bounded workflows: pass both a positive `intervalMs` and positive total `timeoutMs` (each no greater than `2_147_483_647` milliseconds), and optionally an `AbortSignal`. `waitForConnection`, `waitForTikTokPost`, `waitForFacebookPost`, and `waitForYouTubeVideo` return the terminal API response, including provider failure states; they throw only for local timeout, cancellation, or an unfamiliar provider status. Facebook video `READY`/`ERROR` is separate from a connection's `pending_page_selection` dashboard handoff.
 
 ```ts
-import { waitForYouTubeVideo } from '@adeli/node/helpers';
+import { waitForYouTubeVideo } from '@adeli/sdk/helpers';
 
 const status = await waitForYouTubeVideo(
   client,
@@ -33,7 +33,7 @@ if (status.data.status === 'failed') throw new Error(status.data.failureReason ?
 `iterateCommentPages` and `iterateComments` support TikTok and YouTube only. They accept `maxPages` (default `100`, always finite), optional total `timeoutMs` no greater than `2_147_483_647` milliseconds, and optional `signal`; they stop on no cursor, an empty/repeated cursor, or the page limit.
 
 ```ts
-import { iterateCommentPages } from '@adeli/node/helpers';
+import { iterateCommentPages } from '@adeli/sdk/helpers';
 
 for await (const page of iterateCommentPages(
   client,

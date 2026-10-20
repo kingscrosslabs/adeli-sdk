@@ -1,4 +1,4 @@
-import { Adeli } from '@adeli/node';
+import { Adeli } from '@adeli/sdk';
 
 /** Read-only discovery; invoke this from a server request or job. */
 export async function quickstart(): Promise<Readonly<{ profileId: string; accountCount: number }>> {

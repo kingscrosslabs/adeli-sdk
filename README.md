@@ -1,4 +1,4 @@
-# @adeli/node
+# @adeli/sdk
 
 Server-only TypeScript SDK for Adeli, for **Node.js 22 and 24**. This repository currently contains the unpublished `0.1.0` candidate; it is not an npm availability claim. Until publication is authorized, consume a reviewed local tarball.
 
@@ -10,13 +10,13 @@ npm run build
 npm pack
 
 # application checkout (use the tarball path printed by npm pack)
-npm install /absolute/path/to/adeli-node-0.1.0.tgz
+npm install /absolute/path/to/adeli-sdk-0.1.0.tgz
 ```
 
 The quickstart below only performs a read; it does not publish, connect an account, or mutate remote resources.
 
 ```ts
-import { Adeli } from '@adeli/node';
+import { Adeli } from '@adeli/sdk';
 
 export async function readProfiles() {
   const client = new Adeli({ apiKey: process.env.ADELI_API_KEY });
@@ -29,9 +29,9 @@ The API key is resolved at construction from `apiKey` or `ADELI_API_KEY`; do not
 
 ## Entry points
 
-- `@adeli/node`: `Adeli`, resources, response types, and root error classes.
-- `@adeli/node/helpers`: bounded polling and TikTok/YouTube comment iterators.
-- `@adeli/node/uploads`: Node file-backed `Blob`/`File` adapters for multipart uploads.
+- `@adeli/sdk`: `Adeli`, resources, response types, and root error classes.
+- `@adeli/sdk/helpers`: bounded polling and TikTok/YouTube comment iterators.
+- `@adeli/sdk/uploads`: Node file-backed `Blob`/`File` adapters for multipart uploads.
 
 Resources are navigated as `client.profiles`, `client.accounts`, `client.posts`, `client.comments`, `client.messages`, `client.analytics`, `client.ads`, and `client.usage`. Every result retains its `data`, HTTP `status`, and `Headers`; `204` has `data: undefined`, and `202`/`207` are successful responses. Provider casing, nulls, privacy values, partial records, and error details are not normalized away.
 

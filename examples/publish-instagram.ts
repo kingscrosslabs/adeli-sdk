@@ -1,4 +1,4 @@
-import { Adeli, type CreatePostBody } from '@adeli/node';
+import { Adeli, type CreatePostBody } from '@adeli/sdk';
 
 export async function publishInstagramImage(input: { accountId: string; imageBase64: string }) {
   const client = new Adeli({ apiKey: process.env.ADELI_API_KEY });

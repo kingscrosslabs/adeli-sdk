@@ -1,4 +1,4 @@
-import { CancellationError, MalformedResponseError, TimeoutError } from '@adeli/node';
+import { CancellationError, MalformedResponseError, TimeoutError } from '@adeli/sdk';
 import { isRepresentableTimerDuration, MAX_TIMER_DURATION_MS } from '../core/duration.js';
 import type { ApiResponse, RequestOptions } from '../core/types.js';
 import type { ConnectionSession, ProfilePath } from '../resources/profiles.js';

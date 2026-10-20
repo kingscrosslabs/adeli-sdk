@@ -11,7 +11,7 @@ export function validateReleaseIdentity(input) {
   if (input.eventRefName !== input.releaseTag) errors.push(`event ref name ${input.eventRefName} does not match release tag ${input.releaseTag}`);
   if (input.eventSha !== input.headSha) errors.push(`checked-out HEAD ${input.headSha} does not match workflow event SHA ${input.eventSha}`);
   if (`v${input.reviewedVersion}` !== input.releaseTag) errors.push(`reviewed version ${input.reviewedVersion} does not match release tag ${input.releaseTag}`);
-  if (input.packageName !== '@adeli/node') errors.push(`package name ${input.packageName} is not @adeli/node`);
+  if (input.packageName !== '@adeli/sdk') errors.push(`package name ${input.packageName} is not @adeli/sdk`);
   if (input.packageVersion !== input.reviewedVersion) errors.push(`package version ${input.packageVersion} does not match reviewed version ${input.reviewedVersion}`);
   if (input.identity) {
     for (const field of ['eventRefType', 'eventRef', 'eventRefName', 'eventSha', 'releaseTag', 'reviewedVersion', 'packageName']) {

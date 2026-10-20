@@ -14,6 +14,6 @@ export default defineConfig({
   format: ['esm', 'cjs'], dts: true, splitting: false, clean: true, sourcemap: true,
   // Helpers/uploads import runtime errors from the package self-reference. Keeping
   // that import external prevents splitting:false from creating duplicate classes.
-  external: ['@adeli/node'],
+  external: ['@adeli/sdk'],
   outDir: 'dist', target: 'node22', treeshake: true
 });

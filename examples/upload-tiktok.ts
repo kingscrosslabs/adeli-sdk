@@ -1,6 +1,6 @@
-import { Adeli } from '@adeli/node';
-import { waitForTikTokPost } from '@adeli/node/helpers';
-import { fileFromPath } from '@adeli/node/uploads';
+import { Adeli } from '@adeli/sdk';
+import { waitForTikTokPost } from '@adeli/sdk/helpers';
+import { fileFromPath } from '@adeli/sdk/uploads';
 
 export async function uploadTikTok(input: { accountId: string; videoPath: string }) {
   const client = new Adeli({ apiKey: process.env.ADELI_API_KEY });

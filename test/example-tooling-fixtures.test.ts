@@ -8,7 +8,7 @@ function writeExampleFixture(root: string, valid: boolean): void {
   mkdirSync(join(root, 'dist'), { recursive: true });
   mkdirSync(join(root, 'examples'));
   writeFileSync(join(root, 'package.json'), JSON.stringify({
-    name: '@adeli/node', version: '0.0.0-example-fixture', type: 'module', engines: { node: '>=22' },
+    name: '@adeli/sdk', version: '0.0.0-example-fixture', type: 'module', engines: { node: '>=22' },
     files: ['dist'], exports: { '.': { import: { types: './dist/index.d.ts', default: './dist/index.js' }, require: { types: './dist/index.d.cts', default: './dist/index.cjs' } } },
   }, null, 2));
   writeFileSync(join(root, 'dist/index.js'), 'export class Adeli {}\n');
@@ -16,8 +16,8 @@ function writeExampleFixture(root: string, valid: boolean): void {
   writeFileSync(join(root, 'dist/index.d.ts'), 'export declare class Adeli {}\n');
   writeFileSync(join(root, 'dist/index.d.cts'), 'export declare class Adeli {}\n');
   writeFileSync(join(root, 'examples/read.ts'), valid
-    ? "import { Adeli } from '@adeli/node';\nnew Adeli();\n"
-    : "import { MissingExport } from '@adeli/node';\nnew MissingExport();\n");
+    ? "import { Adeli } from '@adeli/sdk';\nnew Adeli();\n"
+    : "import { MissingExport } from '@adeli/sdk';\nnew MissingExport();\n");
 }
 
 describe('packed example typecheck tooling', () => {

@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest';
 function writeFixture(root: string, includeUploads: boolean): void {
   mkdirSync(join(root, 'dist', 'helpers'), { recursive: true });
   writeFileSync(join(root, 'package.json'), JSON.stringify({
-    name: '@adeli/node', version: '0.0.0-fixture', type: 'module', license: 'UNLICENSED',
+    name: '@adeli/sdk', version: '0.0.0-fixture', type: 'module', license: 'UNLICENSED',
     files: ['dist'],
     exports: {
       '.': { import: { types: './dist/index.d.ts', default: './dist/index.js' }, require: { types: './dist/index.d.cts', default: './dist/index.cjs' } },
@@ -19,8 +19,8 @@ function writeFixture(root: string, includeUploads: boolean): void {
   writeFileSync(join(root, 'dist/index.cjs'), "class TimeoutError extends Error {}\nclass Adeli { constructor(_options) {} }\nfunction isPermissionRequiredDetails(value) { return value?.reconnect?.action === 'restart_oauth'; }\nmodule.exports = { TimeoutError, Adeli, isPermissionRequiredDetails };\n");
   writeFileSync(join(root, 'dist/index.d.ts'), "export declare class TimeoutError extends Error {}\nexport declare class Adeli { constructor(options?: { apiKey?: string }); }\nexport type PermissionRequiredDetails = { reconnect?: { action: 'restart_oauth' } } & Record<string, unknown>;\nexport declare function isPermissionRequiredDetails(value: unknown): value is PermissionRequiredDetails;\n");
   writeFileSync(join(root, 'dist/index.d.cts'), "export declare class TimeoutError extends Error {}\nexport declare class Adeli { constructor(options?: { apiKey?: string }); }\nexport type PermissionRequiredDetails = { reconnect?: { action: 'restart_oauth' } } & Record<string, unknown>;\nexport declare function isPermissionRequiredDetails(value: unknown): value is PermissionRequiredDetails;\n");
-  writeFileSync(join(root, 'dist/helpers/index.js'), "import { TimeoutError } from '@adeli/node';\nexport async function waitForConnection(_client, _args, _options) { throw new TimeoutError('timed out'); }\n");
-  writeFileSync(join(root, 'dist/helpers/index.cjs'), "const { TimeoutError } = require('@adeli/node');\nasync function waitForConnection(_client, _args, _options) { throw new TimeoutError('timed out'); }\nmodule.exports = { waitForConnection };\n");
+  writeFileSync(join(root, 'dist/helpers/index.js'), "import { TimeoutError } from '@adeli/sdk';\nexport async function waitForConnection(_client, _args, _options) { throw new TimeoutError('timed out'); }\n");
+  writeFileSync(join(root, 'dist/helpers/index.cjs'), "const { TimeoutError } = require('@adeli/sdk');\nasync function waitForConnection(_client, _args, _options) { throw new TimeoutError('timed out'); }\nmodule.exports = { waitForConnection };\n");
   writeFileSync(join(root, 'dist/helpers/index.d.ts'), "export declare function waitForConnection(client: unknown, args: unknown, options?: { timeoutMs?: number; intervalMs?: number }): Promise<unknown>;\n");
   writeFileSync(join(root, 'dist/helpers/index.d.cts'), "export declare function waitForConnection(client: unknown, args: unknown, options?: { timeoutMs?: number; intervalMs?: number }): Promise<unknown>;\n");
   if (includeUploads) {

@@ -4,7 +4,7 @@
     "strict": true, "noUncheckedIndexedAccess": true, "exactOptionalPropertyTypes": true,
     "declaration": true, "isolatedModules": true, "verbatimModuleSyntax": true,
     "baseUrl": ".",
-    "paths": { "@adeli/node": ["src/index.ts"], "@adeli/node/helpers": ["src/helpers/index.ts"], "@adeli/node/uploads": ["src/uploads.ts"] },
+    "paths": { "@adeli/sdk": ["src/index.ts"], "@adeli/sdk/helpers": ["src/helpers/index.ts"], "@adeli/sdk/uploads": ["src/uploads.ts"] },
     "noEmit": true, "skipLibCheck": true, "types": ["node", "vitest/globals"]
   },
   "include": ["src", "scripts", "test", "tsup.config.ts", "vitest.config.ts"]

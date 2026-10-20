@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { CancellationError, MalformedResponseError, TimeoutError, type ApiResponse } from '@adeli/node';
-import { iterateCommentPages, iterateComments, waitForConnection, waitForFacebookPost, waitForTikTokPost, waitForYouTubeVideo } from '@adeli/node/helpers';
+import { CancellationError, MalformedResponseError, TimeoutError, type ApiResponse } from '@adeli/sdk';
+import { iterateCommentPages, iterateComments, waitForConnection, waitForFacebookPost, waitForTikTokPost, waitForYouTubeVideo } from '@adeli/sdk/helpers';
 
 const response = <T>(data: T): ApiResponse<T> => ({ data, status: 200, headers: new Headers({ 'x-test': 'yes' }) });
 const connection = (status: string): ApiResponse<any> => response({ id: 'session', profileId: 'profile', platform: 'facebook', status });

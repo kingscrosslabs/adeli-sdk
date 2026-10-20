@@ -9,7 +9,7 @@ const valid = {
   headSha: 'a'.repeat(40),
   releaseTag: 'v0.1.0',
   reviewedVersion: '0.1.0',
-  packageName: '@adeli/node',
+  packageName: '@adeli/sdk',
   packageVersion: '0.1.0',
 };
 

@@ -1,4 +1,4 @@
-import { Adeli } from '@adeli/node';
+import { Adeli } from '@adeli/sdk';
 
 /** Read a partial aggregate without hiding provider-specific failures. */
 export async function listAccountsWithOutcomes() {
