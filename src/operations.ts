@@ -17,6 +17,7 @@ export const operations = {
   disconnectAccount: { operationId: 'disconnectAccount', method: 'DELETE', path: '/profiles/{profileId}/accounts/{accountId}', retry: 'never' },
   refreshAccounts: { operationId: 'refreshAccounts', method: 'POST', path: '/profiles/{profileId}/accounts/refresh', retry: 'never' },
   listPosts: { operationId: 'listPosts', method: 'GET', path: '/posts', retry: 'never' },
+  createMediaUploads: { operationId: 'createMediaUploads', method: 'POST', path: '/media/uploads', retry: 'never' },
   createPost: { operationId: 'createPost', method: 'POST', path: '/posts', retry: 'never', defaultTimeoutMs: 300_000 },
   uploadYouTubeVideo: { operationId: 'uploadYouTubeVideo', method: 'POST', path: '/posts/youtube', retry: 'never', defaultTimeoutMs: 300_000 },
   deleteXPost: { operationId: 'deleteXPost', method: 'DELETE', path: '/posts/x/{postId}', retry: 'never' },

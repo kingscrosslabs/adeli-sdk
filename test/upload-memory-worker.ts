@@ -16,21 +16,29 @@ try {
   await truncate(path, fixtureSize);
   let received = 0;
   let chunks = 0;
+  let uploadUrl = '';
   server = createServer((request, response) => {
+    if (request.url === '/api/v1/media/uploads') {
+      const body: Buffer[] = [];
+      request.on('data', (chunk: Buffer) => body.push(chunk));
+      request.on('end', () => {
+        const manifest = JSON.parse(Buffer.concat(body).toString()) as { files: Array<{ clientId: string; contentType: string }> };
+        response.writeHead(201, { 'content-type': 'application/json' }).end(JSON.stringify({ uploads: manifest.files.map((file) => ({ clientId: file.clientId, uploadId: 'staged', method: 'PUT', url: uploadUrl, headers: { 'content-type': file.contentType }, expiresAt: '2026-10-26T12:00:00Z' })) }));
+      });
+      return;
+    }
+    const direct = request.url === '/s3';
     request.on('data', (chunk: Buffer) => {
-      received += chunk.byteLength;
+      if (direct) received += chunk.byteLength;
       chunks += 1;
-      // Apply bounded, repeatable backpressure instead of consuming the body as fast as possible.
-      if (chunks % 16 === 0) {
-        request.pause();
-        setTimeout(() => request.resume(), 20);
-      }
+      if (chunks % 16 === 0) { request.pause(); setTimeout(() => request.resume(), 20); }
     });
-    request.on('end', () => { response.writeHead(200, { 'content-type': 'application/json' }).end('{}'); });
+    request.on('end', () => { response.writeHead(200, { 'content-type': 'application/json' }).end(direct ? '' : '{}'); });
   });
   await new Promise<void>((resolve) => server!.listen(0, '127.0.0.1', resolve));
   const address = server.address();
   if (!address || typeof address === 'string') throw new Error('memory receiver did not bind');
+  uploadUrl = `http://127.0.0.1:${address.port}/s3`;
   let eagerBuffer: Buffer | undefined;
   const baseline = memory();
   const samples = [baseline];
@@ -42,7 +50,7 @@ try {
     const realFetch = globalThis.fetch;
     globalThis.fetch = async (input, init) => { const target = new URL(String(input)); if (target.hostname !== '127.0.0.1') throw new Error(`outbound fetch blocked: ${target}`); return realFetch(input, { ...init, redirect: 'error' }); };
     const client = new Adeli({ apiKey: 'memory-test-key', baseURL: `http://127.0.0.1:${address.port}` });
-    await client.posts.uploadYouTubeVideo({ body: { accountId: '00000000-0000-0000-0000-000000000001', video: upload, title: 'memory', privacy_status: 'private', made_for_kids: false } });
+    await client.posts.uploadYouTubeVideo({ body: { accountId: '00000000-0000-0000-0000-000000000001', profileId: '00000000-0000-0000-0000-000000000001', video: upload, title: 'memory', privacy_status: 'private', made_for_kids: false } });
   } finally {
     clearInterval(sampler);
   }

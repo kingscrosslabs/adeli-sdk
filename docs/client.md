@@ -58,3 +58,9 @@ Error `details` remain `unknown`: validation arrays and provider-specific object
 ## Scope and safety
 
 Profile creation accepts an optional idempotency key. Ad-account and campaign creation require keys and do not auto-retry. Publishing has no generic idempotency guarantee. The X usage response is a stored Adeli ledger: `totalCostMicros` and each `operations[].costMicros` are millionths of a US dollar. Preserve these integer values precisely; the SDK does not implicitly convert or round them to dollars. Actual X post/analytics provider calls can incur charges; Ads and destructive calls require separate approval and cleanup planning. The SDK does not claim to enforce every evolving provider-side semantic rule; the API remains authoritative.
+
+## Direct media uploads
+
+Pass `Blob`/`File` values in media fields (including Instagram/Facebook media, TikTok video/photos, YouTube video/thumbnail, X media/thread parts, and Bluesky images/video). The posts resource resolves the profile when necessary, calls `createMediaUploads`, PUTs each raw body to its presigned S3 URL with the returned headers unchanged, and sends only staged references to Adeli. Uploads use concurrency three by default; set `concurrency`, `onProgress`, `signal`, or `timeoutMs` in the method options. Presigned PUTs are idempotent and honor the client's bounded retry count; post publication itself is never retried automatically.
+
+Use `client.posts.createMediaUploads(...)` directly when another process manages the PUTs. API keys are sent only to Adeli and never to signed S3 URLs.

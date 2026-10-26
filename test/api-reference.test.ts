@@ -11,7 +11,7 @@ test('generated API reference covers every operation with typed escaped signatur
   expect(rows).toHaveLength(Object.keys(operations).length + 1); // header plus one row per operation
   expect(document).not.toContain('(... )');
   expect(document).toContain('Promise<ApiResponse');
-  expect(document).toContain('CreatePostBody \\| TikTokMultipartBody');
+  expect(document).toContain('CreatePostWithFiles \\| TikTokMultipartBody');
   expect(document).not.toContain('https://www.tryadeli.com/docs/#');
   expect(document).toContain('https://www.tryadeli.com/docs/api/posts/upload-youtube-video-file');
   expect(document).toContain('https://www.tryadeli.com/docs/pricing/x');

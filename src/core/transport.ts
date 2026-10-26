@@ -2,7 +2,7 @@ import { isRepresentableTimerDuration, MAX_TIMER_DURATION_MS } from './duration.
 import { apiError, CancellationError, MalformedResponseError, NetworkError, RedirectError, TimeoutError } from './errors.js';
 import { backoffMs, canRetry, isDailyQuotaExhausted, isRetryableStatus, parseRetryAfter, retryableNetworkError, sleepWithSignal } from './retry.js';
 import type { ResolvedConfig } from './config.js';
-import type { ApiResponse, MultipartBody, PathParams, QueryParams, QueryValue, TransportRequest } from './types.js';
+import type { ApiResponse, MultipartBody, PathParams, QueryParams, QueryValue, RequestOptions, TransportRequest } from './types.js';
 
 function isMultipartBody(value: unknown): value is MultipartBody {
   return value !== null && typeof value === 'object' && 'stream' in value && 'contentType' in value
@@ -87,6 +87,44 @@ export class Transport {
   constructor(private readonly config: ResolvedConfig) {}
   /** Prevent client configuration, especially apiKey, from leaking through JSON serialization. */
   toJSON(): Record<string, never> { return {}; }
+
+  /** Send raw bytes to a one-object presigned URL without leaking the Adeli API key. */
+  async upload(url: string, method: 'PUT', headers: Readonly<Record<string, string>>, body: Blob, options: RequestOptions = {}): Promise<void> {
+    const timeoutMs = options.timeoutMs ?? this.config.timeoutMs ?? 60_000;
+    if (!isRepresentableTimerDuration(timeoutMs)) throw new TypeError(`timeoutMs must be a positive finite number no greater than ${MAX_TIMER_DURATION_MS}ms`);
+    if (options.signal?.aborted) throw new CancellationError('The media upload was cancelled');
+    const controller = new AbortController();
+    let timedOut = false;
+    let cancelled = false;
+    const onAbort = () => { cancelled = true; controller.abort(); };
+    options.signal?.addEventListener('abort', onAbort, { once: true });
+    const timer = setTimeout(() => { timedOut = true; controller.abort(); }, timeoutMs);
+    try {
+      for (let attempt = 0; ; attempt += 1) {
+        try {
+          const response = await this.config.fetch(url, { method, headers: new Headers(headers), body, signal: controller.signal, redirect: 'error' });
+          if (response.redirected) throw new RedirectError('Adeli refused a media upload redirect');
+          if (response.ok) return;
+          if (attempt < this.config.maxRetries && response.status >= 500) {
+            await sleepWithSignal(backoffMs(attempt, parseRetryAfter(response.headers.get('retry-after'))), controller.signal);
+            continue;
+          }
+          throw new NetworkError(`Direct media upload failed with status ${response.status}`);
+        } catch (error) {
+          if (timedOut) throw new TimeoutError(`Media upload exceeded its ${timeoutMs}ms deadline`);
+          if (cancelled || (error instanceof Error && error.name === 'AbortError')) throw new CancellationError('The media upload was cancelled');
+          if (attempt < this.config.maxRetries && retryableNetworkError(error)) {
+            await sleepWithSignal(backoffMs(attempt), controller.signal);
+            continue;
+          }
+          throw error;
+        }
+      }
+    } finally {
+      clearTimeout(timer);
+      options.signal?.removeEventListener('abort', onAbort);
+    }
+  }
 
   async request<T, B = unknown>(request: TransportRequest<B>): Promise<ApiResponse<T>> {
     const timeoutMs = request.timeoutMs ?? this.config.timeoutMs ?? request.operation.defaultTimeoutMs ?? 60_000;

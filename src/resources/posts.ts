@@ -1,12 +1,14 @@
-import { randomUUID } from 'node:crypto';
-import type { ApiResponse, MultipartBody, RequestOptions } from '../core/types.js';
+import type { ApiResponse, RequestOptions } from '../core/types.js';
 import type { OperationJsonBody as JsonBody, OperationPath as Path, OperationQuery as JsonQuery, OperationSuccessBody as SuccessBody } from '../core/generated.js';
 import type { Transport } from '../core/transport.js';
 import { operations } from '../operations.js';
+import { putDirectUploads, type DirectUploadOptions } from '../uploads.js';
 
 export type PostsQuery = JsonQuery<'listPosts'>;
 export type ListPostsQuery = PostsQuery;
 export type CreatePostBody = JsonBody<'createPost'>;
+export type CreateMediaUploadsBody = JsonBody<'createMediaUploads'>;
+export type CreateMediaUploadsResponse = SuccessBody<'createMediaUploads'>;
 export type PostListResponse = SuccessBody<'listPosts'>;
 export type DeletePostResponse = SuccessBody<'deleteXPost'>;
 export type FacebookPostStatusResponse = SuccessBody<'getFacebookPostStatus'>;
@@ -14,9 +16,20 @@ export type TikTokPostStatusResponse = SuccessBody<'getTikTokPostStatus'>;
 export type TikTokCreatorInfoResponse = SuccessBody<'getTikTokCreatorInfo'>;
 export type YouTubeVideoStatusResponse = SuccessBody<'getYouTubeVideoStatus'>;
 export type YouTubeUploadResponse = SuccessBody<'uploadYouTubeVideo'>;
+export type YouTubeStagedUploadBody = JsonBody<'uploadYouTubeVideo'>;
 
-/** A Blob/File accepted by multipart methods. File names are retained when provided by the Node adapter. */
+/** A Blob/File sent directly to private S3. File names are retained when provided by the Node adapter. */
 export type BinaryUpload = Blob & { readonly name?: string };
+export type UploadableMedia<T> = T | BinaryUpload | ({ readonly file: BinaryUpload } & (T extends object ? Partial<T> : object));
+type MediaKey = 'image' | 'images' | 'reel' | 'story' | 'carousel' | 'video' | 'photos' | 'media' | 'thumbnail';
+type UploadableValue<K, V> = K extends MediaKey
+  ? V extends readonly (infer Item)[] ? readonly UploadableMedia<UploadableDeep<Item>>[] : UploadableMedia<UploadableDeep<V>>
+  : UploadableDeep<V>;
+type UploadableDeep<T> = T extends readonly (infer Item)[] ? readonly UploadableDeep<Item>[] : T extends object ? { readonly [K in keyof T]: UploadableValue<K, T[K]> } : T;
+/** Generated post union with Blob/File alternatives added at every media field, including thread parts. */
+export type CreatePostWithFiles = UploadableDeep<CreatePostBody>;
+
+/** Backwards-compatible name for the existing high-level TikTok file body. */
 export interface TikTokMultipartBody {
   readonly platform: 'tiktok';
   readonly accountId: string;
@@ -59,70 +72,29 @@ export interface YouTubeUploadBody {
 }
 export type UploadYouTubeVideoBody = YouTubeUploadBody;
 
-type MultipartField = { readonly name: string; readonly value: string };
-type MultipartFile = { readonly name: string; readonly file: BinaryUpload };
-function scalarFields(body: Record<string, unknown>, skip: ReadonlySet<string>): MultipartField[] {
-  const fields: MultipartField[] = [];
-  for (const [name, value] of Object.entries(body)) {
-    if (skip.has(name) || value === undefined || value === null || typeof value === 'object') continue;
-    fields.push({ name, value: String(value) });
+type Platform = CreateMediaUploadsBody['platform'];
+type MutableReference = { upload_id: string };
+type CollectedFile = { file: BinaryUpload; reference: MutableReference; purpose: 'post_media' | 'youtube_thumbnail' };
+
+function isBlob(value: unknown): value is BinaryUpload { return typeof Blob !== 'undefined' && value instanceof Blob; }
+function collectFiles(value: unknown, key: string | undefined, collected: CollectedFile[]): unknown {
+  if (isBlob(value)) {
+    const reference: MutableReference = { upload_id: '' };
+    collected.push({ file: value, reference, purpose: key === 'thumbnail' ? 'youtube_thumbnail' : 'post_media' });
+    return reference;
   }
-  return fields;
-}
-function safeHeaderValue(value: string): string { return value.replace(/["\\\r\n]/g, '_'); }
-function streamingMultipart(fields: readonly MultipartField[], files: readonly MultipartFile[]): MultipartBody {
-  const boundary = `----adeli-${randomUUID()}`;
-  const encoder = new TextEncoder();
-  const encodedFields = fields.map(({ name, value }) => encoder.encode(`--${boundary}\r\nContent-Disposition: form-data; name="${safeHeaderValue(name)}"\r\n\r\n${value}\r\n`));
-  const encodedFiles = files.map(({ name, file }) => encoder.encode(`--${boundary}\r\nContent-Disposition: form-data; name="${safeHeaderValue(name)}"; filename="${safeHeaderValue(file.name ?? name)}"\r\nContent-Type: ${safeHeaderValue(file.type || 'application/octet-stream')}\r\n\r\n`));
-  const ending = encoder.encode(`--${boundary}--\r\n`);
-  async function* parts(): AsyncGenerator<Uint8Array> {
-    for (const field of encodedFields) yield field;
-    for (let index = 0; index < files.length; index += 1) {
-      yield encodedFiles[index]!;
-      const reader = files[index]!.file.stream().getReader();
-      try {
-        while (true) {
-          const chunk = await reader.read();
-          if (chunk.done) break;
-          yield chunk.value;
-        }
-      } finally {
-        reader.releaseLock();
-      }
-      yield encoder.encode('\r\n');
+  if (Array.isArray(value)) return value.map((item) => collectFiles(item, key, collected));
+  if (value !== null && typeof value === 'object') {
+    const record = value as Record<string, unknown>;
+    if (isBlob(record.file)) {
+      const reference: MutableReference = { upload_id: '' };
+      collected.push({ file: record.file, reference, purpose: key === 'thumbnail' ? 'youtube_thumbnail' : 'post_media' });
+      const metadata = Object.fromEntries(Object.entries(record).filter(([name]) => name !== 'file'));
+      return Object.assign(reference, metadata);
     }
-    yield ending;
+    return Object.fromEntries(Object.entries(record).map(([name, item]) => [name, collectFiles(item, name, collected)]));
   }
-  const iterator = parts();
-  const stream = new ReadableStream<Uint8Array>({
-    async pull(controller) {
-      try {
-        const next = await iterator.next();
-        if (next.done) controller.close();
-        else controller.enqueue(next.value);
-      } catch (error) { controller.error(error); }
-    },
-    async cancel(reason) { await iterator.return(reason); },
-  });
-  return { stream, contentType: `multipart/form-data; boundary=${boundary}` };
-}
-function tiktokMultipart(body: TikTokMultipartBody): MultipartBody {
-  const fields = scalarFields(body as unknown as Record<string, unknown>, new Set(['video', 'photos']));
-  const files: MultipartFile[] = [];
-  if (body.video !== undefined) files.push({ name: 'video', file: body.video });
-  for (const photo of body.photos ?? []) files.push({ name: 'photos[]', file: photo });
-  return streamingMultipart(fields, files);
-}
-function youtubeMultipart(body: YouTubeUploadBody): MultipartBody {
-  const fields = scalarFields(body as unknown as Record<string, unknown>, new Set(['video', 'thumbnail', 'tags']));
-  if (body.tags !== undefined) fields.push({ name: 'tags', value: body.tags.join(',') });
-  const files: MultipartFile[] = [{ name: 'video', file: body.video }];
-  if (body.thumbnail !== undefined) files.push({ name: 'thumbnail', file: body.thumbnail });
-  return streamingMultipart(fields, files);
-}
-function isTikTokMultipart(body: CreatePostBody | TikTokMultipartBody): body is TikTokMultipartBody {
-  return body.platform === 'tiktok' && ((body.video !== undefined && body.video instanceof Blob) || (Array.isArray(body.photos) && body.photos.some((photo) => photo instanceof Blob)));
+  return value;
 }
 
 export class PostsResource {
@@ -130,12 +102,41 @@ export class PostsResource {
   listPosts(args: { readonly query?: PostsQuery } = {}, options: RequestOptions = {}): Promise<ApiResponse<PostListResponse>> {
     return this.transport.request({ operation: operations.listPosts, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs });
   }
-  createPost(args: { readonly body: CreatePostBody | TikTokMultipartBody }, options: RequestOptions = {}): Promise<ApiResponse<SuccessBody<'createPost'>>> {
-    const body = isTikTokMultipart(args.body) ? tiktokMultipart(args.body) : args.body;
+  createMediaUploads(args: { readonly body: CreateMediaUploadsBody }, options: RequestOptions = {}): Promise<ApiResponse<CreateMediaUploadsResponse>> {
+    return this.transport.request({ operation: operations.createMediaUploads, body: args.body, signal: options.signal, timeoutMs: options.timeoutMs });
+  }
+  private async profileIdFor(accountId: string, explicit: string | undefined, options: RequestOptions) {
+    if (explicit) return explicit;
+    const response = await this.transport.request<SuccessBody<'listAccounts'>>({ operation: operations.listAccounts, query: { accountId }, signal: options.signal, timeoutMs: options.timeoutMs });
+    const account = (response.data as { accounts?: Array<{ profileId?: string }> }).accounts?.[0];
+    if (!account?.profileId) throw new TypeError('A profileId is required to upload media for this account');
+    return account.profileId;
+  }
+  private async stageBody(body: Record<string, unknown>, options: DirectUploadOptions): Promise<Record<string, unknown>> {
+    const files: CollectedFile[] = [];
+    const stagedBody = collectFiles(body, undefined, files) as Record<string, unknown>;
+    if (!files.length) return stagedBody;
+    const platform = body.platform as Platform;
+    if (!['instagram', 'facebook', 'tiktok', 'youtube', 'x', 'bluesky'].includes(platform)) throw new TypeError('A supported platform is required for media upload');
+    const accountId = body.accountId;
+    if (typeof accountId !== 'string') throw new TypeError('accountId is required for media upload');
+    const profileId = await this.profileIdFor(accountId, typeof body.profileId === 'string' ? body.profileId : undefined, options);
+    const declaration = files.map(({ file, purpose }, index) => {
+      if (!file.type) throw new TypeError('Every uploaded Blob needs a content type');
+      return { clientId: String(index), purpose, contentType: file.type, size: file.size, ...('name' in file && typeof file.name === 'string' ? { filename: file.name } : {}) };
+    });
+    const initiated = await this.createMediaUploads({ body: { profileId, platform, files: declaration } }, options);
+    const uploadIds = await putDirectUploads(this.transport, initiated.data.uploads, files.map(({ file }) => file), options);
+    uploadIds.forEach((uploadId, index) => { files[index]!.reference.upload_id = uploadId; });
+    return stagedBody;
+  }
+  async createPost(args: { readonly body: CreatePostWithFiles | TikTokMultipartBody }, options: DirectUploadOptions = {}): Promise<ApiResponse<SuccessBody<'createPost'>>> {
+    const body = await this.stageBody(args.body as unknown as Record<string, unknown>, options);
     return this.transport.request({ operation: operations.createPost, body, signal: options.signal, timeoutMs: options.timeoutMs });
   }
-  uploadYouTubeVideo(args: { readonly body: YouTubeUploadBody }, options: RequestOptions = {}): Promise<ApiResponse<YouTubeUploadResponse>> {
-    return this.transport.request({ operation: operations.uploadYouTubeVideo, body: youtubeMultipart(args.body), signal: options.signal, timeoutMs: options.timeoutMs });
+  async uploadYouTubeVideo(args: { readonly body: YouTubeUploadBody | YouTubeStagedUploadBody }, options: DirectUploadOptions = {}): Promise<ApiResponse<YouTubeUploadResponse>> {
+    const body = await this.stageBody({ ...args.body, platform: 'youtube' }, options);
+    return this.transport.request({ operation: operations.uploadYouTubeVideo, body, signal: options.signal, timeoutMs: options.timeoutMs });
   }
   deleteXPost(args: { readonly path: Path<'deleteXPost'>; readonly query: JsonQuery<'deleteXPost'> }, options: RequestOptions = {}): Promise<ApiResponse<DeletePostResponse>> {
     return this.transport.request({ operation: operations.deleteXPost, path: args.path, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs });

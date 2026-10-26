@@ -17,6 +17,7 @@
     "disconnectAccount": [{"method":"DELETE","path":"/api/v1/profiles/{profileId}/accounts/{accountId}","href":"/docs/api/accounts/disconnect-account"}],
     "refreshAccounts": [{"method":"POST","path":"/api/v1/profiles/{profileId}/accounts/refresh","href":"/docs/api/accounts/refresh-tokens"}],
     "listPosts": [{"method":"GET","path":"/api/v1/posts","href":"/docs/api/posts/list-posts"}],
+    "createMediaUploads": [{"method":"POST","path":"/api/v1/media/uploads","href":"/docs/api/posts/create-media-uploads"}],
     "createPost": [
       {"method":"POST","path":"/api/v1/posts","href":"/docs/api/posts/publish-instagram"},
       {"method":"POST","path":"/api/v1/posts","href":"/docs/api/posts/publish-facebook"},
