@@ -58,6 +58,10 @@
     "createCampaign": [{"method":"POST","path":"/api/v1/ads/campaigns","href":"/docs/api/ads/create-campaign"}],
     "deleteCampaign": [{"method":"DELETE","path":"/api/v1/ads/campaigns/{campaignId}","href":"/docs/api/ads/delete-campaign"}],
     "setAdStatus": [{"method":"PUT","path":"/api/v1/ads/status","href":"/docs/api/ads/update-status"}],
+    "updateAdGroup": [{"method":"PATCH","path":"/api/v1/ads/ad-groups/{adGroupId}","href":"/docs/api/ads/update-ad-group"}],
+    "listAdTargeting": [{"method":"GET","path":"/api/v1/ads/targeting","href":"/docs/api/ads/list-targeting"}],
+    "listAdIdentities": [{"method":"GET","path":"/api/v1/ads/identities","href":"/docs/api/ads/list-identities"}],
+    "createAdIdentity": [{"method":"POST","path":"/api/v1/ads/identities","href":"/docs/api/ads/create-identity"}],
     "getXUsage": [{"method":"GET","path":"/api/v1/usage/x","href":"/docs/pricing/x"}]
   }
 }

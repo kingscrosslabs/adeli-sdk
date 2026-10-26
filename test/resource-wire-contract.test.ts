@@ -104,6 +104,10 @@ function wireResponse(operationId: string, _status?: string): unknown {
     case 'createCampaign': return { campaign: { id, profileId: id, facebookConnectionId: null, metaAdsConnectionId: id, adAccountId: 'act_1', pageId: 'page-1', pagePostId: '1', idempotencyKey: 'campaign-key', campaignId: null, adSetId: null, creativeId: null, adId: null, status: 'pending', failureReason: null, createdAt: profile.createdAt, updatedAt: profile.updatedAt }, objects: { campaignId: 'campaign', adSetId: 'set', creativeId: 'creative', adId: 'ad' }, preview: null, replayed: false };
     case 'deleteCampaign': return undefined;
     case 'setAdStatus': return { platform: 'meta_ads', accountId: id, objectId: '1', status: 'PAUSED' };
+    case 'updateAdGroup': return { platform: 'tiktok_ads', accountId: id, adAccountId: '7000000001', adGroup: { adGroupId: '2', dailyBudget: 25 } };
+    case 'listAdTargeting': return { platform: 'tiktok_ads', accountId: id, adAccountId: '7000000001', type: 'regions', options: [{ id: '6252001', name: 'United States', parentId: null, level: 'COUNTRY' }] };
+    case 'listAdIdentities': return { platform: 'tiktok_ads', accountId: id, adAccountId: '7000000001', identities: [{ id: 'identity-1', type: 'CUSTOMIZED_USER', displayName: 'Brand', avatarUrl: null }] };
+    case 'createAdIdentity': return { platform: 'tiktok_ads', accountId: id, adAccountId: '7000000001', identity: { id: 'identity-1', type: 'CUSTOMIZED_USER', displayName: 'Brand', avatarUrl: null } };
     case 'getXUsage': return { from: '2025-01-01T00:00:00.000Z', to: '2025-02-01T00:00:00.000Z', ratesAsOf: '2025-01-01', totalCostMicros: 0, operations: [{ operation: 'list_posts', resourceType: 'post', resourceCount: 1, costMicros: 0 }] };
     default: throw new Error(`fixture missing for ${operationId}`);
   }
@@ -115,7 +119,7 @@ type WireCase = { id: string; call: (options: RequestOptions) => Promise<ApiResp
 function jsonBody(body: Record<string, unknown>): ExpectedBody { return body; }
 function requireRequest(value: Request | undefined, id: string): Request { if (value === undefined) throw new Error(`${id}: fetch was not called`); return value; }
 // Request expectations are deliberately written independently of operations metadata; the registry is only a coverage allow-list.
-test('all 50 registered operations preserve exact wire requests and response envelopes', async () => {
+test('all 54 registered operations preserve exact wire requests and response envelopes', async () => {
   let currentFixture: WireCase | undefined;
   let returnUnauthorized = false;
   const unauthorizedDetails = { reason: 'wire-contract', nested: { preserved: true } };
@@ -176,13 +180,17 @@ test('all 50 registered operations preserve exact wire requests and response env
     { id: 'createCampaign', call: (o) => client.ads.createCampaign({ query: { accountId: id, profileId: id }, body: { adAccountId: 'act_1', pagePostId: '1', dailyBudget: 0, startDate: '2025-01-01', endDate: '2025-01-02', campaignName: 'Campaign' } }, { ...o, idempotencyKey: 'campaign-key' }), method: 'POST', path: '/api/v1/ads/campaigns', query: `accountId=${id}&profileId=${id}`, body: jsonBody({ adAccountId: 'act_1', pagePostId: '1', dailyBudget: 0, startDate: '2025-01-01', endDate: '2025-01-02', campaignName: 'Campaign' }), status: 200, response: wireResponse('createCampaign'), idempotencyKey: 'campaign-key' },
     { id: 'deleteCampaign', call: (o) => client.ads.deleteCampaign({ path: { campaignId: 'campaign/a' }, query: { accountId: id, profileId: id, adAccountId: 'act_1' } }, o), method: 'DELETE', path: '/api/v1/ads/campaigns/campaign%2Fa', query: `accountId=${id}&profileId=${id}&adAccountId=act_1`, status: 204, response: wireResponse('deleteCampaign') },
     { id: 'setAdStatus', call: (o) => client.ads.setAdStatus({ query: { accountId: id, profileId: id }, body: { adAccountId: 'act_1', objectId: '1', status: 'PAUSED' } }, o), method: 'PUT', path: '/api/v1/ads/status', query: `accountId=${id}&profileId=${id}`, body: jsonBody({ adAccountId: 'act_1', objectId: '1', status: 'PAUSED' }), status: 200, response: wireResponse('setAdStatus') },
+    { id: 'updateAdGroup', call: (o) => client.ads.updateAdGroup({ path: { adGroupId: '2' }, query: { accountId: id }, body: { adAccountId: '7000000001', dailyBudget: 25 } }, o), method: 'PATCH', path: '/api/v1/ads/ad-groups/2', query: `accountId=${id}`, body: jsonBody({ adAccountId: '7000000001', dailyBudget: 25 }), status: 200, response: wireResponse('updateAdGroup') },
+    { id: 'listAdTargeting', call: (o) => client.ads.listAdTargeting({ query: { accountId: id, adAccountId: '7000000001', type: 'regions' } }, o), method: 'GET', path: '/api/v1/ads/targeting', query: `accountId=${id}&adAccountId=7000000001&type=regions`, status: 200, response: wireResponse('listAdTargeting') },
+    { id: 'listAdIdentities', call: (o) => client.ads.listAdIdentities({ query: { accountId: id, adAccountId: '7000000001' } }, o), method: 'GET', path: '/api/v1/ads/identities', query: `accountId=${id}&adAccountId=7000000001`, status: 200, response: wireResponse('listAdIdentities') },
+    { id: 'createAdIdentity', call: (o) => client.ads.createAdIdentity({ query: { accountId: id }, body: { adAccountId: '7000000001', displayName: 'Brand', avatar: { url: 'https://cdn.example/a.png' } } }, o), method: 'POST', path: '/api/v1/ads/identities', query: `accountId=${id}`, body: jsonBody({ adAccountId: '7000000001', displayName: 'Brand', avatar: { url: 'https://cdn.example/a.png' } }), status: 201, response: wireResponse('createAdIdentity') },
     { id: 'getXUsage', call: (o) => client.usage.getXUsage({}, o), method: 'GET', path: '/api/v1/usage/x', status: 200, response: wireResponse('getXUsage') },
   ];
 
   const { operations } = await import('../src/operations.js');
   expect(new Set(cases.map((item) => item.id))).toEqual(new Set(Object.keys(operations)));
   expect(cases).toHaveLength(Object.keys(operations).length);
-  expect(declaredSuccessPairs()).toHaveLength(59);
+  expect(declaredSuccessPairs()).toHaveLength(63);
   for (const fixture of cases) {
     for (const status of successStatuses(fixture.id)) {
       delete state.request;

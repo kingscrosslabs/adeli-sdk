@@ -51,6 +51,10 @@ export const operations = {
   createCampaign: { operationId: 'createCampaign', method: 'POST', path: '/ads/campaigns', retry: 'never' },
   deleteCampaign: { operationId: 'deleteCampaign', method: 'DELETE', path: '/ads/campaigns/{campaignId}', retry: 'never' },
   setAdStatus: { operationId: 'setAdStatus', method: 'PUT', path: '/ads/status', retry: 'never' },
+  updateAdGroup: { operationId: 'updateAdGroup', method: 'PATCH', path: '/ads/ad-groups/{adGroupId}', retry: 'never' },
+  listAdTargeting: { operationId: 'listAdTargeting', method: 'GET', path: '/ads/targeting', retry: 'safe-read' },
+  listAdIdentities: { operationId: 'listAdIdentities', method: 'GET', path: '/ads/identities', retry: 'safe-read' },
+  createAdIdentity: { operationId: 'createAdIdentity', method: 'POST', path: '/ads/identities', retry: 'never' },
   getXUsage: { operationId: 'getXUsage', method: 'GET', path: '/usage/x', retry: 'safe-read' },
 } as const satisfies Record<string, OperationMetadata>;
 export type OperationId = keyof typeof operations;

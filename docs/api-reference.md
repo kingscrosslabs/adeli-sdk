@@ -3,7 +3,7 @@
 Generated from `src/operations.ts` metadata, AST-extracted resource method declarations, and the checked-in verified public docs mapping `openapi/docs-links.json`; this file is not hand-maintained.
 
 - Contract status: **candidate-unreleased**
-- Candidate OpenAPI SHA-256: `c961b96cc1f9d22353d81b742aa0a5aa238dbfc16ff29cdd2e47305add2ae5b7`
+- Candidate OpenAPI SHA-256: `db146aa810d1eceedf233c3a46247791388f2eef54eaebdfb99d7ff88e98e898`
 - Public endpoint documentation: https://www.tryadeli.com/docs/
 
 | Resource | Method signature | HTTP | Path | Endpoint docs |
@@ -57,6 +57,10 @@ Generated from `src/operations.ts` metadata, AST-extracted resource method decla
 | ads | `createCampaign(args: { readonly query?: CreateCampaignQuery; readonly body: CreateCampaignBody }, options: IdempotentOptions): Promise<ApiResponse<CampaignResponse>>` | POST | `/ads/campaigns` | [api/ads/create-campaign](https://www.tryadeli.com/docs/api/ads/create-campaign) |
 | ads | `deleteCampaign(args: { readonly path: DeleteCampaignPath; readonly query: JsonQuery<'deleteCampaign'> }, options: RequestOptions = {}): Promise<ApiResponse<undefined>>` | DELETE | `/ads/campaigns/{campaignId}` | [api/ads/delete-campaign](https://www.tryadeli.com/docs/api/ads/delete-campaign) |
 | ads | `setAdStatus(args: { readonly query?: JsonQuery<'setAdStatus'>; readonly body: SetAdStatusBody }, options: RequestOptions = {}): Promise<ApiResponse<AdStatusResponse>>` | PUT | `/ads/status` | [api/ads/update-status](https://www.tryadeli.com/docs/api/ads/update-status) |
+| unknown | `updateAdGroup(args: { readonly path: UpdateAdGroupPath; readonly query?: UpdateAdGroupQuery; readonly body: UpdateAdGroupBody }, options: RequestOptions = {}): Promise<ApiResponse<AdGroupResponse>>` | PATCH | `/ads/ad-groups/{adGroupId}` | [api/ads/update-ad-group](https://www.tryadeli.com/docs/api/ads/update-ad-group) |
+| unknown | `listAdTargeting(args: { readonly query: AdTargetingQuery }, options: RequestOptions = {}): Promise<ApiResponse<AdTargetingResponse>>` | GET | `/ads/targeting` | [api/ads/list-targeting](https://www.tryadeli.com/docs/api/ads/list-targeting) |
+| unknown | `listAdIdentities(args: { readonly query: AdIdentitiesQuery }, options: RequestOptions = {}): Promise<ApiResponse<AdIdentitiesResponse>>` | GET | `/ads/identities` | [api/ads/list-identities](https://www.tryadeli.com/docs/api/ads/list-identities) |
+| unknown | `createAdIdentity(args: { readonly query?: CreateAdIdentityQuery; readonly body: CreateAdIdentityBody }, options: RequestOptions = {}): Promise<ApiResponse<AdIdentityResponse>>` | POST | `/ads/identities` | [api/ads/create-identity](https://www.tryadeli.com/docs/api/ads/create-identity) |
 | usage | `getXUsage(_args: Record<never, never> = {}, options: RequestOptions = {}): Promise<ApiResponse<XUsageResponse>>` | GET | `/usage/x` | [pricing/x](https://www.tryadeli.com/docs/pricing/x) |
 
 ## Compatibility note
