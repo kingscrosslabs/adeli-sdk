@@ -186,9 +186,29 @@ export interface paths {
         put?: never;
         /**
          * Publish a post
-         * @description Publish to Instagram, Facebook, TikTok, YouTube, X, or Bluesky. Instagram JSON supports images, Reels, Stories, and mixed image/video carousels; Reel, Story, and carousel video can be base64 MP4 or a public HTTPS URL. Send `multipart/form-data` only for TikTok uploads on this shared endpoint.
+         * @description Publish to Instagram, Facebook, TikTok, YouTube, X, or Bluesky. Instagram requests using only staged upload references are durably accepted with 202 and a status URL; legacy base64 or URL inputs remain synchronous during the compatibility window. Send `multipart/form-data` only for TikTok uploads on this shared endpoint.
          */
         post: operations["createPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/media/uploads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Prepare direct media uploads
+         * @description Create short-lived, object-scoped S3 PUT descriptors. Upload each file with the returned headers unchanged, then pass its uploadId as upload_id when publishing.
+         */
+        post: operations["createMediaUploads"];
         delete?: never;
         options?: never;
         head?: never;
@@ -206,7 +226,7 @@ export interface paths {
         put?: never;
         /**
          * Upload a video file to YouTube
-         * @description Multipart upload of a video file. To publish from a URL or base64 instead, use `POST /api/v1/posts`.
+         * @description Recommended: send JSON with staged video and optional thumbnail upload references created by `createMediaUploads`. Legacy multipart remains supported for compatibility.
          */
         post: operations["uploadYouTubeVideo"];
         delete?: never;
@@ -244,6 +264,23 @@ export interface paths {
         post?: never;
         /** Delete a Bluesky post */
         delete: operations["deleteBlueskyPost"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/instagram/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Check an Instagram post's publishing status */
+        get: operations["getInstagramPostStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -2748,6 +2785,14 @@ export interface operations {
                             x: number;
                             y: number;
                         }[];
+                    } | {
+                        upload_id: string;
+                        altText?: string;
+                        userTags?: {
+                            username: string;
+                            x: number;
+                            y: number;
+                        }[];
                     };
                 } | {
                     /** @constant */
@@ -2759,7 +2804,7 @@ export interface operations {
                     caption?: string;
                     collaborators?: string[];
                     isAiGenerated?: boolean;
-                    images: {
+                    images: ({
                         /** @enum {string} */
                         contentType: "image/jpeg" | "image/png" | "image/webp";
                         base64: string;
@@ -2769,7 +2814,15 @@ export interface operations {
                             x: number;
                             y: number;
                         }[];
-                    }[];
+                    } | {
+                        upload_id: string;
+                        altText?: string;
+                        userTags?: {
+                            username: string;
+                            x: number;
+                            y: number;
+                        }[];
+                    })[];
                 } | {
                     /** @constant */
                     platform: "instagram";
@@ -2791,6 +2844,12 @@ export interface operations {
                     } | {
                         /** Format: uri */
                         url: string;
+                        userTags?: {
+                            username: string;
+                        }[];
+                        thumbOffsetMs?: number;
+                    } | {
+                        upload_id: string;
                         userTags?: {
                             username: string;
                         }[];
@@ -2830,7 +2889,14 @@ export interface operations {
                             x?: number;
                             y?: number;
                         }[];
-                    });
+                    }) | {
+                        upload_id: string;
+                        userTags?: {
+                            username: string;
+                            x?: number;
+                            y?: number;
+                        }[];
+                    };
                     isAiGenerated?: boolean;
                 } | {
                     /** @constant */
@@ -2842,7 +2908,7 @@ export interface operations {
                     caption?: string;
                     collaborators?: string[];
                     isAiGenerated?: boolean;
-                    carousel: ({
+                    carousel: (({
                         /** @enum {string} */
                         contentType: "image/jpeg" | "image/png" | "image/webp";
                         base64: string;
@@ -2852,7 +2918,15 @@ export interface operations {
                             x: number;
                             y: number;
                         }[];
-                    } | ({
+                    } | {
+                        upload_id: string;
+                        altText?: string;
+                        userTags?: {
+                            username: string;
+                            x: number;
+                            y: number;
+                        }[];
+                    }) | ({
                         /** @constant */
                         contentType: "video/mp4";
                         base64: string;
@@ -2863,6 +2937,12 @@ export interface operations {
                     } | {
                         /** Format: uri */
                         url: string;
+                        userTags?: {
+                            username: string;
+                        }[];
+                        thumbOffsetMs?: number;
+                    } | {
+                        upload_id: string;
                         userTags?: {
                             username: string;
                         }[];
@@ -2880,6 +2960,8 @@ export interface operations {
                         /** @enum {string} */
                         contentType: "image/jpeg" | "image/png" | "image/webp";
                         base64: string;
+                    } | {
+                        upload_id: string;
                     };
                 } | {
                     /** @constant */
@@ -2889,11 +2971,13 @@ export interface operations {
                     /** Format: uuid */
                     profileId?: string;
                     message?: string;
-                    images: {
+                    images: ({
                         /** @enum {string} */
                         contentType: "image/jpeg" | "image/png" | "image/webp";
                         base64: string;
-                    }[];
+                    } | {
+                        upload_id: string;
+                    })[];
                 } | {
                     /** @constant */
                     platform: "facebook";
@@ -2906,6 +2990,8 @@ export interface operations {
                         /** @constant */
                         contentType: "video/mp4";
                         base64: string;
+                    } | {
+                        upload_id: string;
                     };
                 } | {
                     /** @constant */
@@ -2919,6 +3005,8 @@ export interface operations {
                         /** @constant */
                         contentType: "video/mp4";
                         base64: string;
+                    } | {
+                        upload_id: string;
                     };
                     title?: string;
                 }) | {
@@ -2964,12 +3052,16 @@ export interface operations {
                     } | {
                         /** Format: uri */
                         url: string;
+                    } | {
+                        upload_id: string;
                     };
-                    photos?: {
+                    photos?: ({
                         /** @enum {string} */
                         content_type: "image/jpeg" | "image/png" | "image/webp";
                         base64: string;
-                    }[];
+                    } | {
+                        upload_id: string;
+                    })[];
                     scheduled_date?: unknown;
                     add_to_queue?: unknown;
                     async_upload?: unknown;
@@ -2998,6 +3090,11 @@ export interface operations {
                         /** @enum {string} */
                         content_type: "video/mp4" | "video/quicktime" | "video/webm";
                         base64: string;
+                    } | {
+                        upload_id: string;
+                    };
+                    thumbnail?: {
+                        upload_id: string;
                     };
                 } | {
                     /** @constant */
@@ -3014,6 +3111,8 @@ export interface operations {
                     } | {
                         /** Format: uri */
                         url: string;
+                    } | {
+                        upload_id: string;
                     })[];
                     thread?: {
                         text: string;
@@ -3024,6 +3123,8 @@ export interface operations {
                         } | {
                             /** Format: uri */
                             url: string;
+                        } | {
+                            upload_id: string;
                         })[];
                     }[];
                 } | {
@@ -3034,12 +3135,15 @@ export interface operations {
                     /** Format: uuid */
                     profileId?: string;
                     text: string;
-                    images?: {
+                    images?: ({
                         /** @enum {string} */
                         content_type: "image/jpeg" | "image/png" | "image/webp";
                         base64: string;
                         altText?: string;
-                    }[];
+                    } | {
+                        upload_id: string;
+                        altText?: string;
+                    })[];
                     video?: {
                         /** @constant */
                         content_type: "video/mp4";
@@ -3049,16 +3153,22 @@ export interface operations {
                         /** Format: uri */
                         url: string;
                         altText?: string;
+                    } | {
+                        upload_id: string;
+                        altText?: string;
                     };
                     langs?: string[];
                     thread?: {
                         text: string;
-                        images?: {
+                        images?: ({
                             /** @enum {string} */
                             content_type: "image/jpeg" | "image/png" | "image/webp";
                             base64: string;
                             altText?: string;
-                        }[];
+                        } | {
+                            upload_id: string;
+                            altText?: string;
+                        })[];
                         video?: {
                             /** @constant */
                             content_type: "video/mp4";
@@ -3067,6 +3177,9 @@ export interface operations {
                         } | {
                             /** Format: uri */
                             url: string;
+                            altText?: string;
+                        } | {
+                            upload_id: string;
                             altText?: string;
                         };
                     }[];
@@ -3193,6 +3306,18 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
+                        /** Format: uuid */
+                        jobId: string;
+                        /** @constant */
+                        platform: "instagram";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        /** @enum {string} */
+                        status: "queued" | "processing";
+                        statusUrl: string;
+                    } | {
                         /** @constant */
                         platform: "tiktok";
                         /** Format: uuid */
@@ -3390,6 +3515,84 @@ export interface operations {
             };
         };
     };
+    createMediaUploads: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Format: uuid */
+                    profileId: string;
+                    /** @enum {string} */
+                    platform: "instagram" | "facebook" | "tiktok" | "youtube" | "x" | "bluesky";
+                    files: {
+                        clientId: string;
+                        /** @enum {string} */
+                        purpose: "post_media" | "youtube_thumbnail";
+                        contentType: string;
+                        size: number;
+                        filename?: string;
+                    }[];
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        uploads: {
+                            clientId: string;
+                            uploadId: string;
+                            /** @constant */
+                            method: "PUT";
+                            /** Format: uri */
+                            url: string;
+                            headers: {
+                                [key: string]: string;
+                            };
+                            /** Format: date-time */
+                            expiresAt: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
     uploadYouTubeVideo: {
         parameters: {
             query?: never;
@@ -3399,6 +3602,38 @@ export interface operations {
         };
         requestBody: {
             content: {
+                "application/json": {
+                    /** @constant */
+                    platform: "youtube";
+                    /** Format: uuid */
+                    accountId: string;
+                    /** Format: uuid */
+                    profileId?: string;
+                    title: string;
+                    description?: string;
+                    tags?: string[];
+                    category_id?: string;
+                    /** @enum {string} */
+                    privacy_status: "public" | "unlisted" | "private";
+                    made_for_kids: boolean;
+                    contains_synthetic_media?: boolean;
+                    /** Format: date-time */
+                    publish_at?: string;
+                    notify_subscribers?: boolean;
+                    video: {
+                        /** Format: uri */
+                        url: string;
+                    } | {
+                        /** @enum {string} */
+                        content_type: "video/mp4" | "video/quicktime" | "video/webm";
+                        base64: string;
+                    } | {
+                        upload_id: string;
+                    };
+                    thumbnail?: {
+                        upload_id: string;
+                    };
+                };
                 "multipart/form-data": {
                     /** @description `youtube`. */
                     platform?: string;
@@ -3735,6 +3970,130 @@ export interface operations {
             };
             /** @description Provider quota or rate limit exhausted */
             429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getInstagramPostStatus: {
+        parameters: {
+            query: {
+                jobId: string;
+                profileId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        jobId: string;
+                        /** @constant */
+                        platform: "instagram";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        statusUrl: string;
+                        /** @enum {string} */
+                        status: "queued" | "processing";
+                    } | {
+                        /** Format: uuid */
+                        jobId: string;
+                        /** @constant */
+                        platform: "instagram";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        statusUrl: string;
+                        /** @constant */
+                        status: "published";
+                        post: {
+                            id: string;
+                            /** @enum {string} */
+                            platform: "instagram" | "tiktok" | "facebook" | "youtube" | "x" | "bluesky";
+                            /** Format: uuid */
+                            accountId: string;
+                            /** Format: uuid */
+                            profileId: string;
+                            providerId: string;
+                            caption: string | null;
+                            media: {
+                                type: string;
+                                url: string | null;
+                                thumbnailUrl: string | null;
+                            }[];
+                            permalink: string | null;
+                            engagement: {
+                                likes: number | null;
+                                comments: number | null;
+                                shares?: number | null;
+                                views?: number | null;
+                                reach?: number | null;
+                            };
+                            publishedAt: string | null;
+                        };
+                    } | {
+                        /** Format: uuid */
+                        jobId: string;
+                        /** @constant */
+                        platform: "instagram";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        statusUrl: string;
+                        /** @enum {string} */
+                        status: "failed" | "outcome_unknown";
+                        error: {
+                            code: string;
+                            message: string;
+                        };
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

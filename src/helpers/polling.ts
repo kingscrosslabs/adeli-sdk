@@ -4,11 +4,13 @@ import type { ApiResponse, RequestOptions } from '../core/types.js';
 import type { ConnectionSession, ProfilePath } from '../resources/profiles.js';
 import type {
   FacebookPostStatusResponse,
+  InstagramPostStatusResponse,
   TikTokPostStatusResponse,
   YouTubeVideoStatusResponse,
 } from '../resources/posts.js';
 
 type PublishStatusQuery = { readonly accountId: string; readonly profileId?: string; readonly publishId: string };
+type InstagramStatusQuery = { readonly jobId: string; readonly profileId?: string };
 type VideoStatusQuery = { readonly accountId: string; readonly profileId?: string; readonly videoId: string };
 
 /** A bounded polling deadline and delay. Both values are required to make the side effect explicit. */
@@ -23,14 +25,16 @@ export type ConnectionPollingClient =
   | { readonly profiles: { readonly getConnection: ConnectionMethod } }
   | { readonly getConnection: ConnectionMethod };
 
+type InstagramMethod = (args: { readonly query: InstagramStatusQuery }, options?: RequestOptions) => Promise<ApiResponse<InstagramPostStatusResponse>>;
 type TikTokMethod = (args: { readonly query: PublishStatusQuery }, options?: RequestOptions) => Promise<ApiResponse<TikTokPostStatusResponse>>;
 type FacebookMethod = (args: { readonly query: PublishStatusQuery }, options?: RequestOptions) => Promise<ApiResponse<FacebookPostStatusResponse>>;
 type YouTubeMethod = (args: { readonly query: VideoStatusQuery }, options?: RequestOptions) => Promise<ApiResponse<YouTubeVideoStatusResponse>>;
+export type InstagramPollingClient = { readonly posts: { readonly getInstagramPostStatus: InstagramMethod } } | { readonly getInstagramPostStatus: InstagramMethod };
 export type TikTokPollingClient = { readonly posts: { readonly getTikTokPostStatus: TikTokMethod } } | { readonly getTikTokPostStatus: TikTokMethod };
 export type FacebookPollingClient = { readonly posts: { readonly getFacebookPostStatus: FacebookMethod } } | { readonly getFacebookPostStatus: FacebookMethod };
 export type YouTubePollingClient = { readonly posts: { readonly getYouTubeVideoStatus: YouTubeMethod } } | { readonly getYouTubeVideoStatus: YouTubeMethod };
-/** A convenience structural type for clients that expose all three status methods under resources. */
-export type PostPollingClient = { readonly posts: { readonly getTikTokPostStatus: TikTokMethod; readonly getFacebookPostStatus: FacebookMethod; readonly getYouTubeVideoStatus: YouTubeMethod } };
+/** A convenience structural type for clients that expose all post status methods under resources. */
+export type PostPollingClient = { readonly posts: { readonly getInstagramPostStatus: InstagramMethod; readonly getTikTokPostStatus: TikTokMethod; readonly getFacebookPostStatus: FacebookMethod; readonly getYouTubeVideoStatus: YouTubeMethod } };
 
 interface Deadline {
   readonly at: number;
@@ -182,6 +186,17 @@ function connectionStatus(response: ApiResponse<ConnectionSession>): 'pending' |
   }
 }
 
+function instagramStatus(response: ApiResponse<InstagramPostStatusResponse>): 'pending' | 'terminal' | 'invalid' {
+  switch (response.data?.status) {
+    case 'queued':
+    case 'processing': return 'pending';
+    case 'published':
+    case 'failed':
+    case 'outcome_unknown': return 'terminal';
+    default: return 'invalid';
+  }
+}
+
 function facebookStatus(response: ApiResponse<FacebookPostStatusResponse>): 'pending' | 'terminal' | 'invalid' {
   switch (response.data?.status) {
     case 'PROCESSING': return 'pending';
@@ -218,6 +233,11 @@ function connectionMethod(client: ConnectionPollingClient): ConnectionMethod {
     ? (args, options) => client.profiles.getConnection(args, options)
     : (args, options) => client.getConnection(args, options);
 }
+function instagramMethod(client: InstagramPollingClient): InstagramMethod {
+  return 'posts' in client
+    ? (args, options) => client.posts.getInstagramPostStatus(args, options)
+    : (args, options) => client.getInstagramPostStatus(args, options);
+}
 function tikTokMethod(client: TikTokPollingClient): TikTokMethod {
   return 'posts' in client
     ? (args, options) => client.posts.getTikTokPostStatus(args, options)
@@ -243,6 +263,17 @@ export function waitForConnection(
   const getConnection = connectionMethod(client);
   const snapshot = { path: { ...args.path } };
   return poll(signal => getConnection(snapshot, { signal }), connectionStatus, options);
+}
+
+/** Poll durable Instagram publication through published, failed, or uncertain outcome. */
+export function waitForInstagramPost(
+  client: InstagramPollingClient,
+  args: { readonly query: InstagramStatusQuery },
+  options: PollingOptions,
+): Promise<ApiResponse<InstagramPostStatusResponse>> {
+  const getStatus = instagramMethod(client);
+  const snapshot = { query: { ...args.query } };
+  return poll(signal => getStatus(snapshot, { signal }), instagramStatus, options);
 }
 
 /** Poll TikTok processing. SEND_TO_USER_INBOX is not a public publication. */

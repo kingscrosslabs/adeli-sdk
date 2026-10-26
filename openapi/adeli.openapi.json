@@ -4149,7 +4149,7 @@
       "post": {
         "operationId": "createPost",
         "summary": "Publish a post",
-        "description": "Publish to Instagram, Facebook, TikTok, YouTube, X, or Bluesky. Instagram JSON supports images, Reels, Stories, and mixed image/video carousels; Reel, Story, and carousel video can be base64 MP4 or a public HTTPS URL. Send `multipart/form-data` only for TikTok uploads on this shared endpoint.",
+        "description": "Publish to Instagram, Facebook, TikTok, YouTube, X, or Bluesky. Instagram requests using only staged upload references are durably accepted with 202 and a status URL; legacy base64 or URL inputs remain synchronous during the compatibility window. Send `multipart/form-data` only for TikTok uploads on this shared endpoint.",
         "tags": [
           "Posts"
         ],
@@ -4191,58 +4191,108 @@
                             "type": "boolean"
                           },
                           "image": {
-                            "type": "object",
-                            "properties": {
-                              "contentType": {
-                                "type": "string",
-                                "enum": [
-                                  "image/jpeg",
-                                  "image/png",
-                                  "image/webp"
-                                ]
-                              },
-                              "base64": {
-                                "type": "string",
-                                "minLength": 1
-                              },
-                              "altText": {
-                                "type": "string",
-                                "maxLength": 1000
-                              },
-                              "userTags": {
-                                "maxItems": 20,
-                                "type": "array",
-                                "items": {
-                                  "type": "object",
-                                  "properties": {
-                                    "username": {
-                                      "type": "string"
-                                    },
-                                    "x": {
-                                      "type": "number",
-                                      "minimum": 0,
-                                      "maximum": 1
-                                    },
-                                    "y": {
-                                      "type": "number",
-                                      "minimum": 0,
-                                      "maximum": 1
-                                    }
+                            "anyOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "contentType": {
+                                    "type": "string",
+                                    "enum": [
+                                      "image/jpeg",
+                                      "image/png",
+                                      "image/webp"
+                                    ]
                                   },
-                                  "required": [
-                                    "username",
-                                    "x",
-                                    "y"
-                                  ],
-                                  "additionalProperties": false
-                                }
+                                  "base64": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "altText": {
+                                    "type": "string",
+                                    "maxLength": 1000
+                                  },
+                                  "userTags": {
+                                    "maxItems": 20,
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "username": {
+                                          "type": "string"
+                                        },
+                                        "x": {
+                                          "type": "number",
+                                          "minimum": 0,
+                                          "maximum": 1
+                                        },
+                                        "y": {
+                                          "type": "number",
+                                          "minimum": 0,
+                                          "maximum": 1
+                                        }
+                                      },
+                                      "required": [
+                                        "username",
+                                        "x",
+                                        "y"
+                                      ],
+                                      "additionalProperties": false
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "contentType",
+                                  "base64"
+                                ],
+                                "additionalProperties": false
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "upload_id": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 300
+                                  },
+                                  "altText": {
+                                    "type": "string",
+                                    "maxLength": 1000
+                                  },
+                                  "userTags": {
+                                    "maxItems": 20,
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "username": {
+                                          "type": "string"
+                                        },
+                                        "x": {
+                                          "type": "number",
+                                          "minimum": 0,
+                                          "maximum": 1
+                                        },
+                                        "y": {
+                                          "type": "number",
+                                          "minimum": 0,
+                                          "maximum": 1
+                                        }
+                                      },
+                                      "required": [
+                                        "username",
+                                        "x",
+                                        "y"
+                                      ],
+                                      "additionalProperties": false
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "upload_id"
+                                ],
+                                "additionalProperties": false
                               }
-                            },
-                            "required": [
-                              "contentType",
-                              "base64"
-                            ],
-                            "additionalProperties": false
+                            ]
                           }
                         },
                         "required": [
@@ -4286,58 +4336,108 @@
                             "maxItems": 10,
                             "type": "array",
                             "items": {
-                              "type": "object",
-                              "properties": {
-                                "contentType": {
-                                  "type": "string",
-                                  "enum": [
-                                    "image/jpeg",
-                                    "image/png",
-                                    "image/webp"
-                                  ]
-                                },
-                                "base64": {
-                                  "type": "string",
-                                  "minLength": 1
-                                },
-                                "altText": {
-                                  "type": "string",
-                                  "maxLength": 1000
-                                },
-                                "userTags": {
-                                  "maxItems": 20,
-                                  "type": "array",
-                                  "items": {
-                                    "type": "object",
-                                    "properties": {
-                                      "username": {
-                                        "type": "string"
-                                      },
-                                      "x": {
-                                        "type": "number",
-                                        "minimum": 0,
-                                        "maximum": 1
-                                      },
-                                      "y": {
-                                        "type": "number",
-                                        "minimum": 0,
-                                        "maximum": 1
-                                      }
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "contentType": {
+                                      "type": "string",
+                                      "enum": [
+                                        "image/jpeg",
+                                        "image/png",
+                                        "image/webp"
+                                      ]
                                     },
-                                    "required": [
-                                      "username",
-                                      "x",
-                                      "y"
-                                    ],
-                                    "additionalProperties": false
-                                  }
+                                    "base64": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    },
+                                    "altText": {
+                                      "type": "string",
+                                      "maxLength": 1000
+                                    },
+                                    "userTags": {
+                                      "maxItems": 20,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "username": {
+                                            "type": "string"
+                                          },
+                                          "x": {
+                                            "type": "number",
+                                            "minimum": 0,
+                                            "maximum": 1
+                                          },
+                                          "y": {
+                                            "type": "number",
+                                            "minimum": 0,
+                                            "maximum": 1
+                                          }
+                                        },
+                                        "required": [
+                                          "username",
+                                          "x",
+                                          "y"
+                                        ],
+                                        "additionalProperties": false
+                                      }
+                                    }
+                                  },
+                                  "required": [
+                                    "contentType",
+                                    "base64"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "upload_id": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 300
+                                    },
+                                    "altText": {
+                                      "type": "string",
+                                      "maxLength": 1000
+                                    },
+                                    "userTags": {
+                                      "maxItems": 20,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "username": {
+                                            "type": "string"
+                                          },
+                                          "x": {
+                                            "type": "number",
+                                            "minimum": 0,
+                                            "maximum": 1
+                                          },
+                                          "y": {
+                                            "type": "number",
+                                            "minimum": 0,
+                                            "maximum": 1
+                                          }
+                                        },
+                                        "required": [
+                                          "username",
+                                          "x",
+                                          "y"
+                                        ],
+                                        "additionalProperties": false
+                                      }
+                                    }
+                                  },
+                                  "required": [
+                                    "upload_id"
+                                  ],
+                                  "additionalProperties": false
                                 }
-                              },
-                              "required": [
-                                "contentType",
-                                "base64"
-                              ],
-                              "additionalProperties": false
+                              ]
                             }
                           }
                         },
@@ -4450,6 +4550,41 @@
                                 },
                                 "required": [
                                   "url"
+                                ],
+                                "additionalProperties": false
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "upload_id": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 300
+                                  },
+                                  "userTags": {
+                                    "maxItems": 20,
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "username": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "username"
+                                      ],
+                                      "additionalProperties": false
+                                    }
+                                  },
+                                  "thumbOffsetMs": {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 9007199254740991
+                                  }
+                                },
+                                "required": [
+                                  "upload_id"
                                 ],
                                 "additionalProperties": false
                               }
@@ -4618,6 +4753,46 @@
                                     "additionalProperties": false
                                   }
                                 ]
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "upload_id": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 300
+                                  },
+                                  "userTags": {
+                                    "maxItems": 20,
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "username": {
+                                          "type": "string"
+                                        },
+                                        "x": {
+                                          "type": "number",
+                                          "minimum": 0,
+                                          "maximum": 1
+                                        },
+                                        "y": {
+                                          "type": "number",
+                                          "minimum": 0,
+                                          "maximum": 1
+                                        }
+                                      },
+                                      "required": [
+                                        "username"
+                                      ],
+                                      "additionalProperties": false
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "upload_id"
+                                ],
+                                "additionalProperties": false
                               }
                             ]
                           },
@@ -4668,58 +4843,108 @@
                             "items": {
                               "anyOf": [
                                 {
-                                  "type": "object",
-                                  "properties": {
-                                    "contentType": {
-                                      "type": "string",
-                                      "enum": [
-                                        "image/jpeg",
-                                        "image/png",
-                                        "image/webp"
-                                      ]
-                                    },
-                                    "base64": {
-                                      "type": "string",
-                                      "minLength": 1
-                                    },
-                                    "altText": {
-                                      "type": "string",
-                                      "maxLength": 1000
-                                    },
-                                    "userTags": {
-                                      "maxItems": 20,
-                                      "type": "array",
-                                      "items": {
-                                        "type": "object",
-                                        "properties": {
-                                          "username": {
-                                            "type": "string"
-                                          },
-                                          "x": {
-                                            "type": "number",
-                                            "minimum": 0,
-                                            "maximum": 1
-                                          },
-                                          "y": {
-                                            "type": "number",
-                                            "minimum": 0,
-                                            "maximum": 1
-                                          }
+                                  "anyOf": [
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "contentType": {
+                                          "type": "string",
+                                          "enum": [
+                                            "image/jpeg",
+                                            "image/png",
+                                            "image/webp"
+                                          ]
                                         },
-                                        "required": [
-                                          "username",
-                                          "x",
-                                          "y"
-                                        ],
-                                        "additionalProperties": false
-                                      }
+                                        "base64": {
+                                          "type": "string",
+                                          "minLength": 1
+                                        },
+                                        "altText": {
+                                          "type": "string",
+                                          "maxLength": 1000
+                                        },
+                                        "userTags": {
+                                          "maxItems": 20,
+                                          "type": "array",
+                                          "items": {
+                                            "type": "object",
+                                            "properties": {
+                                              "username": {
+                                                "type": "string"
+                                              },
+                                              "x": {
+                                                "type": "number",
+                                                "minimum": 0,
+                                                "maximum": 1
+                                              },
+                                              "y": {
+                                                "type": "number",
+                                                "minimum": 0,
+                                                "maximum": 1
+                                              }
+                                            },
+                                            "required": [
+                                              "username",
+                                              "x",
+                                              "y"
+                                            ],
+                                            "additionalProperties": false
+                                          }
+                                        }
+                                      },
+                                      "required": [
+                                        "contentType",
+                                        "base64"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "upload_id": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 300
+                                        },
+                                        "altText": {
+                                          "type": "string",
+                                          "maxLength": 1000
+                                        },
+                                        "userTags": {
+                                          "maxItems": 20,
+                                          "type": "array",
+                                          "items": {
+                                            "type": "object",
+                                            "properties": {
+                                              "username": {
+                                                "type": "string"
+                                              },
+                                              "x": {
+                                                "type": "number",
+                                                "minimum": 0,
+                                                "maximum": 1
+                                              },
+                                              "y": {
+                                                "type": "number",
+                                                "minimum": 0,
+                                                "maximum": 1
+                                              }
+                                            },
+                                            "required": [
+                                              "username",
+                                              "x",
+                                              "y"
+                                            ],
+                                            "additionalProperties": false
+                                          }
+                                        }
+                                      },
+                                      "required": [
+                                        "upload_id"
+                                      ],
+                                      "additionalProperties": false
                                     }
-                                  },
-                                  "required": [
-                                    "contentType",
-                                    "base64"
-                                  ],
-                                  "additionalProperties": false
+                                  ]
                                 },
                                 {
                                   "anyOf": [
@@ -4796,6 +5021,41 @@
                                         "url"
                                       ],
                                       "additionalProperties": false
+                                    },
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "upload_id": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 300
+                                        },
+                                        "userTags": {
+                                          "maxItems": 20,
+                                          "type": "array",
+                                          "items": {
+                                            "type": "object",
+                                            "properties": {
+                                              "username": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "required": [
+                                              "username"
+                                            ],
+                                            "additionalProperties": false
+                                          }
+                                        },
+                                        "thumbOffsetMs": {
+                                          "type": "integer",
+                                          "minimum": 0,
+                                          "maximum": 9007199254740991
+                                        }
+                                      },
+                                      "required": [
+                                        "upload_id"
+                                      ],
+                                      "additionalProperties": false
                                     }
                                   ]
                                 }
@@ -4834,27 +5094,45 @@
                             "maxLength": 2200
                           },
                           "image": {
-                            "type": "object",
-                            "properties": {
-                              "contentType": {
-                                "type": "string",
-                                "enum": [
-                                  "image/jpeg",
-                                  "image/png",
-                                  "image/webp"
-                                ]
+                            "anyOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "contentType": {
+                                    "type": "string",
+                                    "enum": [
+                                      "image/jpeg",
+                                      "image/png",
+                                      "image/webp"
+                                    ]
+                                  },
+                                  "base64": {
+                                    "type": "string",
+                                    "minLength": 4,
+                                    "maxLength": 5592408
+                                  }
+                                },
+                                "required": [
+                                  "contentType",
+                                  "base64"
+                                ],
+                                "additionalProperties": false
                               },
-                              "base64": {
-                                "type": "string",
-                                "minLength": 4,
-                                "maxLength": 5592408
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "upload_id": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 300
+                                  }
+                                },
+                                "required": [
+                                  "upload_id"
+                                ],
+                                "additionalProperties": false
                               }
-                            },
-                            "required": [
-                              "contentType",
-                              "base64"
-                            ],
-                            "additionalProperties": false
+                            ]
                           }
                         },
                         "required": [
@@ -4888,27 +5166,45 @@
                             "maxItems": 10,
                             "type": "array",
                             "items": {
-                              "type": "object",
-                              "properties": {
-                                "contentType": {
-                                  "type": "string",
-                                  "enum": [
-                                    "image/jpeg",
-                                    "image/png",
-                                    "image/webp"
-                                  ]
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "contentType": {
+                                      "type": "string",
+                                      "enum": [
+                                        "image/jpeg",
+                                        "image/png",
+                                        "image/webp"
+                                      ]
+                                    },
+                                    "base64": {
+                                      "type": "string",
+                                      "minLength": 4,
+                                      "maxLength": 5592408
+                                    }
+                                  },
+                                  "required": [
+                                    "contentType",
+                                    "base64"
+                                  ],
+                                  "additionalProperties": false
                                 },
-                                "base64": {
-                                  "type": "string",
-                                  "minLength": 4,
-                                  "maxLength": 5592408
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "upload_id": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 300
+                                    }
+                                  },
+                                  "required": [
+                                    "upload_id"
+                                  ],
+                                  "additionalProperties": false
                                 }
-                              },
-                              "required": [
-                                "contentType",
-                                "base64"
-                              ],
-                              "additionalProperties": false
+                              ]
                             }
                           }
                         },
@@ -4939,23 +5235,41 @@
                             "maxLength": 2200
                           },
                           "reel": {
-                            "type": "object",
-                            "properties": {
-                              "contentType": {
-                                "type": "string",
-                                "const": "video/mp4"
+                            "anyOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "contentType": {
+                                    "type": "string",
+                                    "const": "video/mp4"
+                                  },
+                                  "base64": {
+                                    "type": "string",
+                                    "minLength": 4,
+                                    "maxLength": 89478488
+                                  }
+                                },
+                                "required": [
+                                  "contentType",
+                                  "base64"
+                                ],
+                                "additionalProperties": false
                               },
-                              "base64": {
-                                "type": "string",
-                                "minLength": 4,
-                                "maxLength": 89478488
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "upload_id": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 300
+                                  }
+                                },
+                                "required": [
+                                  "upload_id"
+                                ],
+                                "additionalProperties": false
                               }
-                            },
-                            "required": [
-                              "contentType",
-                              "base64"
-                            ],
-                            "additionalProperties": false
+                            ]
                           }
                         },
                         "required": [
@@ -4985,23 +5299,41 @@
                             "maxLength": 2200
                           },
                           "video": {
-                            "type": "object",
-                            "properties": {
-                              "contentType": {
-                                "type": "string",
-                                "const": "video/mp4"
+                            "anyOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "contentType": {
+                                    "type": "string",
+                                    "const": "video/mp4"
+                                  },
+                                  "base64": {
+                                    "type": "string",
+                                    "minLength": 4,
+                                    "maxLength": 89478488
+                                  }
+                                },
+                                "required": [
+                                  "contentType",
+                                  "base64"
+                                ],
+                                "additionalProperties": false
                               },
-                              "base64": {
-                                "type": "string",
-                                "minLength": 4,
-                                "maxLength": 89478488
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "upload_id": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 300
+                                  }
+                                },
+                                "required": [
+                                  "upload_id"
+                                ],
+                                "additionalProperties": false
                               }
-                            },
-                            "required": [
-                              "contentType",
-                              "base64"
-                            ],
-                            "additionalProperties": false
+                            ]
                           },
                           "title": {
                             "type": "string",
@@ -5134,6 +5466,20 @@
                               "url"
                             ],
                             "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "upload_id": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 300
+                              }
+                            },
+                            "required": [
+                              "upload_id"
+                            ],
+                            "additionalProperties": false
                           }
                         ]
                       },
@@ -5142,27 +5488,45 @@
                         "maxItems": 35,
                         "type": "array",
                         "items": {
-                          "type": "object",
-                          "properties": {
-                            "content_type": {
-                              "type": "string",
-                              "enum": [
-                                "image/jpeg",
-                                "image/png",
-                                "image/webp"
-                              ]
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "content_type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "image/jpeg",
+                                    "image/png",
+                                    "image/webp"
+                                  ]
+                                },
+                                "base64": {
+                                  "type": "string",
+                                  "minLength": 4,
+                                  "maxLength": 27962040
+                                }
+                              },
+                              "required": [
+                                "content_type",
+                                "base64"
+                              ],
+                              "additionalProperties": false
                             },
-                            "base64": {
-                              "type": "string",
-                              "minLength": 4,
-                              "maxLength": 27962040
+                            {
+                              "type": "object",
+                              "properties": {
+                                "upload_id": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 300
+                                }
+                              },
+                              "required": [
+                                "upload_id"
+                              ],
+                              "additionalProperties": false
                             }
-                          },
-                          "required": [
-                            "content_type",
-                            "base64"
-                          ],
-                          "additionalProperties": false
+                          ]
                         }
                       },
                       "scheduled_date": {
@@ -5277,8 +5641,36 @@
                               "base64"
                             ],
                             "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "upload_id": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 300
+                              }
+                            },
+                            "required": [
+                              "upload_id"
+                            ],
+                            "additionalProperties": false
                           }
                         ]
+                      },
+                      "thumbnail": {
+                        "type": "object",
+                        "properties": {
+                          "upload_id": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 300
+                          }
+                        },
+                        "required": [
+                          "upload_id"
+                        ],
+                        "additionalProperties": false
                       }
                     },
                     "required": [
@@ -5352,6 +5744,20 @@
                                 "url"
                               ],
                               "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "upload_id": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 300
+                                }
+                              },
+                              "required": [
+                                "upload_id"
+                              ],
+                              "additionalProperties": false
                             }
                           ]
                         }
@@ -5408,6 +5814,20 @@
                                       "url"
                                     ],
                                     "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "upload_id": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 300
+                                      }
+                                    },
+                                    "required": [
+                                      "upload_id"
+                                    ],
+                                    "additionalProperties": false
                                   }
                                 ]
                               }
@@ -5450,31 +5870,53 @@
                         "maxItems": 4,
                         "type": "array",
                         "items": {
-                          "type": "object",
-                          "properties": {
-                            "content_type": {
-                              "type": "string",
-                              "enum": [
-                                "image/jpeg",
-                                "image/png",
-                                "image/webp"
-                              ]
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "content_type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "image/jpeg",
+                                    "image/png",
+                                    "image/webp"
+                                  ]
+                                },
+                                "base64": {
+                                  "type": "string",
+                                  "minLength": 4,
+                                  "maxLength": 27962028
+                                },
+                                "altText": {
+                                  "type": "string",
+                                  "maxLength": 2000
+                                }
+                              },
+                              "required": [
+                                "content_type",
+                                "base64"
+                              ],
+                              "additionalProperties": false
                             },
-                            "base64": {
-                              "type": "string",
-                              "minLength": 4,
-                              "maxLength": 27962028
-                            },
-                            "altText": {
-                              "type": "string",
-                              "maxLength": 2000
+                            {
+                              "type": "object",
+                              "properties": {
+                                "upload_id": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 300
+                                },
+                                "altText": {
+                                  "type": "string",
+                                  "maxLength": 2000
+                                }
+                              },
+                              "required": [
+                                "upload_id"
+                              ],
+                              "additionalProperties": false
                             }
-                          },
-                          "required": [
-                            "content_type",
-                            "base64"
-                          ],
-                          "additionalProperties": false
+                          ]
                         }
                       },
                       "video": {
@@ -5518,6 +5960,24 @@
                               "url"
                             ],
                             "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "upload_id": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 300
+                              },
+                              "altText": {
+                                "type": "string",
+                                "maxLength": 2000
+                              }
+                            },
+                            "required": [
+                              "upload_id"
+                            ],
+                            "additionalProperties": false
                           }
                         ]
                       },
@@ -5543,31 +6003,53 @@
                               "maxItems": 4,
                               "type": "array",
                               "items": {
-                                "type": "object",
-                                "properties": {
-                                  "content_type": {
-                                    "type": "string",
-                                    "enum": [
-                                      "image/jpeg",
-                                      "image/png",
-                                      "image/webp"
-                                    ]
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "content_type": {
+                                        "type": "string",
+                                        "enum": [
+                                          "image/jpeg",
+                                          "image/png",
+                                          "image/webp"
+                                        ]
+                                      },
+                                      "base64": {
+                                        "type": "string",
+                                        "minLength": 4,
+                                        "maxLength": 27962028
+                                      },
+                                      "altText": {
+                                        "type": "string",
+                                        "maxLength": 2000
+                                      }
+                                    },
+                                    "required": [
+                                      "content_type",
+                                      "base64"
+                                    ],
+                                    "additionalProperties": false
                                   },
-                                  "base64": {
-                                    "type": "string",
-                                    "minLength": 4,
-                                    "maxLength": 27962028
-                                  },
-                                  "altText": {
-                                    "type": "string",
-                                    "maxLength": 2000
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "upload_id": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 300
+                                      },
+                                      "altText": {
+                                        "type": "string",
+                                        "maxLength": 2000
+                                      }
+                                    },
+                                    "required": [
+                                      "upload_id"
+                                    ],
+                                    "additionalProperties": false
                                   }
-                                },
-                                "required": [
-                                  "content_type",
-                                  "base64"
-                                ],
-                                "additionalProperties": false
+                                ]
                               }
                             },
                             "video": {
@@ -5609,6 +6091,24 @@
                                   },
                                   "required": [
                                     "url"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "upload_id": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 300
+                                    },
+                                    "altText": {
+                                      "type": "string",
+                                      "maxLength": 2000
+                                    }
+                                  },
+                                  "required": [
+                                    "upload_id"
                                   ],
                                   "additionalProperties": false
                                 }
@@ -6052,6 +6552,45 @@
               "application/json": {
                 "schema": {
                   "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "jobId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "platform": {
+                          "type": "string",
+                          "const": "instagram"
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "profileId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "queued",
+                            "processing"
+                          ]
+                        },
+                        "statusUrl": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "jobId",
+                        "platform",
+                        "accountId",
+                        "profileId",
+                        "status",
+                        "statusUrl"
+                      ]
+                    },
                     {
                       "type": "object",
                       "properties": {
@@ -6521,17 +7060,336 @@
         }
       }
     },
-    "/api/v1/posts/youtube": {
+    "/api/v1/media/uploads": {
       "post": {
-        "operationId": "uploadYouTubeVideo",
-        "summary": "Upload a video file to YouTube",
-        "description": "Multipart upload of a video file. To publish from a URL or base64 instead, use `POST /api/v1/posts`.",
+        "operationId": "createMediaUploads",
+        "summary": "Prepare direct media uploads",
+        "description": "Create short-lived, object-scoped S3 PUT descriptors. Upload each file with the returned headers unchanged, then pass its uploadId as upload_id when publishing.",
         "tags": [
           "Posts"
         ],
         "requestBody": {
           "required": true,
           "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "profileId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "platform": {
+                    "type": "string",
+                    "enum": [
+                      "instagram",
+                      "facebook",
+                      "tiktok",
+                      "youtube",
+                      "x",
+                      "bluesky"
+                    ]
+                  },
+                  "files": {
+                    "minItems": 1,
+                    "maxItems": 35,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "clientId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 100
+                        },
+                        "purpose": {
+                          "type": "string",
+                          "enum": [
+                            "post_media",
+                            "youtube_thumbnail"
+                          ]
+                        },
+                        "contentType": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 100
+                        },
+                        "size": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "filename": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 255
+                        }
+                      },
+                      "required": [
+                        "clientId",
+                        "purpose",
+                        "contentType",
+                        "size"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "profileId",
+                  "platform",
+                  "files"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "uploads": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "clientId": {
+                            "type": "string"
+                          },
+                          "uploadId": {
+                            "type": "string"
+                          },
+                          "method": {
+                            "type": "string",
+                            "const": "PUT"
+                          },
+                          "url": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "headers": {
+                            "type": "object",
+                            "propertyNames": {
+                              "type": "string"
+                            },
+                            "additionalProperties": {
+                              "type": "string"
+                            }
+                          },
+                          "expiresAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                          }
+                        },
+                        "required": [
+                          "clientId",
+                          "uploadId",
+                          "method",
+                          "url",
+                          "headers",
+                          "expiresAt"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "uploads"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/posts/youtube": {
+      "post": {
+        "operationId": "uploadYouTubeVideo",
+        "summary": "Upload a video file to YouTube",
+        "description": "Recommended: send JSON with staged video and optional thumbnail upload references created by `createMediaUploads`. Legacy multipart remains supported for compatibility.",
+        "tags": [
+          "Posts"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "platform": {
+                    "type": "string",
+                    "const": "youtube"
+                  },
+                  "accountId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "profileId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "tags": {
+                    "maxItems": 100,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 500
+                    }
+                  },
+                  "category_id": {
+                    "type": "string",
+                    "pattern": "^\\d+$"
+                  },
+                  "privacy_status": {
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "unlisted",
+                      "private"
+                    ]
+                  },
+                  "made_for_kids": {
+                    "type": "boolean"
+                  },
+                  "contains_synthetic_media": {
+                    "type": "boolean"
+                  },
+                  "publish_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                  },
+                  "notify_subscribers": {
+                    "type": "boolean"
+                  },
+                  "video": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string",
+                            "format": "uri"
+                          }
+                        },
+                        "required": [
+                          "url"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "content_type": {
+                            "type": "string",
+                            "enum": [
+                              "video/mp4",
+                              "video/quicktime",
+                              "video/webm"
+                            ]
+                          },
+                          "base64": {
+                            "type": "string",
+                            "minLength": 4,
+                            "maxLength": 89478488
+                          }
+                        },
+                        "required": [
+                          "content_type",
+                          "base64"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "upload_id": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 300
+                          }
+                        },
+                        "required": [
+                          "upload_id"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  },
+                  "thumbnail": {
+                    "type": "object",
+                    "properties": {
+                      "upload_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 300
+                      }
+                    },
+                    "required": [
+                      "upload_id"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "platform",
+                  "accountId",
+                  "title",
+                  "privacy_status",
+                  "made_for_kids",
+                  "video"
+                ],
+                "additionalProperties": false
+              }
+            },
             "multipart/form-data": {
               "schema": {
                 "type": "object",
@@ -7099,6 +7957,352 @@
           },
           "429": {
             "description": "Provider quota or rate limit exhausted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/posts/instagram/status": {
+      "get": {
+        "operationId": "getInstagramPostStatus",
+        "summary": "Check an Instagram post's publishing status",
+        "tags": [
+          "Posts"
+        ],
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "profileId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "jobId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "platform": {
+                          "type": "string",
+                          "const": "instagram"
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "profileId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "statusUrl": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "queued",
+                            "processing"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "jobId",
+                        "platform",
+                        "accountId",
+                        "profileId",
+                        "statusUrl",
+                        "status"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "jobId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "platform": {
+                          "type": "string",
+                          "const": "instagram"
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "profileId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "statusUrl": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "const": "published"
+                        },
+                        "post": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "platform": {
+                              "type": "string",
+                              "enum": [
+                                "instagram",
+                                "tiktok",
+                                "facebook",
+                                "youtube",
+                                "x",
+                                "bluesky"
+                              ]
+                            },
+                            "accountId": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "profileId": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "providerId": {
+                              "type": "string"
+                            },
+                            "caption": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "media": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "type": {
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "thumbnailUrl": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "type",
+                                  "url",
+                                  "thumbnailUrl"
+                                ]
+                              }
+                            },
+                            "permalink": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "engagement": {
+                              "type": "object",
+                              "properties": {
+                                "likes": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                },
+                                "comments": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                },
+                                "shares": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                },
+                                "views": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                },
+                                "reach": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "likes",
+                                "comments"
+                              ]
+                            },
+                            "publishedAt": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "platform",
+                            "accountId",
+                            "profileId",
+                            "providerId",
+                            "caption",
+                            "media",
+                            "permalink",
+                            "engagement",
+                            "publishedAt"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "jobId",
+                        "platform",
+                        "accountId",
+                        "profileId",
+                        "statusUrl",
+                        "status",
+                        "post"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "jobId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "platform": {
+                          "type": "string",
+                          "const": "instagram"
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "profileId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "statusUrl": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "failed",
+                            "outcome_unknown"
+                          ]
+                        },
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string"
+                            },
+                            "message": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "code",
+                            "message"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "jobId",
+                        "platform",
+                        "accountId",
+                        "profileId",
+                        "statusUrl",
+                        "status",
+                        "error"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Profile, account, or object not found",
             "content": {
               "application/json": {
                 "schema": {

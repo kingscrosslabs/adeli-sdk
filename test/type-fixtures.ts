@@ -1,5 +1,5 @@
 import type { Account, ApiResponse, Profile, StartConnectionBody } from '../src/index.js';
-import type { CreatePostBody, TikTokMultipartBody } from '../src/resources/posts.js';
+import type { CreatePostBody, CreatePostWithFiles, TikTokMultipartBody } from '../src/resources/posts.js';
 import type { CreateAdAccountBody } from '../src/resources/ads.js';
 import { Adeli } from '../src/index.js';
 
@@ -9,6 +9,15 @@ const image = { contentType: 'image/jpeg' as const, base64: 'aGVsbG8=' };
 const instagramImage: CreatePostBody = { platform: 'instagram', accountId: id, image };
 const youtubeVideo: CreatePostBody = { platform: 'youtube', accountId: id, title: 'video', privacy_status: 'private', made_for_kids: false, video: { url: 'https://media.example/video.mp4' } };
 const tiktokFiles: TikTokMultipartBody = { platform: 'tiktok', accountId: id, music_usage_confirmed: true, video: new Blob(['video'], { type: 'video/mp4' }), disable_comment: false, photo_cover_index: 0 };
+const file = new File(['media'], 'media.jpg', { type: 'image/jpeg' });
+const instagramFile: CreatePostWithFiles = { platform: 'instagram', accountId: id, image: { file, altText: 'Bird' } };
+const facebookFile: CreatePostWithFiles = { platform: 'facebook', accountId: id, image: file };
+const tiktokFile: CreatePostWithFiles = { platform: 'tiktok', accountId: id, music_usage_confirmed: true, photos: [file] };
+const youtubeFile: CreatePostWithFiles = { platform: 'youtube', accountId: id, title: 'Video', privacy_status: 'private', made_for_kids: false, video: new File(['v'], 'v.mp4', { type: 'video/mp4' }) };
+const xFile: CreatePostWithFiles = { platform: 'x', accountId: id, text: 'Bird', media: [file], thread: [{ text: 'More', media: [file] }] };
+const blueskyFile: CreatePostWithFiles = { platform: 'bluesky', accountId: id, text: 'Bird', images: [{ file, altText: 'Bird' }] };
+void instagramFile; void facebookFile; void tiktokFile; void youtubeFile; void xFile; void blueskyFile;
+
 const adAccount: CreateAdAccountBody = { businessId: 'business', name: 'account', timezone: 'UTC' };
 const nullableProfile: Profile = { id, name: 'profile', externalId: null, metadata: null, isDefault: false, createdAt: '', updatedAt: '' };
 const completeAccount: Account = {
@@ -50,6 +59,8 @@ async function knownResponseFields(client: Adeli): Promise<void> {
 
 async function requiredArguments(client: Adeli): Promise<void> {
   await client.comments.listComments({ query: { platform: 'youtube', accountId: id } });
+  await client.posts.createMediaUploads({ body: { profileId: id, platform: 'youtube', files: [{ clientId: 'video', purpose: 'post_media', contentType: 'video/mp4', size: 10 }] } });
+  await client.posts.getInstagramPostStatus({ query: { jobId: id, profileId: id } });
   await client.posts.deleteXPost({ path: { postId: id }, query: { accountId: id } });
   await client.ads.createAdAccount({ body: adAccount }, { idempotencyKey: 'stable' });
   const deleted = await client.ads.deleteCampaign({ path: { campaignId: id }, query: { adAccountId: 'act_1' } });

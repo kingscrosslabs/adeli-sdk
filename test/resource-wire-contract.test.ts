@@ -69,6 +69,7 @@ function wireResponse(operationId: string, _status?: string): unknown {
     case 'disconnectAccount': return { id, disconnected: true, revocationFailed: false };
     case 'refreshAccounts': return { status: 'partial', accounts: [{ id, accountId: id, profileId: id, platform: 'youtube', refreshed: true, expiresAt: '2025-01-02T00:00:00.000Z' }], errors: [errorRecord] };
     case 'listPosts': return { status: 'partial', posts: [post], errors: [errorRecord] };
+    case 'createMediaUploads': return { uploads: [{ clientId: '0', uploadId: 'staged', method: 'PUT', url: 'https://s3.example/0', headers: { 'content-type': 'video/mp4' }, expiresAt: '2026-10-26T12:00:00.000Z' }] };
     case 'createPost':
       if (_status === '201') return post;
       if (_status === '202') return { id: 'upload-1', platform: 'youtube', accountId: id, profileId: id, publishId: 'publish-1', videoId: 'video-1', permalink: 'https://youtube.example/video-1', status: 'ACCEPTED', requestedPrivacy: 'private', appliedPrivacy: 'private', privacyRestricted: false, publishAt: null, thumbnail: null, statusUrl: '/api/v1/posts/youtube/status', warnings: [] };
@@ -76,6 +77,7 @@ function wireResponse(operationId: string, _status?: string): unknown {
     case 'uploadYouTubeVideo': return { id: 'upload-1', platform: 'youtube', accountId: id, profileId: id, publishId: 'publish-1', videoId: 'video-1', permalink: 'https://youtube.example/video-1', status: 'ACCEPTED', requestedPrivacy: 'private', appliedPrivacy: 'private', privacyRestricted: false, publishAt: null, thumbnail: null, statusUrl: '/api/v1/posts/youtube/status', warnings: [] };
     case 'deleteXPost': return { id: 'post-1', accountId: id, providerId: 'provider-1', deleted: true, platform: 'x' };
     case 'deleteBlueskyPost': return { id: 'post-1', accountId: id, providerId: 'provider-1', deleted: true, platform: 'bluesky' };
+    case 'getInstagramPostStatus': return { jobId: id, platform: 'instagram', accountId: id, profileId: id, status: 'processing', statusUrl: `/api/v1/posts/instagram/status?jobId=${id}&profileId=${id}` };
     case 'getFacebookPostStatus': return { platform: 'facebook', accountId: id, profileId: id, publishId: 'publish-1', status: 'READY', phase: null, permalink: null, failureReason: null };
     case 'getTikTokPostStatus': return { platform: 'tiktok', accountId: id, profileId: id, publishId: 'publish-1', status: 'processing', publicPostId: null, publicPostIds: [], failureReason: null, publiclyAvailable: null, source: 'provider' };
     case 'getTikTokCreatorInfo': return { platform: 'tiktok', accountId: id, profileId: id, creator: { nickname: null, privacyLevelOptions: ['PUBLIC_TO_EVERYONE'], commentDisabled: false, duetDisabled: false, stitchDisabled: false, maxVideoPostDurationSec: 60 } };
@@ -112,17 +114,8 @@ type WireCase = { id: string; call: (options: RequestOptions) => Promise<ApiResp
 
 function jsonBody(body: Record<string, unknown>): ExpectedBody { return body; }
 function requireRequest(value: Request | undefined, id: string): Request { if (value === undefined) throw new Error(`${id}: fetch was not called`); return value; }
-async function youtubeMultipartBody(request: Request): Promise<void> {
-  const form = await request.clone().formData();
-  expect(form.get('accountId')).toBe(id);
-  expect(form.get('title')).toBe('v');
-  expect(form.get('privacy_status')).toBe('private');
-  expect(form.get('made_for_kids')).toBe('false');
-  expect(form.get('video')).toBeInstanceOf(File);
-  expect((form.get('video') as File).type).toBe('video/mp4');
-}
 // Request expectations are deliberately written independently of operations metadata; the registry is only a coverage allow-list.
-test('all 48 registered operations preserve exact wire requests and response envelopes', async () => {
+test('all 50 registered operations preserve exact wire requests and response envelopes', async () => {
   let currentFixture: WireCase | undefined;
   let returnUnauthorized = false;
   const unauthorizedDetails = { reason: 'wire-contract', nested: { preserved: true } };
@@ -149,10 +142,12 @@ test('all 48 registered operations preserve exact wire requests and response env
     { id: 'disconnectAccount', call: (o) => client.accounts.disconnectAccount({ path: { profileId: id, accountId: id } }, o), method: 'DELETE', path: `/api/v1/profiles/${id}/accounts/${id}`, status: 200, response: wireResponse('disconnectAccount') },
     { id: 'refreshAccounts', call: (o) => client.accounts.refreshAccounts({ path: { profileId: id } }, o), method: 'POST', path: `/api/v1/profiles/${id}/accounts/refresh`, status: 207, response: wireResponse('refreshAccounts') },
     { id: 'listPosts', call: (o) => client.posts.listPosts({ query: { platform: 'x', accountId: id, profileId: id } }, o), method: 'GET', path: '/api/v1/posts', query: `platform=x&accountId=${id}&profileId=${id}`, status: 207, response: wireResponse('listPosts') },
+    { id: 'createMediaUploads', call: (o) => client.posts.createMediaUploads({ body: { profileId: id, platform: 'youtube', files: [{ clientId: '0', purpose: 'post_media', contentType: 'video/mp4', size: 1 }] } }, o), method: 'POST', path: '/api/v1/media/uploads', body: jsonBody({ profileId: id, platform: 'youtube', files: [{ clientId: '0', purpose: 'post_media', contentType: 'video/mp4', size: 1 }] }), status: 201, response: wireResponse('createMediaUploads') },
     { id: 'createPost', call: (o) => client.posts.createPost({ body: { platform: 'x', accountId: id, text: 'hello', media: [{ url: 'https://media.example/a.jpg' }] } }, o), method: 'POST', path: '/api/v1/posts', body: jsonBody({ platform: 'x', accountId: id, text: 'hello', media: [{ url: 'https://media.example/a.jpg' }] }), status: 207, response: wireResponse('createPost') },
-    { id: 'uploadYouTubeVideo', call: (o) => client.posts.uploadYouTubeVideo({ body: { accountId: id, video: new Blob(['v'], { type: 'video/mp4' }), title: 'v', privacy_status: 'private', made_for_kids: false } }, o), method: 'POST', path: '/api/v1/posts/youtube', body: youtubeMultipartBody, status: 202, response: wireResponse('uploadYouTubeVideo') },
+    { id: 'uploadYouTubeVideo', call: (o) => client.posts.uploadYouTubeVideo({ body: { platform: 'youtube', accountId: id, video: { upload_id: 'staged' }, title: 'v', privacy_status: 'private', made_for_kids: false } }, o), method: 'POST', path: '/api/v1/posts/youtube', body: jsonBody({ platform: 'youtube', accountId: id, video: { upload_id: 'staged' }, title: 'v', privacy_status: 'private', made_for_kids: false }), status: 202, response: wireResponse('uploadYouTubeVideo') },
     { id: 'deleteXPost', call: (o) => client.posts.deleteXPost({ path: { postId: 'post/a' }, query: { accountId: id, profileId: id } }, o), method: 'DELETE', path: '/api/v1/posts/x/post%2Fa', query: `accountId=${id}&profileId=${id}`, status: 200, response: wireResponse('deleteXPost') },
     { id: 'deleteBlueskyPost', call: (o) => client.posts.deleteBlueskyPost({ path: { postId: id }, query: { accountId: id } }, o), method: 'DELETE', path: `/api/v1/posts/bluesky/${id}`, query: `accountId=${id}`, status: 200, response: wireResponse('deleteBlueskyPost') },
+    { id: 'getInstagramPostStatus', call: (o) => client.posts.getInstagramPostStatus({ query: { jobId: id, profileId: id } }, o), method: 'GET', path: '/api/v1/posts/instagram/status', query: `jobId=${id}&profileId=${id}`, status: 200, response: wireResponse('getInstagramPostStatus') },
     { id: 'getFacebookPostStatus', call: (o) => client.posts.getFacebookPostStatus({ query: { accountId: id, profileId: id, publishId: 'publish' } }, o), method: 'GET', path: '/api/v1/posts/facebook/status', query: `accountId=${id}&profileId=${id}&publishId=publish`, status: 200, response: wireResponse('getFacebookPostStatus') },
     { id: 'getTikTokPostStatus', call: (o) => client.posts.getTikTokPostStatus({ query: { accountId: id, publishId: 'publish' } }, o), method: 'GET', path: '/api/v1/posts/tiktok/status', query: `accountId=${id}&publishId=publish`, status: 200, response: wireResponse('getTikTokPostStatus') },
     { id: 'getTikTokCreatorInfo', call: (o) => client.posts.getTikTokCreatorInfo({ query: { accountId: id } }, o), method: 'GET', path: '/api/v1/posts/tiktok/creator-info', query: `accountId=${id}`, status: 200, response: wireResponse('getTikTokCreatorInfo') },
@@ -187,7 +182,7 @@ test('all 48 registered operations preserve exact wire requests and response env
   const { operations } = await import('../src/operations.js');
   expect(new Set(cases.map((item) => item.id))).toEqual(new Set(Object.keys(operations)));
   expect(cases).toHaveLength(Object.keys(operations).length);
-  expect(declaredSuccessPairs()).toHaveLength(57);
+  expect(declaredSuccessPairs()).toHaveLength(59);
   for (const fixture of cases) {
     for (const status of successStatuses(fixture.id)) {
       delete state.request;
