@@ -60,6 +60,7 @@ async function knownResponseFields(client: Adeli): Promise<void> {
 async function requiredArguments(client: Adeli): Promise<void> {
   await client.comments.listComments({ query: { platform: 'youtube', accountId: id } });
   await client.posts.createMediaUploads({ body: { profileId: id, platform: 'youtube', files: [{ clientId: 'video', purpose: 'post_media', contentType: 'video/mp4', size: 10 }] } });
+  await client.posts.getInstagramPostStatus({ query: { jobId: id, profileId: id } });
   await client.posts.deleteXPost({ path: { postId: id }, query: { accountId: id } });
   await client.ads.createAdAccount({ body: adAccount }, { idempotencyKey: 'stable' });
   const deleted = await client.ads.deleteCampaign({ path: { campaignId: id }, query: { adAccountId: 'act_1' } });

@@ -1,5 +1,5 @@
 import type { Adeli, ApiResponse } from '@adeli/sdk';
-import { iterateCommentPages, iterateComments, waitForConnection, waitForTikTokPost, waitForYouTubeVideo } from '../src/helpers/index.js';
+import { iterateCommentPages, iterateComments, waitForConnection, waitForInstagramPost, waitForTikTokPost, waitForYouTubeVideo } from '../src/helpers/index.js';
 import type { CommentIteratorQuery } from '../src/helpers/index.js';
 import type { CommentsResponse } from '../src/resources/comments.js';
 
@@ -19,5 +19,6 @@ iterateComments(client, { query: { platform: 'facebook', accountId: id } });
 iterateCommentPages(client, { query: { platform: 'youtube' } });
 
 void waitForConnection;
+void waitForInstagramPost;
 void waitForTikTokPost;
 void waitForYouTubeVideo;

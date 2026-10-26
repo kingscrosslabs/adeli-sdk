@@ -29,6 +29,7 @@
     "uploadYouTubeVideo": [{"method":"POST","path":"/api/v1/posts/youtube","href":"/docs/api/posts/upload-youtube-video-file"}],
     "deleteXPost": [{"method":"DELETE","path":"/api/v1/posts/x/{postId}","href":"/docs/api/posts/delete-x-post"}],
     "deleteBlueskyPost": [{"method":"DELETE","path":"/api/v1/posts/bluesky/{postId}","href":"/docs/api/posts/delete-bluesky-post"}],
+    "getInstagramPostStatus": [{"method":"GET","path":"/api/v1/posts/instagram/status","href":"/docs/api/posts/get-instagram-publish-status"}],
     "getFacebookPostStatus": [{"method":"GET","path":"/api/v1/posts/facebook/status","href":"/docs/api/posts/get-facebook-video-status"}],
     "getTikTokPostStatus": [{"method":"GET","path":"/api/v1/posts/tiktok/status","href":"/docs/api/posts/get-tiktok-publish-status"}],
     "getTikTokCreatorInfo": [{"method":"GET","path":"/api/v1/posts/tiktok/creator-info","href":"/docs/api/posts/get-tiktok-creator-info"}],

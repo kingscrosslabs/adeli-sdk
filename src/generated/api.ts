@@ -186,7 +186,7 @@ export interface paths {
         put?: never;
         /**
          * Publish a post
-         * @description Publish to Instagram, Facebook, TikTok, YouTube, X, or Bluesky. Instagram JSON supports images, Reels, Stories, and mixed image/video carousels; Reel, Story, and carousel video can be base64 MP4 or a public HTTPS URL. Send `multipart/form-data` only for TikTok uploads on this shared endpoint.
+         * @description Publish to Instagram, Facebook, TikTok, YouTube, X, or Bluesky. Instagram requests using only staged upload references are durably accepted with 202 and a status URL; legacy base64 or URL inputs remain synchronous during the compatibility window. Send `multipart/form-data` only for TikTok uploads on this shared endpoint.
          */
         post: operations["createPost"];
         delete?: never;
@@ -264,6 +264,23 @@ export interface paths {
         post?: never;
         /** Delete a Bluesky post */
         delete: operations["deleteBlueskyPost"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/instagram/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Check an Instagram post's publishing status */
+        get: operations["getInstagramPostStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -3289,6 +3306,18 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
+                        /** Format: uuid */
+                        jobId: string;
+                        /** @constant */
+                        platform: "instagram";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        /** @enum {string} */
+                        status: "queued" | "processing";
+                        statusUrl: string;
+                    } | {
                         /** @constant */
                         platform: "tiktok";
                         /** Format: uuid */
@@ -3941,6 +3970,130 @@ export interface operations {
             };
             /** @description Provider quota or rate limit exhausted */
             429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getInstagramPostStatus: {
+        parameters: {
+            query: {
+                jobId: string;
+                profileId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        jobId: string;
+                        /** @constant */
+                        platform: "instagram";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        statusUrl: string;
+                        /** @enum {string} */
+                        status: "queued" | "processing";
+                    } | {
+                        /** Format: uuid */
+                        jobId: string;
+                        /** @constant */
+                        platform: "instagram";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        statusUrl: string;
+                        /** @constant */
+                        status: "published";
+                        post: {
+                            id: string;
+                            /** @enum {string} */
+                            platform: "instagram" | "tiktok" | "facebook" | "youtube" | "x" | "bluesky";
+                            /** Format: uuid */
+                            accountId: string;
+                            /** Format: uuid */
+                            profileId: string;
+                            providerId: string;
+                            caption: string | null;
+                            media: {
+                                type: string;
+                                url: string | null;
+                                thumbnailUrl: string | null;
+                            }[];
+                            permalink: string | null;
+                            engagement: {
+                                likes: number | null;
+                                comments: number | null;
+                                shares?: number | null;
+                                views?: number | null;
+                                reach?: number | null;
+                            };
+                            publishedAt: string | null;
+                        };
+                    } | {
+                        /** Format: uuid */
+                        jobId: string;
+                        /** @constant */
+                        platform: "instagram";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        statusUrl: string;
+                        /** @enum {string} */
+                        status: "failed" | "outcome_unknown";
+                        error: {
+                            code: string;
+                            message: string;
+                        };
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

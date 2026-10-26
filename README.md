@@ -30,7 +30,7 @@ The API key is resolved at construction from `apiKey` or `ADELI_API_KEY`; do not
 ## Entry points
 
 - `@adeli/sdk`: `Adeli`, resources, response types, and root error classes.
-- `@adeli/sdk/helpers`: bounded polling and TikTok/YouTube comment iterators.
+- `@adeli/sdk/helpers`: bounded polling (including asynchronous Instagram publication) and TikTok/YouTube comment iterators.
 - `@adeli/sdk/uploads`: Node file-backed `Blob`/`File` adapters and direct staged-upload types. File-oriented post helpers initiate short-lived PUTs, stream bytes straight to S3, then submit small upload-reference JSON.
 
 Resources are navigated as `client.profiles`, `client.accounts`, `client.posts`, `client.comments`, `client.messages`, `client.analytics`, `client.ads`, and `client.usage`. Every result retains its `data`, HTTP `status`, and `Headers`; `204` has `data: undefined`, and `202`/`207` are successful responses. Provider casing, nulls, privacy values, partial records, and error details are not normalized away.

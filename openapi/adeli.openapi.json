@@ -4149,7 +4149,7 @@
       "post": {
         "operationId": "createPost",
         "summary": "Publish a post",
-        "description": "Publish to Instagram, Facebook, TikTok, YouTube, X, or Bluesky. Instagram JSON supports images, Reels, Stories, and mixed image/video carousels; Reel, Story, and carousel video can be base64 MP4 or a public HTTPS URL. Send `multipart/form-data` only for TikTok uploads on this shared endpoint.",
+        "description": "Publish to Instagram, Facebook, TikTok, YouTube, X, or Bluesky. Instagram requests using only staged upload references are durably accepted with 202 and a status URL; legacy base64 or URL inputs remain synchronous during the compatibility window. Send `multipart/form-data` only for TikTok uploads on this shared endpoint.",
         "tags": [
           "Posts"
         ],
@@ -6555,6 +6555,45 @@
                     {
                       "type": "object",
                       "properties": {
+                        "jobId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "platform": {
+                          "type": "string",
+                          "const": "instagram"
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "profileId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "queued",
+                            "processing"
+                          ]
+                        },
+                        "statusUrl": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "jobId",
+                        "platform",
+                        "accountId",
+                        "profileId",
+                        "status",
+                        "statusUrl"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
                         "platform": {
                           "type": "string",
                           "const": "tiktok"
@@ -7918,6 +7957,352 @@
           },
           "429": {
             "description": "Provider quota or rate limit exhausted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/posts/instagram/status": {
+      "get": {
+        "operationId": "getInstagramPostStatus",
+        "summary": "Check an Instagram post's publishing status",
+        "tags": [
+          "Posts"
+        ],
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "profileId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "jobId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "platform": {
+                          "type": "string",
+                          "const": "instagram"
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "profileId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "statusUrl": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "queued",
+                            "processing"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "jobId",
+                        "platform",
+                        "accountId",
+                        "profileId",
+                        "statusUrl",
+                        "status"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "jobId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "platform": {
+                          "type": "string",
+                          "const": "instagram"
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "profileId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "statusUrl": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "const": "published"
+                        },
+                        "post": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "platform": {
+                              "type": "string",
+                              "enum": [
+                                "instagram",
+                                "tiktok",
+                                "facebook",
+                                "youtube",
+                                "x",
+                                "bluesky"
+                              ]
+                            },
+                            "accountId": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "profileId": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "providerId": {
+                              "type": "string"
+                            },
+                            "caption": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "media": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "type": {
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "thumbnailUrl": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "type",
+                                  "url",
+                                  "thumbnailUrl"
+                                ]
+                              }
+                            },
+                            "permalink": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "engagement": {
+                              "type": "object",
+                              "properties": {
+                                "likes": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                },
+                                "comments": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                },
+                                "shares": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                },
+                                "views": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                },
+                                "reach": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "likes",
+                                "comments"
+                              ]
+                            },
+                            "publishedAt": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "platform",
+                            "accountId",
+                            "profileId",
+                            "providerId",
+                            "caption",
+                            "media",
+                            "permalink",
+                            "engagement",
+                            "publishedAt"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "jobId",
+                        "platform",
+                        "accountId",
+                        "profileId",
+                        "statusUrl",
+                        "status",
+                        "post"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "jobId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "platform": {
+                          "type": "string",
+                          "const": "instagram"
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "profileId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "statusUrl": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "failed",
+                            "outcome_unknown"
+                          ]
+                        },
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string"
+                            },
+                            "message": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "code",
+                            "message"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "jobId",
+                        "platform",
+                        "accountId",
+                        "profileId",
+                        "statusUrl",
+                        "status",
+                        "error"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Profile, account, or object not found",
             "content": {
               "application/json": {
                 "schema": {

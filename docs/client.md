@@ -17,7 +17,7 @@ Most operations require a profile or connected account scope. Organization-wide 
 
 ## Polling and comment iteration
 
-Polling helpers are explicit bounded workflows: pass both a positive `intervalMs` and positive total `timeoutMs` (each no greater than `2_147_483_647` milliseconds), and optionally an `AbortSignal`. `waitForConnection`, `waitForTikTokPost`, `waitForFacebookPost`, and `waitForYouTubeVideo` return the terminal API response, including provider failure states; they throw only for local timeout, cancellation, or an unfamiliar provider status. Facebook video `READY`/`ERROR` is separate from a connection's `pending_page_selection` dashboard handoff.
+Polling helpers are explicit bounded workflows: pass both a positive `intervalMs` and positive total `timeoutMs` (each no greater than `2_147_483_647` milliseconds), and optionally an `AbortSignal`. `waitForConnection`, `waitForInstagramPost`, `waitForTikTokPost`, `waitForFacebookPost`, and `waitForYouTubeVideo` return the terminal API response, including provider failure states; they throw only for local timeout, cancellation, or an unfamiliar provider status. Facebook video `READY`/`ERROR` is separate from a connection's `pending_page_selection` dashboard handoff.
 
 ```ts
 import { waitForYouTubeVideo } from '@adeli/sdk/helpers';
@@ -62,5 +62,7 @@ Profile creation accepts an optional idempotency key. Ad-account and campaign cr
 ## Direct media uploads
 
 Pass `Blob`/`File` values in media fields (including Instagram/Facebook media, TikTok video/photos, YouTube video/thumbnail, X media/thread parts, and Bluesky images/video). The posts resource resolves the profile when necessary, calls `createMediaUploads`, PUTs each raw body to its presigned S3 URL with the returned headers unchanged, and sends only staged references to Adeli. Uploads use concurrency three by default; set `concurrency`, `onProgress`, `signal`, or `timeoutMs` in the method options. Presigned PUTs are idempotent and honor the client's bounded retry count; post publication itself is never retried automatically.
+
+A file-backed Instagram `createPost` returns a `202` job response. Call `client.posts.getInstagramPostStatus(...)` directly or use bounded `waitForInstagramPost(...)`. Its terminal states are `published`, `failed`, and `outcome_unknown`; the last state is intentionally not retried because Meta may already have accepted the final publish write.
 
 Use `client.posts.createMediaUploads(...)` directly when another process manages the PUTs. API keys are sent only to Adeli and never to signed S3 URLs.

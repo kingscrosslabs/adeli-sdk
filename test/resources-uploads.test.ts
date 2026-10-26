@@ -33,7 +33,7 @@ test('invokes every operation through the public resource surface', async () => 
     client.accounts.updateAccount({ path: { profileId: id, accountId: id }, body: { xCapabilities: { analytics: false } } }), client.accounts.disconnectAccount({ path: { profileId: id, accountId: id } }), client.accounts.refreshAccounts({ path: { profileId: id } }),
     client.posts.listPosts({}), client.posts.createMediaUploads({ body: { profileId: id, platform: 'x', files: [{ clientId: '0', purpose: 'post_media', contentType: 'image/jpeg', size: 1 }] } }), client.posts.createPost({ body: { platform: 'x', accountId: id, text: 'hello' } }), client.posts.uploadYouTubeVideo({ body: { accountId: id, profileId: id, video: new Blob(['x'], { type: 'video/mp4' }), title: 'v', privacy_status: 'private', made_for_kids: false } }),
     client.posts.deleteXPost({ path: { postId: id }, query: { accountId: id } }), client.posts.deleteBlueskyPost({ path: { postId: id }, query: { accountId: id } }),
-    client.posts.getFacebookPostStatus({ query: { accountId: id, publishId: 'p' } }), client.posts.getTikTokPostStatus({ query: { accountId: id, publishId: 'p' } }), client.posts.getTikTokCreatorInfo({ query: { accountId: id } }), client.posts.getYouTubeVideoStatus({ query: { accountId: id, videoId: 'v' } }),
+    client.posts.getInstagramPostStatus({ query: { jobId: id } }), client.posts.getFacebookPostStatus({ query: { accountId: id, publishId: 'p' } }), client.posts.getTikTokPostStatus({ query: { accountId: id, publishId: 'p' } }), client.posts.getTikTokCreatorInfo({ query: { accountId: id } }), client.posts.getYouTubeVideoStatus({ query: { accountId: id, videoId: 'v' } }),
     client.comments.listComments({ query: { platform: 'youtube', accountId: id } }), client.comments.createComment({ body: { platform: 'youtube', accountId: id, message: 'hi' } }),
     client.comments.updateComment({ path: { commentId: id }, body: { platform: 'youtube', accountId: id, liked: false } }), client.comments.deleteComment({ path: { commentId: id }, query: { platform: 'youtube', accountId: id } }),
     client.messages.listMessages({}), client.messages.sendMessage({ body: { platform: 'facebook', accountId: id, recipient: 'r', text: 'hi' } }),
@@ -45,7 +45,7 @@ test('invokes every operation through the public resource surface', async () => 
     client.ads.deleteCampaign({ path: { campaignId: id }, query: { adAccountId: 'act_1' } }), client.ads.setAdStatus({ body: { adAccountId: id, objectId: '1', status: 'PAUSED' } }), client.usage.getXUsage({}),
   ]);
   const apiRequests = requests.filter((request) => new URL(request.url).hostname === 'localhost');
-  expect(new Set(apiRequests.map((request) => `${request.method} ${new URL(request.url).pathname}`)).size).toBe(49);
+  expect(new Set(apiRequests.map((request) => `${request.method} ${new URL(request.url).pathname}`)).size).toBe(50);
   expect(requests.some((request) => new URL(request.url).hostname === 's3.example')).toBe(true);
 });
 

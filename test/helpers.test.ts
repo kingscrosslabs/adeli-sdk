@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { CancellationError, MalformedResponseError, TimeoutError, type ApiResponse } from '@adeli/sdk';
-import { iterateCommentPages, iterateComments, waitForConnection, waitForFacebookPost, waitForTikTokPost, waitForYouTubeVideo } from '@adeli/sdk/helpers';
+import { iterateCommentPages, iterateComments, waitForConnection, waitForFacebookPost, waitForInstagramPost, waitForTikTokPost, waitForYouTubeVideo } from '@adeli/sdk/helpers';
 
 const response = <T>(data: T): ApiResponse<T> => ({ data, status: 200, headers: new Headers({ 'x-test': 'yes' }) });
 const connection = (status: string): ApiResponse<any> => response({ id: 'session', profileId: 'profile', platform: 'facebook', status });
 const tiktok = (status: string): ApiResponse<any> => response({ platform: 'tiktok', accountId: 'account', profileId: 'profile', publishId: 'publish', status, publicPostId: null, publicPostIds: [], failureReason: null, publiclyAvailable: null, source: 'provider' });
+const instagram = (status: string): ApiResponse<any> => response({ jobId: 'job', platform: 'instagram', accountId: 'account', profileId: 'profile', status, statusUrl: '/api/v1/posts/instagram/status?jobId=job' });
 const facebook = (status: string): ApiResponse<any> => response({ platform: 'facebook', accountId: 'account', profileId: 'profile', publishId: 'publish', status, phase: null, permalink: null, failureReason: null });
 const youtube = (status: string): ApiResponse<any> => response({ platform: 'youtube', accountId: 'account', profileId: 'profile', videoId: 'video', status, uploadStatus: null, processingStatus: null, failureReason: null, privacyStatus: 'private', publishAt: null, permalink: null });
 const pendingOptions = { timeoutMs: 1000, intervalMs: 1 };
@@ -50,6 +51,26 @@ describe('bounded polling helpers', () => {
     if (platform === 'facebook') await waitForFacebookPost(client, { query: { accountId: 'account', publishId: 'publish' } }, pendingOptions);
     if (platform === 'youtube') await waitForYouTubeVideo(client, { query: { accountId: 'account', videoId: 'video' } }, pendingOptions);
     expect(calls).toBe(2);
+  });
+
+  it.each(['queued', 'processing'])('continues Instagram polling for %s and preserves the scoped query', async status => {
+    let calls = 0;
+    const queries: unknown[] = [];
+    const client = { posts: { getInstagramPostStatus: async (args: { query: unknown }) => {
+      calls += 1;
+      queries.push(args.query);
+      return calls === 1 ? instagram(status) : instagram('published');
+    } } };
+    const result = await waitForInstagramPost(client, { query: { jobId: 'job', profileId: 'profile' } }, pendingOptions);
+    expect(result.data.status).toBe('published');
+    expect(queries).toEqual([{ jobId: 'job', profileId: 'profile' }, { jobId: 'job', profileId: 'profile' }]);
+  });
+
+  it.each(['published', 'failed', 'outcome_unknown'])('returns terminal Instagram status %s without retrying publication', async status => {
+    let calls = 0;
+    const client = { getInstagramPostStatus: async () => { calls += 1; return instagram(status); } };
+    await expect(waitForInstagramPost(client, { query: { jobId: 'job' } }, pendingOptions)).resolves.toMatchObject({ data: { status } });
+    expect(calls).toBe(1);
   });
 
   it('treats TikTok inbox delivery as terminal but not public publication', async () => {

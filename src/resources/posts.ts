@@ -11,6 +11,7 @@ export type CreateMediaUploadsBody = JsonBody<'createMediaUploads'>;
 export type CreateMediaUploadsResponse = SuccessBody<'createMediaUploads'>;
 export type PostListResponse = SuccessBody<'listPosts'>;
 export type DeletePostResponse = SuccessBody<'deleteXPost'>;
+export type InstagramPostStatusResponse = SuccessBody<'getInstagramPostStatus'>;
 export type FacebookPostStatusResponse = SuccessBody<'getFacebookPostStatus'>;
 export type TikTokPostStatusResponse = SuccessBody<'getTikTokPostStatus'>;
 export type TikTokCreatorInfoResponse = SuccessBody<'getTikTokCreatorInfo'>;
@@ -143,6 +144,9 @@ export class PostsResource {
   }
   deleteBlueskyPost(args: { readonly path: Path<'deleteBlueskyPost'>; readonly query: JsonQuery<'deleteBlueskyPost'> }, options: RequestOptions = {}): Promise<ApiResponse<SuccessBody<'deleteBlueskyPost'>>> {
     return this.transport.request({ operation: operations.deleteBlueskyPost, path: args.path, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs });
+  }
+  getInstagramPostStatus(args: { readonly query: JsonQuery<'getInstagramPostStatus'> }, options: RequestOptions = {}): Promise<ApiResponse<InstagramPostStatusResponse>> {
+    return this.transport.request({ operation: operations.getInstagramPostStatus, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs });
   }
   getFacebookPostStatus(args: { readonly query: JsonQuery<'getFacebookPostStatus'> }, options: RequestOptions = {}): Promise<ApiResponse<FacebookPostStatusResponse>> {
     return this.transport.request({ operation: operations.getFacebookPostStatus, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs });

@@ -22,6 +22,7 @@ export const operations = {
   uploadYouTubeVideo: { operationId: 'uploadYouTubeVideo', method: 'POST', path: '/posts/youtube', retry: 'never', defaultTimeoutMs: 300_000 },
   deleteXPost: { operationId: 'deleteXPost', method: 'DELETE', path: '/posts/x/{postId}', retry: 'never' },
   deleteBlueskyPost: { operationId: 'deleteBlueskyPost', method: 'DELETE', path: '/posts/bluesky/{postId}', retry: 'never' },
+  getInstagramPostStatus: { operationId: 'getInstagramPostStatus', method: 'GET', path: '/posts/instagram/status', retry: 'safe-read' },
   getFacebookPostStatus: { operationId: 'getFacebookPostStatus', method: 'GET', path: '/posts/facebook/status', retry: 'safe-read' },
   getTikTokPostStatus: { operationId: 'getTikTokPostStatus', method: 'GET', path: '/posts/tiktok/status', retry: 'safe-read' },
   getTikTokCreatorInfo: { operationId: 'getTikTokCreatorInfo', method: 'GET', path: '/posts/tiktok/creator-info', retry: 'safe-read' },
