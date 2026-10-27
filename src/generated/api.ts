@@ -411,6 +411,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/messages/instagram": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send an Instagram message or private reply
+         * @description A DM to an IGSID, or a private reply to a comment's author (Instagram Login only, one per comment), with up to three postback or URL buttons.
+         */
+        post: operations["sendInstagramMessage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/analytics/instagram/account-insights": {
         parameters: {
             query?: never;
@@ -5332,6 +5352,138 @@ export interface operations {
                         sender: string | null;
                         body: string;
                         status: string;
+                        /** Format: date-time */
+                        occurredAt: string;
+                        /** Format: date-time */
+                        createdAt: string;
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connection lacks a permission or provider-confirmed resource */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PermissionRequiredError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The request conflicts with existing state */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connected account cannot perform this operation */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    sendInstagramMessage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Format: uuid */
+                    accountId: string;
+                    /** Format: uuid */
+                    profileId?: string;
+                    recipient: {
+                        id: string;
+                    } | {
+                        commentId: string;
+                    };
+                    text: string;
+                    buttons?: ({
+                        /** @constant */
+                        type: "postback";
+                        title: string;
+                        payload: string;
+                    } | {
+                        /** @constant */
+                        type: "url";
+                        title: string;
+                        /** Format: uri */
+                        url: string;
+                    })[];
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        providerId: string;
+                        /** @constant */
+                        platform: "instagram";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        /** @constant */
+                        direction: "outbound";
+                        /** @enum {string} */
+                        type: "text" | "buttons";
+                        recipient: string | null;
+                        sender: string;
+                        body: string;
+                        /** @constant */
+                        status: "sent";
                         /** Format: date-time */
                         occurredAt: string;
                         /** Format: date-time */

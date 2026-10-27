@@ -40,6 +40,7 @@
     "deleteComment": [{"method":"DELETE","path":"/api/v1/comments/{commentId}","href":"/docs/api/comments/delete-comment"}],
     "listMessages": [{"method":"GET","path":"/api/v1/messages","href":"/docs/api/messages/list-messages"}],
     "sendMessage": [{"method":"POST","path":"/api/v1/messages","href":"/docs/api/messages/send-message"}],
+    "sendInstagramMessage": [{"method":"POST","path":"/api/v1/messages/instagram","href":"/docs/api/messages/send-instagram-message"}],
     "getInstagramAccountInsights": [{"method":"GET","path":"/api/v1/analytics/instagram/account-insights","href":"/docs/api/analytics/instagram-account-insights"}],
     "getFacebookPageMetrics": [{"method":"GET","path":"/api/v1/analytics/facebook/page-metrics","href":"/docs/api/analytics/facebook-page-metrics"}],
     "getTikTokAccountAnalytics": [{"method":"GET","path":"/api/v1/analytics/tiktok/account-analytics","href":"/docs/api/analytics/tiktok-account-analytics"}],

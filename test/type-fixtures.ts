@@ -1,6 +1,7 @@
 import type { Account, ApiResponse, Profile, StartConnectionBody } from '../src/index.js';
 import type { CreatePostBody, CreatePostWithFiles, TikTokMultipartBody } from '../src/resources/posts.js';
 import type { CreateAdAccountBody } from '../src/resources/ads.js';
+import type { SendInstagramMessageBody } from '../src/resources/messages.js';
 import { Adeli } from '../src/index.js';
 
 const id = '00000000-0000-0000-0000-000000000001';
@@ -33,6 +34,17 @@ void instagramImage;
 void youtubeVideo;
 void tiktokFiles;
 void adAccount;
+
+const instagramDirect: SendInstagramMessageBody = { accountId: id, recipient: { id: 'igsid' }, text: 'hello' };
+const instagramPrivateReply: SendInstagramMessageBody = { accountId: id, profileId: id, recipient: { commentId: 'comment-1' }, text: 'Thanks!', buttons: [{ type: 'postback', title: 'Send it', payload: 'send' }, { type: 'url', title: 'Shop', url: 'https://shop.example/' }] };
+void instagramDirect;
+void instagramPrivateReply;
+// @ts-expect-error the Instagram recipient is an object, not the plain string sendMessage takes.
+const invalidInstagramRecipient: SendInstagramMessageBody = { accountId: id, recipient: 'igsid', text: 'hello' };
+// @ts-expect-error postback buttons require a payload.
+const invalidPostback: SendInstagramMessageBody = { accountId: id, recipient: { id: 'igsid' }, text: 'hello', buttons: [{ type: 'postback', title: 'Yes' }] };
+void invalidInstagramRecipient;
+void invalidPostback;
 
 // @ts-expect-error platform discriminant rejects an Instagram body labelled as YouTube.
 const invalidPlatform: CreatePostBody = { platform: 'youtube', accountId: id, image };

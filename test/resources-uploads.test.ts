@@ -36,7 +36,7 @@ test('invokes every operation through the public resource surface', async () => 
     client.posts.getInstagramPostStatus({ query: { jobId: id } }), client.posts.getFacebookPostStatus({ query: { accountId: id, publishId: 'p' } }), client.posts.getTikTokPostStatus({ query: { accountId: id, publishId: 'p' } }), client.posts.getTikTokCreatorInfo({ query: { accountId: id } }), client.posts.getYouTubeVideoStatus({ query: { accountId: id, videoId: 'v' } }),
     client.comments.listComments({ query: { platform: 'youtube', accountId: id } }), client.comments.createComment({ body: { platform: 'youtube', accountId: id, message: 'hi' } }),
     client.comments.updateComment({ path: { commentId: id }, body: { platform: 'youtube', accountId: id, liked: false } }), client.comments.deleteComment({ path: { commentId: id }, query: { platform: 'youtube', accountId: id } }),
-    client.messages.listMessages({}), client.messages.sendMessage({ body: { platform: 'facebook', accountId: id, recipient: 'r', text: 'hi' } }),
+    client.messages.listMessages({}), client.messages.sendMessage({ body: { platform: 'facebook', accountId: id, recipient: 'r', text: 'hi' } }), client.messages.sendInstagramMessage({ body: { accountId: id, recipient: { id: 'igsid' }, text: 'hi' } }),
     client.analytics.getInstagramAccountInsights({ query: { accountId: id } }), client.analytics.getFacebookPageMetrics({}), client.analytics.getTikTokAccountAnalytics({ query: { accountId: id } }),
     client.analytics.getTikTokAccountInsights({ query: { accountId: id } }), client.analytics.getTikTokVideoInsights({ query: { accountId: id } }), client.analytics.getYouTubeChannelInsights({ query: { accountId: id } }), client.analytics.getYouTubeVideoInsights({ query: { accountId: id } }),
     client.ads.listAdBusinesses({}), client.ads.listAdAccounts({}), client.ads.createAdAccount({ body: { businessId: 'b', name: 'a', timezone: 'UTC' } }, { idempotencyKey: 'a' }),
@@ -45,7 +45,7 @@ test('invokes every operation through the public resource surface', async () => 
     client.ads.deleteCampaign({ path: { campaignId: id }, query: { adAccountId: 'act_1' } }), client.ads.setAdStatus({ body: { adAccountId: id, objectId: '1', status: 'PAUSED' } }), client.usage.getXUsage({}),
   ]);
   const apiRequests = requests.filter((request) => new URL(request.url).hostname === 'localhost');
-  expect(new Set(apiRequests.map((request) => `${request.method} ${new URL(request.url).pathname}`)).size).toBe(50);
+  expect(new Set(apiRequests.map((request) => `${request.method} ${new URL(request.url).pathname}`)).size).toBe(51);
   expect(requests.some((request) => new URL(request.url).hostname === 's3.example')).toBe(true);
 });
 
