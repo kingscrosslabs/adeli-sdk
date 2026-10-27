@@ -41,14 +41,13 @@ const linkOperations = docsLinks.operations ?? {};
 validateMethodCoverage(Object.keys(operations), new Set(methodSources.keys()));
 validateDocsLinks(operations, linkOperations, docsLinks.baseUrl);
 
-const resourceName = (operationId: string): string => operationId === 'getMe' ? 'Adeli' : ({
-  listProfiles: 'profiles', createProfile: 'profiles', getProfile: 'profiles', updateProfile: 'profiles', deleteProfile: 'profiles', startConnection: 'profiles', getConnection: 'profiles',
-  listAccounts: 'accounts', listProfileAccounts: 'accounts', getAccount: 'accounts', updateAccount: 'accounts', disconnectAccount: 'accounts', refreshAccounts: 'accounts',
-  listPosts: 'posts', createPost: 'posts', uploadYouTubeVideo: 'posts', deleteXPost: 'posts', deleteBlueskyPost: 'posts', getFacebookPostStatus: 'posts', getTikTokPostStatus: 'posts', getTikTokCreatorInfo: 'posts', getYouTubeVideoStatus: 'posts',
-  listComments: 'comments', createComment: 'comments', updateComment: 'comments', deleteComment: 'comments', listMessages: 'messages', sendMessage: 'messages',
-  getInstagramAccountInsights: 'analytics', getFacebookPageMetrics: 'analytics', getTikTokAccountAnalytics: 'analytics', getTikTokAccountInsights: 'analytics', getTikTokVideoInsights: 'analytics', getYouTubeChannelInsights: 'analytics', getYouTubeVideoInsights: 'analytics',
-  listAdBusinesses: 'ads', listAdAccounts: 'ads', createAdAccount: 'ads', getAdAccount: 'ads', updateAdAccount: 'ads', getAdTree: 'ads', getAdInsights: 'ads', listAdLeads: 'ads', createCampaign: 'ads', deleteCampaign: 'ads', setAdStatus: 'ads', getXUsage: 'usage',
-} as Record<string, string>)[operationId] ?? 'unknown';
+// The resource is the file that declares the method, so a new operation cannot
+// fall through to a stale hand-maintained map.
+const resourceName = (operationId: string): string => {
+  const file = methodSources.get(operationId)?.file;
+  if (file === undefined) throw new Error(`No public resource method declares ${operationId}`);
+  return file === 'src/client.ts' ? 'Adeli' : file.slice('src/resources/'.length, -'.ts'.length);
+};
 function escapeCell(value: string): string { return value.replaceAll('|', '\\|').replaceAll('\n', ' '); }
 function endpointLinks(operationId: string): string {
   return linkOperations[operationId]!.map((entry) => `[${entry.href.replace('/docs/', '')}](${docsLinks.baseUrl}${entry.href})`).join('<br>');
