@@ -1,0 +1,87 @@
+{
+  "name": "@adeli/sdk",
+  "version": "0.1.0",
+  "description": "Server-side TypeScript SDK for Adeli",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kingscrosslabs/adeli-sdk.git"
+  },
+  "license": "UNLICENSED",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./helpers": {
+      "import": {
+        "types": "./dist/helpers/index.d.ts",
+        "default": "./dist/helpers/index.js"
+      },
+      "require": {
+        "types": "./dist/helpers/index.d.cts",
+        "default": "./dist/helpers/index.cjs"
+      }
+    },
+    "./uploads": {
+      "import": {
+        "types": "./dist/uploads.d.ts",
+        "default": "./dist/uploads.js"
+      },
+      "require": {
+        "types": "./dist/uploads.d.cts",
+        "default": "./dist/uploads.cjs"
+      }
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "openapi/*.json",
+    "README.md",
+    "docs/*.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "sync:openapi": "tsx scripts/sync-openapi.ts",
+    "generate": "tsx scripts/generate.ts",
+    "generate:api-reference": "tsx scripts/generate-api-reference.ts",
+    "check:api-reference": "tsx scripts/check-api-reference.ts",
+    "check:generated": "tsx scripts/check-generated.ts && npm run check:api-reference",
+    "check:contract": "tsx scripts/check-contract.ts",
+    "lint": "eslint . --cache --cache-location .eslintcache",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "tsup",
+    "check:package": "npm run build && npm pack --dry-run && tsx scripts/check-package.ts",
+    "test:package": "node test/package-smoke.mjs",
+    "typecheck:examples": "tsx scripts/typecheck-examples.ts",
+    "release:check": "tsx scripts/check-package.ts --release"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
+    "@changesets/cli": "3.0.3",
+    "@redocly/ajv": "8.11.2",
+    "@types/node": "22.15.21",
+    "@typescript-eslint/eslint-plugin": "8.72.0",
+    "@typescript-eslint/parser": "8.72.0",
+    "eslint": "9.39.5",
+    "openapi-typescript": "7.9.1",
+    "publint": "0.3.25",
+    "tsup": "8.5.0",
+    "tsx": "4.19.4",
+    "typescript": "5.8.3",
+    "vitest": "5.0.5"
+  }
+}

@@ -1,0 +1,133 @@
+name: Release SDK
+
+# Dispatch this workflow with GitHub's ref set to the exact reviewed tag, for
+# example: gh workflow run release.yml --ref v0.1.0 -f reviewed_version=0.1.0 -f release_tag=v0.1.0
+# A branch dispatch is rejected before dependencies, packing, or publication.
+on:
+  workflow_dispatch:
+    inputs:
+      reviewed_version:
+        description: 'Reviewed package version (must match package.json and the release tag)'
+        required: true
+        type: string
+      release_tag:
+        description: 'Reviewed git tag (for example v0.1.0; dispatch --ref must be this tag)'
+        required: true
+        type: string
+
+jobs:
+  validate:
+    name: Validate reviewed release candidate
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Use the event ref, never an arbitrary input ref. GITHUB_SHA is the
+          # commit GitHub will associate with provenance for this dispatch.
+          ref: ${{ github.ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.22.2'
+          cache: npm
+      - name: Pin npm for trusted publishing compatibility
+        run: npm install --global --ignore-scripts npm@11.16.0
+      - name: Verify event identity before any package work
+        env:
+          EVENT_REF: ${{ github.ref }}
+          EVENT_REF_NAME: ${{ github.ref_name }}
+          EVENT_REF_TYPE: ${{ github.ref_type }}
+          EVENT_SHA: ${{ github.sha }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          REVIEWED_VERSION: ${{ inputs.reviewed_version }}
+        run: |
+          set -euo pipefail
+          export HEAD_SHA="$(git rev-parse HEAD)"
+          test "$(npm --version)" = "11.16.0"
+          node scripts/check-release-provenance.mjs
+      - run: npm ci --ignore-scripts
+      # check:generated writes only to a temporary directory and detects committed drift.
+      - run: npm run check:generated
+      - run: npm run check:contract
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm audit --audit-level=high
+      - run: npm run build
+      - run: npm run check:package
+      - run: npm run test:package
+      - run: npm run typecheck:examples
+      - name: Require approved license before creating publish artifact
+        run: test "$(node -p "require('./package.json').license")" != "UNLICENSED"
+      - name: Pack validated candidate without lifecycle scripts
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          REVIEWED_VERSION: ${{ inputs.reviewed_version }}
+          EVENT_REF: ${{ github.ref }}
+          EVENT_REF_NAME: ${{ github.ref_name }}
+          EVENT_REF_TYPE: ${{ github.ref_type }}
+          EVENT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          export HEAD_SHA="$(git rev-parse HEAD)"
+          mkdir -p "$RUNNER_TEMP/sdk-release"
+          npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP/sdk-release"
+          artifact="$(find "$RUNNER_TEMP/sdk-release" -maxdepth 1 -name '*.tgz' -print -quit)"
+          test -n "$artifact"
+          node scripts/check-release-provenance.mjs --artifact "$artifact" --write-identity "$RUNNER_TEMP/sdk-release/identity.json"
+          sha256sum "$artifact" > "$RUNNER_TEMP/sdk-release/artifact.sha256"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdk-release-tarball
+          path: |
+            ${{ runner.temp }}/sdk-release/*.tgz
+            ${{ runner.temp }}/sdk-release/identity.json
+            ${{ runner.temp }}/sdk-release/artifact.sha256
+          if-no-files-found: error
+
+  publish:
+    name: Publish approved tarball
+    needs: validate
+    environment: npm-release
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.22.2'
+          registry-url: https://registry.npmjs.org
+      - name: Pin npm for trusted publishing compatibility without lifecycle scripts
+        run: npm install --global --ignore-scripts npm@11.16.0
+      - uses: actions/download-artifact@v4
+        with:
+          name: sdk-release-tarball
+          path: release
+      - name: Recheck event identity and artifact before publication
+        env:
+          EVENT_REF: ${{ github.ref }}
+          EVENT_REF_NAME: ${{ github.ref_name }}
+          EVENT_REF_TYPE: ${{ github.ref_type }}
+          EVENT_SHA: ${{ github.sha }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          REVIEWED_VERSION: ${{ inputs.reviewed_version }}
+        run: |
+          set -euo pipefail
+          export HEAD_SHA="$(git rev-parse HEAD)"
+          test "$(npm --version)" = "11.16.0"
+          artifact="$(find release -maxdepth 1 -name '*.tgz' -print -quit)"
+          test -n "$artifact"
+          node scripts/check-release-provenance.mjs --artifact "$artifact" --identity-file release/identity.json
+      - name: Publish validated tarball with OIDC provenance
+        run: |
+          set -euo pipefail
+          set -- release/*.tgz
+          test "$#" -eq 1
+          npm publish "$1" --ignore-scripts --provenance --access public

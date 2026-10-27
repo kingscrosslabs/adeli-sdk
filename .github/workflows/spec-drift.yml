@@ -1,0 +1,41 @@
+name: OpenAPI spec drift
+
+on:
+  schedule:
+    - cron: '17 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Fetch public candidate and write review report
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .drift-report
+          curl --fail --location --retry 2 --retry-delay 1 --connect-timeout 10 --max-time 60 \
+            --output .drift-report/live-openapi.json https://www.tryadeli.com/docs/openapi.json
+          sha256sum openapi/adeli.openapi.json .drift-report/live-openapi.json | tee .drift-report/raw-hashes.txt
+          set +e
+          node scripts/check-spec-drift.mjs \
+            --baseline openapi/adeli.openapi.json \
+            --candidate .drift-report/live-openapi.json \
+            --report .drift-report/report.md
+          status=$?
+          set -e
+          # Formatting/key-order-only drift exits zero; semantic or malformed
+          # candidates fail with an artifact containing actionable evidence.
+          test "$status" -eq 0
+      - name: Upload drift evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi-drift-report
+          path: .drift-report
