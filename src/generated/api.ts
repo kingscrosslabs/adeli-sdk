@@ -4656,6 +4656,7 @@ export interface operations {
                             isHidden: boolean;
                             /** Format: date-time */
                             createdAt: string;
+                            authorId?: string | null;
                             liked?: boolean;
                             replyCount?: number;
                             deletable?: boolean;
@@ -4800,6 +4801,7 @@ export interface operations {
                             isHidden: boolean;
                             /** Format: date-time */
                             createdAt: string;
+                            authorId?: string | null;
                             liked?: boolean;
                             replyCount?: number;
                             deletable?: boolean;

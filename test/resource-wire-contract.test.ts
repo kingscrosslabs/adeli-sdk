@@ -15,7 +15,7 @@ const key = 'wire-key';
 const post = { id: 'post-1', platform: 'x', accountId: id, profileId: id, providerId: 'provider-1', caption: null, media: [{ type: 'image', url: null, thumbnailUrl: null }], permalink: null, engagement: { likes: 1, comments: null, shares: 0, views: null, reach: null }, publishedAt: null };
 const account = { id, accountId: id, profileId: id, platform: 'x', providerId: null, displayName: null, displayIdentifier: '@wire', connectionStatus: 'connected', grantedPermissions: ['read'], recommendedPermissions: [{ code: 'inbox', label: 'Inbox' }], missingRecommendedPermissions: [], capabilities: { analytics: false, inbox: true }, capabilityRequirements: {}, reconnect: { action: 'restart_oauth', method: 'POST', href: null, provider: 'x' } };
 const profile = { id, name: 'Default', externalId: null, metadata: {}, isDefault: true, createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-02T00:00:00.000Z' };
-const comment = { id: 'comment-1', mediaId: 'media-1', parentId: null, authorName: 'Author', authorFullName: null, authorHandle: '@author', avatarUrl: null, profileUrl: null, body: 'hello', likeCount: 0, isCreator: false, isHidden: false, createdAt: '2025-01-01T00:00:00.000Z', liked: false, replyCount: 0, deletable: true };
+const comment = { id: 'comment-1', mediaId: 'media-1', parentId: null, authorName: 'Author', authorFullName: null, authorHandle: '@author', avatarUrl: null, profileUrl: null, body: 'hello', likeCount: 0, isCreator: false, isHidden: false, createdAt: '2025-01-01T00:00:00.000Z', authorId: 'author-1', liked: false, replyCount: 0, deletable: true };
 const message = { id: 'message-1', providerId: null, platform: 'facebook', accountId: id, profileId: id, direction: 'outbound', type: 'text', recipient: 'recipient', sender: null, body: 'hello', status: 'sent', occurredAt: '2025-01-01T00:00:00.000Z', createdAt: '2025-01-01T00:00:00.000Z' };
 const errorRecord = { platform: 'x', accountId: id, code: 'permission_required', message: 'permission required', details: { missing: ['read'] } };
 
@@ -245,4 +245,23 @@ test('idempotent Ads writes preserve fresh 201 and replay 200 responses', async 
   await expect(client.ads.createAdAccount(args, { idempotencyKey: 'stable-ad-key' })).resolves.toMatchObject({ status: 201, data: bodies[0] });
   await expect(client.ads.createAdAccount(args, { idempotencyKey: 'stable-ad-key' })).resolves.toMatchObject({ status: 200, data: bodies[1] });
   expect(seenKeys).toEqual(['stable-ad-key', 'stable-ad-key']);
+});
+
+test('comment responses carry the nullable authorId through listComments and Instagram createComment', async () => {
+  const anonymous = { ...comment, id: 'comment-2', authorId: null };
+  const bodies = [
+    { platform: 'instagram', accountId: id, profileId: id, postId: null, posts: [], comments: [comment, anonymous], nextCursor: null, complete: true, syncedAt: null },
+    { platform: 'instagram', accountId: id, profileId: id, comment },
+  ];
+  let call = 0;
+  const client = new Adeli({ apiKey: key, baseURL, fetch: async () => {
+    const index = call++;
+    return new Response(JSON.stringify(bodies[index]), { status: index === 0 ? 200 : 201, headers: { 'content-type': 'application/json' } });
+  } });
+  const listed = await client.comments.listComments({ query: { platform: 'instagram', accountId: id } });
+  validateSuccess('listComments', '200', listed.data);
+  expect(listed.data.comments.map((item) => item.authorId)).toEqual(['author-1', null]);
+  const created = await client.comments.createComment({ body: { platform: 'instagram', accountId: id, postId: 'media-1', message: 'hello' } });
+  validateSuccess('createComment', '201', created.data);
+  expect(created.data).toMatchObject({ comment: { id: 'comment-1', authorId: 'author-1' } });
 });
