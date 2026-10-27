@@ -31,6 +31,20 @@ export type AdInsightsResponse = SuccessBody<'getAdInsights'>;
 export type AdLeadsResponse = SuccessBody<'listAdLeads'>;
 export type CampaignResponse = SuccessBody<'createCampaign'>;
 export type AdStatusResponse = SuccessBody<'setAdStatus'>;
+/** TikTok Ads only: an ad group's budget, end date or name. */
+export type UpdateAdGroupPath = Path<'updateAdGroup'>;
+export type UpdateAdGroupQuery = JsonQuery<'updateAdGroup'>;
+export type UpdateAdGroupBody = JsonBody<'updateAdGroup'>;
+export type AdGroupResponse = SuccessBody<'updateAdGroup'>;
+/** TikTok Ads only: location, language and interest options. */
+export type AdTargetingQuery = JsonQuery<'listAdTargeting'>;
+export type AdTargetingResponse = SuccessBody<'listAdTargeting'>;
+/** TikTok Ads only: the brand identities an ad runs as. */
+export type AdIdentitiesQuery = JsonQuery<'listAdIdentities'>;
+export type AdIdentitiesResponse = SuccessBody<'listAdIdentities'>;
+export type CreateAdIdentityQuery = JsonQuery<'createAdIdentity'>;
+export type CreateAdIdentityBody = JsonBody<'createAdIdentity'>;
+export type AdIdentityResponse = SuccessBody<'createAdIdentity'>;
 
 function requiredIdempotency(options: IdempotentOptions | undefined): string {
   const key = options?.idempotencyKey;
@@ -57,4 +71,8 @@ export class AdsResource {
   }
   deleteCampaign(args: { readonly path: DeleteCampaignPath; readonly query: JsonQuery<'deleteCampaign'> }, options: RequestOptions = {}): Promise<ApiResponse<undefined>> { return this.transport.request({ operation: operations.deleteCampaign, path: args.path, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs }); }
   setAdStatus(args: { readonly query?: JsonQuery<'setAdStatus'>; readonly body: SetAdStatusBody }, options: RequestOptions = {}): Promise<ApiResponse<AdStatusResponse>> { return this.transport.request({ operation: operations.setAdStatus, query: args.query, body: args.body, signal: options.signal, timeoutMs: options.timeoutMs }); }
+  updateAdGroup(args: { readonly path: UpdateAdGroupPath; readonly query?: UpdateAdGroupQuery; readonly body: UpdateAdGroupBody }, options: RequestOptions = {}): Promise<ApiResponse<AdGroupResponse>> { return this.transport.request({ operation: operations.updateAdGroup, path: args.path, query: args.query, body: args.body, signal: options.signal, timeoutMs: options.timeoutMs }); }
+  listAdTargeting(args: { readonly query: AdTargetingQuery }, options: RequestOptions = {}): Promise<ApiResponse<AdTargetingResponse>> { return this.transport.request({ operation: operations.listAdTargeting, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs }); }
+  listAdIdentities(args: { readonly query: AdIdentitiesQuery }, options: RequestOptions = {}): Promise<ApiResponse<AdIdentitiesResponse>> { return this.transport.request({ operation: operations.listAdIdentities, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs }); }
+  createAdIdentity(args: { readonly query?: CreateAdIdentityQuery; readonly body: CreateAdIdentityBody }, options: RequestOptions = {}): Promise<ApiResponse<AdIdentityResponse>> { return this.transport.request({ operation: operations.createAdIdentity, query: args.query, body: args.body, signal: options.signal, timeoutMs: options.timeoutMs }); }
 }

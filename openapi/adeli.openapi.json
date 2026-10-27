@@ -57,7 +57,7 @@
     },
     {
       "name": "Ads",
-      "description": "Meta ad accounts, campaigns, insights, and leads, through a profile's Meta Ads account (connect `meta_ads`), which is separate from its Facebook Pages account."
+      "description": "Meta and TikTok ad accounts, campaigns, insights, and Meta leads, through a profile's Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account, which are separate from its Facebook Pages and TikTok accounts."
     },
     {
       "name": "Usage",
@@ -171,6 +171,7 @@
                             "enum": [
                               "instagram",
                               "tiktok",
+                              "tiktok_ads",
                               "facebook",
                               "meta_ads",
                               "whatsapp",
@@ -953,6 +954,7 @@
                     "enum": [
                       "instagram",
                       "tiktok",
+                      "tiktok_ads",
                       "facebook",
                       "meta_ads",
                       "whatsapp",
@@ -1007,6 +1009,7 @@
                       "enum": [
                         "instagram",
                         "tiktok",
+                        "tiktok_ads",
                         "facebook",
                         "meta_ads",
                         "whatsapp",
@@ -1221,6 +1224,7 @@
                       "enum": [
                         "instagram",
                         "tiktok",
+                        "tiktok_ads",
                         "facebook",
                         "meta_ads",
                         "whatsapp",
@@ -1372,6 +1376,7 @@
               "enum": [
                 "instagram",
                 "tiktok",
+                "tiktok_ads",
                 "facebook",
                 "meta_ads",
                 "whatsapp",
@@ -1437,6 +1442,7 @@
                             "enum": [
                               "instagram",
                               "tiktok",
+                              "tiktok_ads",
                               "facebook",
                               "meta_ads",
                               "whatsapp",
@@ -1642,6 +1648,7 @@
                                 "enum": [
                                   "instagram",
                                   "tiktok",
+                                  "tiktok_ads",
                                   "facebook",
                                   "meta_ads",
                                   "whatsapp",
@@ -1687,6 +1694,7 @@
                             "enum": [
                               "instagram",
                               "tiktok",
+                              "tiktok_ads",
                               "facebook",
                               "meta_ads",
                               "whatsapp",
@@ -1760,6 +1768,7 @@
                             "enum": [
                               "instagram",
                               "tiktok",
+                              "tiktok_ads",
                               "facebook",
                               "meta_ads",
                               "whatsapp",
@@ -1965,6 +1974,7 @@
                                 "enum": [
                                   "instagram",
                                   "tiktok",
+                                  "tiktok_ads",
                                   "facebook",
                                   "meta_ads",
                                   "whatsapp",
@@ -2010,6 +2020,7 @@
                             "enum": [
                               "instagram",
                               "tiktok",
+                              "tiktok_ads",
                               "facebook",
                               "meta_ads",
                               "whatsapp",
@@ -2166,6 +2177,7 @@
                             "enum": [
                               "instagram",
                               "tiktok",
+                              "tiktok_ads",
                               "facebook",
                               "meta_ads",
                               "whatsapp",
@@ -2371,6 +2383,7 @@
                                 "enum": [
                                   "instagram",
                                   "tiktok",
+                                  "tiktok_ads",
                                   "facebook",
                                   "meta_ads",
                                   "whatsapp",
@@ -2416,6 +2429,7 @@
                             "enum": [
                               "instagram",
                               "tiktok",
+                              "tiktok_ads",
                               "facebook",
                               "meta_ads",
                               "whatsapp",
@@ -2489,6 +2503,7 @@
                             "enum": [
                               "instagram",
                               "tiktok",
+                              "tiktok_ads",
                               "facebook",
                               "meta_ads",
                               "whatsapp",
@@ -2694,6 +2709,7 @@
                                 "enum": [
                                   "instagram",
                                   "tiktok",
+                                  "tiktok_ads",
                                   "facebook",
                                   "meta_ads",
                                   "whatsapp",
@@ -2739,6 +2755,7 @@
                             "enum": [
                               "instagram",
                               "tiktok",
+                              "tiktok_ads",
                               "facebook",
                               "meta_ads",
                               "whatsapp",
@@ -2893,6 +2910,7 @@
                       "enum": [
                         "instagram",
                         "tiktok",
+                        "tiktok_ads",
                         "facebook",
                         "meta_ads",
                         "whatsapp",
@@ -3088,6 +3106,7 @@
                       "enum": [
                         "instagram",
                         "tiktok",
+                        "tiktok_ads",
                         "facebook",
                         "meta_ads",
                         "whatsapp",
@@ -3411,6 +3430,7 @@
                             "enum": [
                               "instagram",
                               "tiktok",
+                              "tiktok_ads",
                               "facebook",
                               "meta_ads",
                               "whatsapp",
@@ -3518,6 +3538,7 @@
                             "enum": [
                               "instagram",
                               "tiktok",
+                              "tiktok_ads",
                               "facebook",
                               "meta_ads",
                               "whatsapp",
@@ -3645,6 +3666,7 @@
               "enum": [
                 "instagram",
                 "tiktok",
+                "tiktok_ads",
                 "facebook",
                 "meta_ads",
                 "whatsapp",
@@ -3834,6 +3856,7 @@
                             "enum": [
                               "instagram",
                               "tiktok",
+                              "tiktok_ads",
                               "facebook",
                               "meta_ads",
                               "whatsapp",
@@ -4031,6 +4054,7 @@
                             "enum": [
                               "instagram",
                               "tiktok",
+                              "tiktok_ads",
                               "facebook",
                               "meta_ads",
                               "whatsapp",
@@ -10093,6 +10117,7 @@
               "enum": [
                 "instagram",
                 "tiktok",
+                "tiktok_ads",
                 "facebook",
                 "meta_ads",
                 "whatsapp",
@@ -10237,6 +10262,7 @@
                             "enum": [
                               "instagram",
                               "tiktok",
+                              "tiktok_ads",
                               "facebook",
                               "meta_ads",
                               "whatsapp",
@@ -10389,6 +10415,7 @@
                             "enum": [
                               "instagram",
                               "tiktok",
+                              "tiktok_ads",
                               "facebook",
                               "meta_ads",
                               "whatsapp",
@@ -13014,6 +13041,7 @@
       "get": {
         "operationId": "listAdBusinesses",
         "summary": "List Meta businesses",
+        "description": "Meta only; a TikTok Ads account returns 400 unsupported_for_platform.",
         "tags": [
           "Ads"
         ],
@@ -13026,7 +13054,7 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "The Meta Ads account (`platform: meta_ads`). It names its profile, so `profileId` can be left out. A Facebook Pages account id is not accepted."
+            "description": "The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted."
           },
           {
             "name": "profileId",
@@ -13036,7 +13064,20 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "The profile whose Meta Ads account to use, when no `accountId` is given."
+            "description": "The profile whose ads account to use, when no `accountId` is given."
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "meta_ads",
+                "tiktok_ads"
+              ]
+            },
+            "description": "Needed only when the profile has both ad networks connected and no `accountId` is given."
           }
         ],
         "responses": {
@@ -13049,7 +13090,10 @@
                   "properties": {
                     "platform": {
                       "type": "string",
-                      "const": "meta_ads"
+                      "enum": [
+                        "meta_ads",
+                        "tiktok_ads"
+                      ]
                     },
                     "accountId": {
                       "type": "string",
@@ -13175,6 +13219,7 @@
       "get": {
         "operationId": "listAdAccounts",
         "summary": "List ad accounts",
+        "description": "Meta ad accounts (`act_<digits>`) or TikTok advertisers (`<digits>`), depending on the account's network.",
         "tags": [
           "Ads"
         ],
@@ -13187,7 +13232,7 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "The Meta Ads account (`platform: meta_ads`). It names its profile, so `profileId` can be left out. A Facebook Pages account id is not accepted."
+            "description": "The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted."
           },
           {
             "name": "profileId",
@@ -13197,7 +13242,20 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "The profile whose Meta Ads account to use, when no `accountId` is given."
+            "description": "The profile whose ads account to use, when no `accountId` is given."
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "meta_ads",
+                "tiktok_ads"
+              ]
+            },
+            "description": "Needed only when the profile has both ad networks connected and no `accountId` is given."
           },
           {
             "name": "refresh",
@@ -13223,7 +13281,10 @@
                   "properties": {
                     "platform": {
                       "type": "string",
-                      "const": "meta_ads"
+                      "enum": [
+                        "meta_ads",
+                        "tiktok_ads"
+                      ]
                     },
                     "accountId": {
                       "type": "string",
@@ -13262,6 +13323,7 @@
                           "accountStatus": {
                             "type": [
                               "number",
+                              "string",
                               "null"
                             ]
                           },
@@ -13399,6 +13461,7 @@
       "post": {
         "operationId": "createAdAccount",
         "summary": "Create an ad account",
+        "description": "Meta only.",
         "tags": [
           "Ads"
         ],
@@ -13411,7 +13474,7 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "The Meta Ads account (`platform: meta_ads`). It names its profile, so `profileId` can be left out. A Facebook Pages account id is not accepted."
+            "description": "The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted."
           },
           {
             "name": "profileId",
@@ -13421,7 +13484,20 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "The profile whose Meta Ads account to use, when no `accountId` is given."
+            "description": "The profile whose ads account to use, when no `accountId` is given."
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "meta_ads",
+                "tiktok_ads"
+              ]
+            },
+            "description": "Needed only when the profile has both ad networks connected and no `accountId` is given."
           },
           {
             "name": "Idempotency-Key",
@@ -13545,6 +13621,7 @@
                             "accountStatus": {
                               "type": [
                                 "number",
+                                "string",
                                 "null"
                               ]
                             },
@@ -13640,6 +13717,7 @@
                             "accountStatus": {
                               "type": [
                                 "number",
+                                "string",
                                 "null"
                               ]
                             },
@@ -13786,6 +13864,7 @@
       "get": {
         "operationId": "getAdAccount",
         "summary": "Get an ad account",
+        "description": "Meta only.",
         "tags": [
           "Ads"
         ],
@@ -13808,7 +13887,7 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "The Meta Ads account (`platform: meta_ads`). It names its profile, so `profileId` can be left out. A Facebook Pages account id is not accepted."
+            "description": "The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted."
           },
           {
             "name": "profileId",
@@ -13818,7 +13897,20 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "The profile whose Meta Ads account to use, when no `accountId` is given."
+            "description": "The profile whose ads account to use, when no `accountId` is given."
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "meta_ads",
+                "tiktok_ads"
+              ]
+            },
+            "description": "Needed only when the profile has both ad networks connected and no `accountId` is given."
           }
         ],
         "responses": {
@@ -13831,7 +13923,10 @@
                   "properties": {
                     "platform": {
                       "type": "string",
-                      "const": "meta_ads"
+                      "enum": [
+                        "meta_ads",
+                        "tiktok_ads"
+                      ]
                     },
                     "accountId": {
                       "type": "string",
@@ -13868,6 +13963,7 @@
                         "accountStatus": {
                           "type": [
                             "number",
+                            "string",
                             "null"
                           ]
                         },
@@ -14052,6 +14148,7 @@
       "patch": {
         "operationId": "updateAdAccount",
         "summary": "Update an ad account",
+        "description": "Meta only.",
         "tags": [
           "Ads"
         ],
@@ -14074,7 +14171,7 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "The Meta Ads account (`platform: meta_ads`). It names its profile, so `profileId` can be left out. A Facebook Pages account id is not accepted."
+            "description": "The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted."
           },
           {
             "name": "profileId",
@@ -14084,7 +14181,20 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "The profile whose Meta Ads account to use, when no `accountId` is given."
+            "description": "The profile whose ads account to use, when no `accountId` is given."
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "meta_ads",
+                "tiktok_ads"
+              ]
+            },
+            "description": "Needed only when the profile has both ad networks connected and no `accountId` is given."
           }
         ],
         "requestBody": {
@@ -14127,7 +14237,10 @@
                   "properties": {
                     "platform": {
                       "type": "string",
-                      "const": "meta_ads"
+                      "enum": [
+                        "meta_ads",
+                        "tiktok_ads"
+                      ]
                     },
                     "accountId": {
                       "type": "string",
@@ -14164,6 +14277,7 @@
                         "accountStatus": {
                           "type": [
                             "number",
+                            "string",
                             "null"
                           ]
                         },
@@ -14349,7 +14463,7 @@
     "/api/v1/ads/tree": {
       "get": {
         "operationId": "getAdTree",
-        "summary": "Campaigns, ad sets, and ads for an ad account",
+        "summary": "Campaigns, ad sets (or TikTok ad groups), and ads for an ad account",
         "tags": [
           "Ads"
         ],
@@ -14362,7 +14476,7 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "The Meta Ads account (`platform: meta_ads`). It names its profile, so `profileId` can be left out. A Facebook Pages account id is not accepted."
+            "description": "The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted."
           },
           {
             "name": "profileId",
@@ -14372,7 +14486,20 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "The profile whose Meta Ads account to use, when no `accountId` is given."
+            "description": "The profile whose ads account to use, when no `accountId` is given."
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "meta_ads",
+                "tiktok_ads"
+              ]
+            },
+            "description": "Needed only when the profile has both ad networks connected and no `accountId` is given."
           },
           {
             "name": "adAccountId",
@@ -14380,7 +14507,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "pattern": "^act_\\d+$"
+              "pattern": "^(act_)?\\d+$"
             }
           },
           {
@@ -14412,7 +14539,10 @@
                   "properties": {
                     "platform": {
                       "type": "string",
-                      "const": "meta_ads"
+                      "enum": [
+                        "meta_ads",
+                        "tiktok_ads"
+                      ]
                     },
                     "accountId": {
                       "type": "string",
@@ -14449,6 +14579,7 @@
                         "accountStatus": {
                           "type": [
                             "number",
+                            "string",
                             "null"
                           ]
                         },
@@ -14544,6 +14675,12 @@
                                   "number",
                                   "null"
                                 ]
+                              },
+                              "videoViews": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
                               }
                             },
                             "required": [
@@ -14624,6 +14761,12 @@
                                         "number",
                                         "null"
                                       ]
+                                    },
+                                    "videoViews": {
+                                      "type": [
+                                        "number",
+                                        "null"
+                                      ]
                                     }
                                   },
                                   "required": [
@@ -14635,6 +14778,12 @@
                                     "cpc",
                                     "cpm",
                                     "conversions"
+                                  ]
+                                },
+                                "budget": {
+                                  "type": [
+                                    "number",
+                                    "null"
                                   ]
                                 },
                                 "ads": {
@@ -14694,6 +14843,12 @@
                                             ]
                                           },
                                           "conversions": {
+                                            "type": [
+                                              "number",
+                                              "null"
+                                            ]
+                                          },
+                                          "videoViews": {
                                             "type": [
                                               "number",
                                               "null"
@@ -14879,7 +15034,7 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "The Meta Ads account (`platform: meta_ads`). It names its profile, so `profileId` can be left out. A Facebook Pages account id is not accepted."
+            "description": "The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted."
           },
           {
             "name": "profileId",
@@ -14889,7 +15044,20 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "The profile whose Meta Ads account to use, when no `accountId` is given."
+            "description": "The profile whose ads account to use, when no `accountId` is given."
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "meta_ads",
+                "tiktok_ads"
+              ]
+            },
+            "description": "Needed only when the profile has both ad networks connected and no `accountId` is given."
           },
           {
             "name": "adAccountId",
@@ -14897,7 +15065,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "pattern": "^act_\\d+$"
+              "pattern": "^(act_)?\\d+$"
             }
           },
           {
@@ -14907,7 +15075,36 @@
             "schema": {
               "type": "string"
             },
-            "description": "A campaign, ad set, or ad id."
+            "description": "A campaign, ad set (ad group), or ad id."
+          },
+          {
+            "name": "level",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "campaign",
+                "ad_group",
+                "ad"
+              ]
+            },
+            "description": "TikTok: the level of `objectId`. Defaults to campaign."
+          },
+          {
+            "name": "breakdown",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "age",
+                "gender",
+                "country_code",
+                "platform"
+              ]
+            },
+            "description": "TikTok: return an audience breakdown (`rows`) instead of the daily series (`points`)."
           },
           {
             "name": "since",
@@ -14934,92 +15131,203 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "platform": {
-                      "type": "string",
-                      "const": "meta_ads"
-                    },
-                    "accountId": {
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "profileId": {
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "adAccountId": {
-                      "type": "string"
-                    },
-                    "objectId": {
-                      "type": "string"
-                    },
-                    "points": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "date": {
-                            "type": "string",
-                            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
-                          },
-                          "spend": {
-                            "type": "number"
-                          },
-                          "impressions": {
-                            "type": "number"
-                          },
-                          "clicks": {
-                            "type": "number"
-                          },
-                          "conversions": {
-                            "type": [
-                              "number",
-                              "null"
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "platform": {
+                          "type": "string",
+                          "enum": [
+                            "meta_ads",
+                            "tiktok_ads"
+                          ]
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "profileId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "adAccountId": {
+                          "type": "string"
+                        },
+                        "objectId": {
+                          "type": "string"
+                        },
+                        "points": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "date": {
+                                "type": "string",
+                                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                              },
+                              "spend": {
+                                "type": "number"
+                              },
+                              "impressions": {
+                                "type": "number"
+                              },
+                              "clicks": {
+                                "type": "number"
+                              },
+                              "conversions": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "videoViews": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "date",
+                              "spend",
+                              "impressions",
+                              "clicks",
+                              "conversions"
                             ]
                           }
                         },
-                        "required": [
-                          "date",
-                          "spend",
-                          "impressions",
-                          "clicks",
-                          "conversions"
-                        ]
-                      }
-                    },
-                    "range": {
-                      "type": "object",
-                      "properties": {
-                        "since": {
-                          "type": "string",
-                          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                        "range": {
+                          "type": "object",
+                          "properties": {
+                            "since": {
+                              "type": "string",
+                              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                            },
+                            "until": {
+                              "type": "string",
+                              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                            }
+                          },
+                          "required": [
+                            "since",
+                            "until"
+                          ]
                         },
-                        "until": {
+                        "fetchedAt": {
                           "type": "string",
-                          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                         }
                       },
                       "required": [
-                        "since",
-                        "until"
+                        "platform",
+                        "accountId",
+                        "profileId",
+                        "adAccountId",
+                        "objectId",
+                        "points",
+                        "range",
+                        "fetchedAt"
                       ]
                     },
-                    "fetchedAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    {
+                      "type": "object",
+                      "properties": {
+                        "platform": {
+                          "type": "string",
+                          "enum": [
+                            "meta_ads",
+                            "tiktok_ads"
+                          ]
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "profileId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "adAccountId": {
+                          "type": "string"
+                        },
+                        "objectId": {
+                          "type": "string"
+                        },
+                        "breakdown": {
+                          "type": "string",
+                          "enum": [
+                            "age",
+                            "gender",
+                            "country_code",
+                            "platform"
+                          ]
+                        },
+                        "rows": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "value": {
+                                "type": "string"
+                              },
+                              "spend": {
+                                "type": "number"
+                              },
+                              "impressions": {
+                                "type": "number"
+                              },
+                              "clicks": {
+                                "type": "number"
+                              },
+                              "reach": {
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "value",
+                              "spend",
+                              "impressions",
+                              "clicks",
+                              "reach"
+                            ]
+                          }
+                        },
+                        "range": {
+                          "type": "object",
+                          "properties": {
+                            "since": {
+                              "type": "string",
+                              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                            },
+                            "until": {
+                              "type": "string",
+                              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                            }
+                          },
+                          "required": [
+                            "since",
+                            "until"
+                          ]
+                        },
+                        "fetchedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                        }
+                      },
+                      "required": [
+                        "platform",
+                        "accountId",
+                        "profileId",
+                        "adAccountId",
+                        "objectId",
+                        "breakdown",
+                        "rows",
+                        "range",
+                        "fetchedAt"
+                      ]
                     }
-                  },
-                  "required": [
-                    "platform",
-                    "accountId",
-                    "profileId",
-                    "adAccountId",
-                    "objectId",
-                    "points",
-                    "range",
-                    "fetchedAt"
                   ]
                 }
               }
@@ -15112,6 +15420,7 @@
       "get": {
         "operationId": "listAdLeads",
         "summary": "List lead forms or leads from a lead form",
+        "description": "Meta only.",
         "tags": [
           "Ads"
         ],
@@ -15124,7 +15433,7 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "The Meta Ads account (`platform: meta_ads`). It names its profile, so `profileId` can be left out. A Facebook Pages account id is not accepted."
+            "description": "The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted."
           },
           {
             "name": "profileId",
@@ -15134,7 +15443,20 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "The profile whose Meta Ads account to use, when no `accountId` is given."
+            "description": "The profile whose ads account to use, when no `accountId` is given."
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "meta_ads",
+                "tiktok_ads"
+              ]
+            },
+            "description": "Needed only when the profile has both ad networks connected and no `accountId` is given."
           },
           {
             "name": "formId",
@@ -15158,7 +15480,10 @@
                       "properties": {
                         "platform": {
                           "type": "string",
-                          "const": "meta_ads"
+                          "enum": [
+                            "meta_ads",
+                            "tiktok_ads"
+                          ]
                         },
                         "accountId": {
                           "type": "string",
@@ -15232,7 +15557,10 @@
                       "properties": {
                         "platform": {
                           "type": "string",
-                          "const": "meta_ads"
+                          "enum": [
+                            "meta_ads",
+                            "tiktok_ads"
+                          ]
                         },
                         "accountId": {
                           "type": "string",
@@ -15417,7 +15745,8 @@
     "/api/v1/ads/campaigns": {
       "post": {
         "operationId": "createCampaign",
-        "summary": "Boost a Page post as a campaign",
+        "summary": "Create a paused campaign",
+        "description": "Meta boosts a Page post; TikTok creates a campaign, ad group and video ad. Everything is created paused: nothing spends until setAdStatus activates it.",
         "tags": [
           "Ads"
         ],
@@ -15430,7 +15759,7 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "The Meta Ads account (`platform: meta_ads`). It names its profile, so `profileId` can be left out. A Facebook Pages account id is not accepted."
+            "description": "The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted."
           },
           {
             "name": "profileId",
@@ -15440,7 +15769,20 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "The profile whose Meta Ads account to use, when no `accountId` is given."
+            "description": "The profile whose ads account to use, when no `accountId` is given."
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "meta_ads",
+                "tiktok_ads"
+              ]
+            },
+            "description": "Needed only when the profile has both ad networks connected and no `accountId` is given."
           },
           {
             "name": "Idempotency-Key",
@@ -15458,44 +15800,313 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "adAccountId": {
-                    "type": "string",
-                    "pattern": "^act_\\d+$"
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "adAccountId": {
+                        "type": "string",
+                        "pattern": "^act_\\d+$"
+                      },
+                      "pagePostId": {
+                        "type": "string",
+                        "pattern": "^\\d+$"
+                      },
+                      "dailyBudget": {
+                        "type": "number",
+                        "exclusiveMinimum": 0,
+                        "maximum": 10000
+                      },
+                      "startDate": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                      },
+                      "endDate": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                      },
+                      "campaignName": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "adAccountId",
+                      "pagePostId",
+                      "dailyBudget",
+                      "startDate",
+                      "endDate",
+                      "campaignName"
+                    ],
+                    "additionalProperties": false
                   },
-                  "pagePostId": {
-                    "type": "string",
-                    "pattern": "^\\d+$"
-                  },
-                  "dailyBudget": {
-                    "type": "number",
-                    "exclusiveMinimum": 0,
-                    "maximum": 10000
-                  },
-                  "startDate": {
-                    "type": "string",
-                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
-                  },
-                  "endDate": {
-                    "type": "string",
-                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
-                  },
-                  "campaignName": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 200
+                  {
+                    "type": "object",
+                    "properties": {
+                      "adAccountId": {
+                        "type": "string",
+                        "pattern": "^\\d+$"
+                      },
+                      "campaignName": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "goal": {
+                        "type": "string",
+                        "enum": [
+                          "traffic",
+                          "reach",
+                          "video_views"
+                        ]
+                      },
+                      "dailyBudget": {
+                        "type": "number",
+                        "exclusiveMinimum": 0,
+                        "maximum": 10000
+                      },
+                      "startDate": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                      },
+                      "endDate": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                      },
+                      "targeting": {
+                        "type": "object",
+                        "properties": {
+                          "locationIds": {
+                            "minItems": 1,
+                            "maxItems": 100,
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "pattern": "^\\d+$"
+                            }
+                          },
+                          "ageGroups": {
+                            "maxItems": 6,
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "AGE_13_17",
+                                "AGE_18_24",
+                                "AGE_25_34",
+                                "AGE_35_44",
+                                "AGE_45_54",
+                                "AGE_55_100"
+                              ]
+                            }
+                          },
+                          "gender": {
+                            "type": "string",
+                            "enum": [
+                              "GENDER_MALE",
+                              "GENDER_FEMALE",
+                              "GENDER_UNLIMITED"
+                            ]
+                          },
+                          "languages": {
+                            "maxItems": 50,
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 2,
+                              "maxLength": 10
+                            }
+                          },
+                          "interestCategoryIds": {
+                            "maxItems": 100,
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "pattern": "^\\d+$"
+                            }
+                          }
+                        },
+                        "required": [
+                          "locationIds"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "creative": {
+                        "type": "object",
+                        "properties": {
+                          "video": {
+                            "anyOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "uploadId": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 200
+                                  }
+                                },
+                                "required": [
+                                  "uploadId"
+                                ],
+                                "additionalProperties": false
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "url": {
+                                    "type": "string",
+                                    "format": "uri"
+                                  }
+                                },
+                                "required": [
+                                  "url"
+                                ],
+                                "additionalProperties": false
+                              }
+                            ]
+                          },
+                          "coverImage": {
+                            "anyOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "uploadId": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 200
+                                  }
+                                },
+                                "required": [
+                                  "uploadId"
+                                ],
+                                "additionalProperties": false
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "url": {
+                                    "type": "string",
+                                    "format": "uri"
+                                  }
+                                },
+                                "required": [
+                                  "url"
+                                ],
+                                "additionalProperties": false
+                              }
+                            ]
+                          },
+                          "adText": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100
+                          },
+                          "callToAction": {
+                            "type": "string",
+                            "enum": [
+                              "LEARN_MORE",
+                              "SHOP_NOW",
+                              "SIGN_UP",
+                              "CONTACT_US",
+                              "DOWNLOAD",
+                              "BOOK_NOW",
+                              "ORDER_NOW",
+                              "WATCH_NOW",
+                              "GET_QUOTE",
+                              "APPLY_NOW"
+                            ]
+                          },
+                          "landingPageUrl": {
+                            "type": "string",
+                            "format": "uri"
+                          }
+                        },
+                        "required": [
+                          "video",
+                          "adText"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "identity": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "identityId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 100
+                              }
+                            },
+                            "required": [
+                              "identityId"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "displayName": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 40
+                              },
+                              "avatar": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "uploadId": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 200
+                                      }
+                                    },
+                                    "required": [
+                                      "uploadId"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "url": {
+                                        "type": "string",
+                                        "format": "uri"
+                                      }
+                                    },
+                                    "required": [
+                                      "url"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                ]
+                              }
+                            },
+                            "required": [
+                              "displayName",
+                              "avatar"
+                            ],
+                            "additionalProperties": false
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "adAccountId",
+                      "campaignName",
+                      "goal",
+                      "dailyBudget",
+                      "startDate",
+                      "endDate",
+                      "targeting",
+                      "creative",
+                      "identity"
+                    ],
+                    "additionalProperties": false
                   }
-                },
-                "required": [
-                  "adAccountId",
-                  "pagePostId",
-                  "dailyBudget",
-                  "startDate",
-                  "endDate",
-                  "campaignName"
-                ],
-                "additionalProperties": false
+                ]
               }
             }
           }
@@ -15506,12 +16117,219 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "campaign": {
+                  "anyOf": [
+                    {
                       "type": "object",
                       "properties": {
-                        "id": {
+                        "campaign": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "profileId": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "facebookConnectionId": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "metaAdsConnectionId": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "adAccountId": {
+                              "type": "string"
+                            },
+                            "pageId": {
+                              "type": "string"
+                            },
+                            "pagePostId": {
+                              "type": "string"
+                            },
+                            "idempotencyKey": {
+                              "type": "string"
+                            },
+                            "campaignId": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "adSetId": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "creativeId": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "adId": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "pending",
+                                "paused",
+                                "active",
+                                "failed",
+                                "rolled_back",
+                                "deleted"
+                              ]
+                            },
+                            "failureReason": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "createdAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                            },
+                            "updatedAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "profileId",
+                            "facebookConnectionId",
+                            "metaAdsConnectionId",
+                            "adAccountId",
+                            "pageId",
+                            "pagePostId",
+                            "idempotencyKey",
+                            "campaignId",
+                            "adSetId",
+                            "creativeId",
+                            "adId",
+                            "status",
+                            "failureReason",
+                            "createdAt",
+                            "updatedAt"
+                          ]
+                        },
+                        "objects": {
+                          "type": "object",
+                          "properties": {
+                            "campaignId": {
+                              "type": "string"
+                            },
+                            "adSetId": {
+                              "type": "string"
+                            },
+                            "creativeId": {
+                              "type": "string"
+                            },
+                            "adId": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "campaignId",
+                            "adSetId",
+                            "creativeId",
+                            "adId"
+                          ]
+                        },
+                        "preview": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "format": {
+                                  "type": "string"
+                                },
+                                "body": {
+                                  "type": "string"
+                                },
+                                "url": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "format": "uri"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "width": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                },
+                                "height": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "format",
+                                "body",
+                                "url",
+                                "width",
+                                "height"
+                              ]
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "replayed": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "campaign",
+                        "objects",
+                        "preview",
+                        "replayed"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "platform": {
+                          "type": "string",
+                          "enum": [
+                            "meta_ads",
+                            "tiktok_ads"
+                          ]
+                        },
+                        "accountId": {
                           "type": "string",
                           "format": "uuid"
                         },
@@ -15519,191 +16337,127 @@
                           "type": "string",
                           "format": "uuid"
                         },
-                        "facebookConnectionId": {
-                          "anyOf": [
-                            {
-                              "type": "string",
-                              "format": "uuid"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "metaAdsConnectionId": {
-                          "anyOf": [
-                            {
-                              "type": "string",
-                              "format": "uuid"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "adAccountId": {
-                          "type": "string"
-                        },
-                        "pageId": {
-                          "type": "string"
-                        },
-                        "pagePostId": {
-                          "type": "string"
-                        },
-                        "idempotencyKey": {
-                          "type": "string"
-                        },
-                        "campaignId": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        },
-                        "adSetId": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        },
-                        "creativeId": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        },
-                        "adId": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        },
-                        "status": {
-                          "type": "string",
-                          "enum": [
-                            "pending",
-                            "paused",
-                            "active",
-                            "failed",
-                            "rolled_back",
-                            "deleted"
-                          ]
-                        },
-                        "failureReason": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        },
-                        "createdAt": {
-                          "type": "string",
-                          "format": "date-time",
-                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
-                        },
-                        "updatedAt": {
-                          "type": "string",
-                          "format": "date-time",
-                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
-                        }
-                      },
-                      "required": [
-                        "id",
-                        "profileId",
-                        "facebookConnectionId",
-                        "metaAdsConnectionId",
-                        "adAccountId",
-                        "pageId",
-                        "pagePostId",
-                        "idempotencyKey",
-                        "campaignId",
-                        "adSetId",
-                        "creativeId",
-                        "adId",
-                        "status",
-                        "failureReason",
-                        "createdAt",
-                        "updatedAt"
-                      ]
-                    },
-                    "objects": {
-                      "type": "object",
-                      "properties": {
-                        "campaignId": {
-                          "type": "string"
-                        },
-                        "adSetId": {
-                          "type": "string"
-                        },
-                        "creativeId": {
-                          "type": "string"
-                        },
-                        "adId": {
-                          "type": "string"
-                        }
-                      },
-                      "required": [
-                        "campaignId",
-                        "adSetId",
-                        "creativeId",
-                        "adId"
-                      ]
-                    },
-                    "preview": {
-                      "anyOf": [
-                        {
+                        "campaign": {
                           "type": "object",
                           "properties": {
-                            "format": {
-                              "type": "string"
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
                             },
-                            "body": {
-                              "type": "string"
+                            "profileId": {
+                              "type": "string",
+                              "format": "uuid"
                             },
-                            "url": {
+                            "tiktokAdsConnectionId": {
                               "anyOf": [
                                 {
                                   "type": "string",
-                                  "format": "uri"
+                                  "format": "uuid"
                                 },
                                 {
                                   "type": "null"
                                 }
                               ]
                             },
-                            "width": {
+                            "advertiserId": {
+                              "type": "string"
+                            },
+                            "idempotencyKey": {
+                              "type": "string"
+                            },
+                            "campaignId": {
                               "type": [
-                                "number",
+                                "string",
                                 "null"
                               ]
                             },
-                            "height": {
+                            "adGroupId": {
                               "type": [
-                                "number",
+                                "string",
                                 "null"
                               ]
+                            },
+                            "adId": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "pending",
+                                "paused",
+                                "active",
+                                "failed",
+                                "rolled_back",
+                                "deleted"
+                              ]
+                            },
+                            "failureReason": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "createdAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                            },
+                            "updatedAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                             }
                           },
                           "required": [
-                            "format",
-                            "body",
-                            "url",
-                            "width",
-                            "height"
+                            "id",
+                            "profileId",
+                            "tiktokAdsConnectionId",
+                            "advertiserId",
+                            "idempotencyKey",
+                            "campaignId",
+                            "adGroupId",
+                            "adId",
+                            "status",
+                            "failureReason",
+                            "createdAt",
+                            "updatedAt"
                           ]
                         },
-                        {
-                          "type": "null"
+                        "objects": {
+                          "type": "object",
+                          "properties": {
+                            "campaignId": {
+                              "type": "string"
+                            },
+                            "adGroupId": {
+                              "type": "string"
+                            },
+                            "adId": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "campaignId",
+                            "adGroupId",
+                            "adId"
+                          ]
+                        },
+                        "replayed": {
+                          "type": "boolean"
                         }
+                      },
+                      "required": [
+                        "platform",
+                        "accountId",
+                        "profileId",
+                        "campaign",
+                        "objects",
+                        "replayed"
                       ]
-                    },
-                    "replayed": {
-                      "type": "boolean"
                     }
-                  },
-                  "required": [
-                    "campaign",
-                    "objects",
-                    "preview",
-                    "replayed"
                   ]
                 }
               }
@@ -15714,12 +16468,219 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "campaign": {
+                  "anyOf": [
+                    {
                       "type": "object",
                       "properties": {
-                        "id": {
+                        "campaign": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "profileId": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "facebookConnectionId": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "metaAdsConnectionId": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "adAccountId": {
+                              "type": "string"
+                            },
+                            "pageId": {
+                              "type": "string"
+                            },
+                            "pagePostId": {
+                              "type": "string"
+                            },
+                            "idempotencyKey": {
+                              "type": "string"
+                            },
+                            "campaignId": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "adSetId": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "creativeId": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "adId": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "pending",
+                                "paused",
+                                "active",
+                                "failed",
+                                "rolled_back",
+                                "deleted"
+                              ]
+                            },
+                            "failureReason": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "createdAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                            },
+                            "updatedAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "profileId",
+                            "facebookConnectionId",
+                            "metaAdsConnectionId",
+                            "adAccountId",
+                            "pageId",
+                            "pagePostId",
+                            "idempotencyKey",
+                            "campaignId",
+                            "adSetId",
+                            "creativeId",
+                            "adId",
+                            "status",
+                            "failureReason",
+                            "createdAt",
+                            "updatedAt"
+                          ]
+                        },
+                        "objects": {
+                          "type": "object",
+                          "properties": {
+                            "campaignId": {
+                              "type": "string"
+                            },
+                            "adSetId": {
+                              "type": "string"
+                            },
+                            "creativeId": {
+                              "type": "string"
+                            },
+                            "adId": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "campaignId",
+                            "adSetId",
+                            "creativeId",
+                            "adId"
+                          ]
+                        },
+                        "preview": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "format": {
+                                  "type": "string"
+                                },
+                                "body": {
+                                  "type": "string"
+                                },
+                                "url": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "format": "uri"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "width": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                },
+                                "height": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "format",
+                                "body",
+                                "url",
+                                "width",
+                                "height"
+                              ]
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "replayed": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "campaign",
+                        "objects",
+                        "preview",
+                        "replayed"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "platform": {
+                          "type": "string",
+                          "enum": [
+                            "meta_ads",
+                            "tiktok_ads"
+                          ]
+                        },
+                        "accountId": {
                           "type": "string",
                           "format": "uuid"
                         },
@@ -15727,191 +16688,127 @@
                           "type": "string",
                           "format": "uuid"
                         },
-                        "facebookConnectionId": {
-                          "anyOf": [
-                            {
-                              "type": "string",
-                              "format": "uuid"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "metaAdsConnectionId": {
-                          "anyOf": [
-                            {
-                              "type": "string",
-                              "format": "uuid"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "adAccountId": {
-                          "type": "string"
-                        },
-                        "pageId": {
-                          "type": "string"
-                        },
-                        "pagePostId": {
-                          "type": "string"
-                        },
-                        "idempotencyKey": {
-                          "type": "string"
-                        },
-                        "campaignId": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        },
-                        "adSetId": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        },
-                        "creativeId": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        },
-                        "adId": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        },
-                        "status": {
-                          "type": "string",
-                          "enum": [
-                            "pending",
-                            "paused",
-                            "active",
-                            "failed",
-                            "rolled_back",
-                            "deleted"
-                          ]
-                        },
-                        "failureReason": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        },
-                        "createdAt": {
-                          "type": "string",
-                          "format": "date-time",
-                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
-                        },
-                        "updatedAt": {
-                          "type": "string",
-                          "format": "date-time",
-                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
-                        }
-                      },
-                      "required": [
-                        "id",
-                        "profileId",
-                        "facebookConnectionId",
-                        "metaAdsConnectionId",
-                        "adAccountId",
-                        "pageId",
-                        "pagePostId",
-                        "idempotencyKey",
-                        "campaignId",
-                        "adSetId",
-                        "creativeId",
-                        "adId",
-                        "status",
-                        "failureReason",
-                        "createdAt",
-                        "updatedAt"
-                      ]
-                    },
-                    "objects": {
-                      "type": "object",
-                      "properties": {
-                        "campaignId": {
-                          "type": "string"
-                        },
-                        "adSetId": {
-                          "type": "string"
-                        },
-                        "creativeId": {
-                          "type": "string"
-                        },
-                        "adId": {
-                          "type": "string"
-                        }
-                      },
-                      "required": [
-                        "campaignId",
-                        "adSetId",
-                        "creativeId",
-                        "adId"
-                      ]
-                    },
-                    "preview": {
-                      "anyOf": [
-                        {
+                        "campaign": {
                           "type": "object",
                           "properties": {
-                            "format": {
-                              "type": "string"
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
                             },
-                            "body": {
-                              "type": "string"
+                            "profileId": {
+                              "type": "string",
+                              "format": "uuid"
                             },
-                            "url": {
+                            "tiktokAdsConnectionId": {
                               "anyOf": [
                                 {
                                   "type": "string",
-                                  "format": "uri"
+                                  "format": "uuid"
                                 },
                                 {
                                   "type": "null"
                                 }
                               ]
                             },
-                            "width": {
+                            "advertiserId": {
+                              "type": "string"
+                            },
+                            "idempotencyKey": {
+                              "type": "string"
+                            },
+                            "campaignId": {
                               "type": [
-                                "number",
+                                "string",
                                 "null"
                               ]
                             },
-                            "height": {
+                            "adGroupId": {
                               "type": [
-                                "number",
+                                "string",
                                 "null"
                               ]
+                            },
+                            "adId": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "pending",
+                                "paused",
+                                "active",
+                                "failed",
+                                "rolled_back",
+                                "deleted"
+                              ]
+                            },
+                            "failureReason": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "createdAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                            },
+                            "updatedAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                             }
                           },
                           "required": [
-                            "format",
-                            "body",
-                            "url",
-                            "width",
-                            "height"
+                            "id",
+                            "profileId",
+                            "tiktokAdsConnectionId",
+                            "advertiserId",
+                            "idempotencyKey",
+                            "campaignId",
+                            "adGroupId",
+                            "adId",
+                            "status",
+                            "failureReason",
+                            "createdAt",
+                            "updatedAt"
                           ]
                         },
-                        {
-                          "type": "null"
+                        "objects": {
+                          "type": "object",
+                          "properties": {
+                            "campaignId": {
+                              "type": "string"
+                            },
+                            "adGroupId": {
+                              "type": "string"
+                            },
+                            "adId": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "campaignId",
+                            "adGroupId",
+                            "adId"
+                          ]
+                        },
+                        "replayed": {
+                          "type": "boolean"
                         }
+                      },
+                      "required": [
+                        "platform",
+                        "accountId",
+                        "profileId",
+                        "campaign",
+                        "objects",
+                        "replayed"
                       ]
-                    },
-                    "replayed": {
-                      "type": "boolean"
                     }
-                  },
-                  "required": [
-                    "campaign",
-                    "objects",
-                    "preview",
-                    "replayed"
                   ]
                 }
               }
@@ -16012,7 +16909,7 @@
             "name": "campaignId",
             "in": "path",
             "required": true,
-            "description": "Meta campaign id.",
+            "description": "Meta or TikTok campaign id.",
             "schema": {
               "type": "string",
               "pattern": "^\\d+$"
@@ -16026,7 +16923,7 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "The Meta Ads account (`platform: meta_ads`). It names its profile, so `profileId` can be left out. A Facebook Pages account id is not accepted."
+            "description": "The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted."
           },
           {
             "name": "profileId",
@@ -16036,7 +16933,20 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "The profile whose Meta Ads account to use, when no `accountId` is given."
+            "description": "The profile whose ads account to use, when no `accountId` is given."
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "meta_ads",
+                "tiktok_ads"
+              ]
+            },
+            "description": "Needed only when the profile has both ad networks connected and no `accountId` is given."
           },
           {
             "name": "adAccountId",
@@ -16044,7 +16954,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "pattern": "^act_\\d+$"
+              "pattern": "^(act_)?\\d+$"
             }
           }
         ],
@@ -16138,7 +17048,7 @@
     "/api/v1/ads/status": {
       "put": {
         "operationId": "setAdStatus",
-        "summary": "Pause or activate a campaign, ad set, or ad",
+        "summary": "Pause or activate a campaign, ad set (ad group), or ad",
         "tags": [
           "Ads"
         ],
@@ -16151,7 +17061,7 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "The Meta Ads account (`platform: meta_ads`). It names its profile, so `profileId` can be left out. A Facebook Pages account id is not accepted."
+            "description": "The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted."
           },
           {
             "name": "profileId",
@@ -16161,7 +17071,290 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "The profile whose Meta Ads account to use, when no `accountId` is given."
+            "description": "The profile whose ads account to use, when no `accountId` is given."
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "meta_ads",
+                "tiktok_ads"
+              ]
+            },
+            "description": "Needed only when the profile has both ad networks connected and no `accountId` is given."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "adAccountId": {
+                        "type": "string",
+                        "pattern": "^act_\\d+$"
+                      },
+                      "objectId": {
+                        "type": "string",
+                        "pattern": "^\\d+$"
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "ACTIVE",
+                          "PAUSED"
+                        ]
+                      },
+                      "level": {
+                        "type": "string",
+                        "enum": [
+                          "campaign",
+                          "ad_group",
+                          "ad"
+                        ]
+                      },
+                      "campaignRecordId": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    },
+                    "required": [
+                      "adAccountId",
+                      "objectId",
+                      "status"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "adAccountId": {
+                        "type": "string",
+                        "pattern": "^\\d+$"
+                      },
+                      "objectId": {
+                        "type": "string",
+                        "pattern": "^\\d+$"
+                      },
+                      "level": {
+                        "type": "string",
+                        "enum": [
+                          "campaign",
+                          "ad_group",
+                          "ad"
+                        ]
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "ACTIVE",
+                          "PAUSED"
+                        ]
+                      },
+                      "campaignRecordId": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    },
+                    "required": [
+                      "adAccountId",
+                      "objectId",
+                      "level",
+                      "status"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "platform": {
+                      "type": "string",
+                      "enum": [
+                        "meta_ads",
+                        "tiktok_ads"
+                      ]
+                    },
+                    "accountId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "objectId": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "ACTIVE",
+                        "PAUSED"
+                      ]
+                    },
+                    "objectIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "platform",
+                    "accountId",
+                    "objectId",
+                    "status"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The connection lacks a permission or provider-confirmed resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionRequiredError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Profile, account, or object not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The request conflicts with existing state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The connected account cannot perform this operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Provider quota or rate limit exhausted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ads/ad-groups/{adGroupId}": {
+      "patch": {
+        "operationId": "updateAdGroup",
+        "summary": "Change a TikTok ad group's budget, end date or name",
+        "description": "TikTok only.",
+        "tags": [
+          "Ads"
+        ],
+        "parameters": [
+          {
+            "name": "adGroupId",
+            "in": "path",
+            "required": true,
+            "description": "TikTok ad group id.",
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            }
+          },
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted."
+          },
+          {
+            "name": "profileId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "The profile whose ads account to use, when no `accountId` is given."
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "meta_ads",
+                "tiktok_ads"
+              ]
+            },
+            "description": "Needed only when the profile has both ad networks connected and no `accountId` is given."
           }
         ],
         "requestBody": {
@@ -16173,28 +17366,25 @@
                 "properties": {
                   "adAccountId": {
                     "type": "string",
-                    "pattern": "^act_\\d+$"
-                  },
-                  "objectId": {
-                    "type": "string",
                     "pattern": "^\\d+$"
                   },
-                  "status": {
+                  "name": {
                     "type": "string",
-                    "enum": [
-                      "ACTIVE",
-                      "PAUSED"
-                    ]
+                    "minLength": 1,
+                    "maxLength": 200
                   },
-                  "campaignRecordId": {
+                  "dailyBudget": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 10000
+                  },
+                  "endDate": {
                     "type": "string",
-                    "format": "uuid"
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
                   }
                 },
                 "required": [
-                  "adAccountId",
-                  "objectId",
-                  "status"
+                  "adAccountId"
                 ],
                 "additionalProperties": false
               }
@@ -16211,28 +17401,707 @@
                   "properties": {
                     "platform": {
                       "type": "string",
-                      "const": "meta_ads"
+                      "const": "tiktok_ads"
                     },
                     "accountId": {
                       "type": "string",
                       "format": "uuid"
                     },
-                    "objectId": {
+                    "adAccountId": {
                       "type": "string"
                     },
-                    "status": {
-                      "type": "string",
-                      "enum": [
-                        "ACTIVE",
-                        "PAUSED"
+                    "adGroup": {
+                      "type": "object",
+                      "properties": {
+                        "adGroupId": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "dailyBudget": {
+                          "type": "number"
+                        },
+                        "endDate": {
+                          "type": "string",
+                          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                        }
+                      },
+                      "required": [
+                        "adGroupId"
                       ]
                     }
                   },
                   "required": [
                     "platform",
                     "accountId",
-                    "objectId",
-                    "status"
+                    "adAccountId",
+                    "adGroup"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The connection lacks a permission or provider-confirmed resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionRequiredError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Profile, account, or object not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The request conflicts with existing state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The connected account cannot perform this operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Provider quota or rate limit exhausted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ads/targeting": {
+      "get": {
+        "operationId": "listAdTargeting",
+        "summary": "TikTok targeting options",
+        "description": "TikTok only.",
+        "tags": [
+          "Ads"
+        ],
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted."
+          },
+          {
+            "name": "profileId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "The profile whose ads account to use, when no `accountId` is given."
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "meta_ads",
+                "tiktok_ads"
+              ]
+            },
+            "description": "Needed only when the profile has both ad networks connected and no `accountId` is given."
+          },
+          {
+            "name": "adAccountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^(act_)?\\d+$"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "regions",
+                "languages",
+                "interests"
+              ]
+            }
+          },
+          {
+            "name": "goal",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "traffic",
+                "reach",
+                "video_views"
+              ]
+            },
+            "description": "Region availability depends on the campaign goal. Defaults to traffic."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "platform": {
+                      "type": "string",
+                      "const": "tiktok_ads"
+                    },
+                    "accountId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "adAccountId": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "regions",
+                        "languages",
+                        "interests"
+                      ]
+                    },
+                    "options": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "parentId": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "level": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "parentId",
+                          "level"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "platform",
+                    "accountId",
+                    "adAccountId",
+                    "type",
+                    "options"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The connection lacks a permission or provider-confirmed resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionRequiredError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Profile, account, or object not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The request conflicts with existing state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The connected account cannot perform this operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Provider quota or rate limit exhausted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ads/identities": {
+      "get": {
+        "operationId": "listAdIdentities",
+        "summary": "List TikTok ad identities",
+        "description": "TikTok only. The brand name and avatar an ad runs as.",
+        "tags": [
+          "Ads"
+        ],
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted."
+          },
+          {
+            "name": "profileId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "The profile whose ads account to use, when no `accountId` is given."
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "meta_ads",
+                "tiktok_ads"
+              ]
+            },
+            "description": "Needed only when the profile has both ad networks connected and no `accountId` is given."
+          },
+          {
+            "name": "adAccountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^(act_)?\\d+$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "platform": {
+                      "type": "string",
+                      "const": "tiktok_ads"
+                    },
+                    "accountId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "adAccountId": {
+                      "type": "string"
+                    },
+                    "identities": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "displayName": {
+                            "type": "string"
+                          },
+                          "avatarUrl": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "type",
+                          "displayName",
+                          "avatarUrl"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "platform",
+                    "accountId",
+                    "adAccountId",
+                    "identities"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The connection lacks a permission or provider-confirmed resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionRequiredError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Profile, account, or object not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The request conflicts with existing state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The connected account cannot perform this operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Provider quota or rate limit exhausted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createAdIdentity",
+        "summary": "Create a TikTok ad identity",
+        "description": "TikTok only.",
+        "tags": [
+          "Ads"
+        ],
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted."
+          },
+          {
+            "name": "profileId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "The profile whose ads account to use, when no `accountId` is given."
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "meta_ads",
+                "tiktok_ads"
+              ]
+            },
+            "description": "Needed only when the profile has both ad networks connected and no `accountId` is given."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "adAccountId": {
+                    "type": "string",
+                    "pattern": "^\\d+$"
+                  },
+                  "displayName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 40
+                  },
+                  "avatar": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "uploadId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          }
+                        },
+                        "required": [
+                          "uploadId"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string",
+                            "format": "uri"
+                          }
+                        },
+                        "required": [
+                          "url"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "adAccountId",
+                  "displayName",
+                  "avatar"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "platform": {
+                      "type": "string",
+                      "const": "tiktok_ads"
+                    },
+                    "accountId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "adAccountId": {
+                      "type": "string"
+                    },
+                    "identity": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        },
+                        "displayName": {
+                          "type": "string"
+                        },
+                        "avatarUrl": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "type",
+                        "displayName",
+                        "avatarUrl"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "platform",
+                    "accountId",
+                    "adAccountId",
+                    "identity"
                   ]
                 }
               }
@@ -16509,6 +18378,7 @@
                     "enum": [
                       "instagram",
                       "tiktok",
+                      "tiktok_ads",
                       "facebook",
                       "meta_ads",
                       "whatsapp",
@@ -16620,6 +18490,7 @@
                         "enum": [
                           "instagram",
                           "tiktok",
+                          "tiktok_ads",
                           "facebook",
                           "meta_ads",
                           "whatsapp",
@@ -16658,6 +18529,7 @@
             "enum": [
               "instagram",
               "tiktok",
+              "tiktok_ads",
               "facebook",
               "meta_ads",
               "whatsapp",
@@ -16754,6 +18626,7 @@
             "enum": [
               "instagram",
               "tiktok",
+              "tiktok_ads",
               "facebook",
               "meta_ads",
               "whatsapp",
@@ -16862,6 +18735,7 @@
             "enum": [
               "instagram",
               "tiktok",
+              "tiktok_ads",
               "facebook",
               "meta_ads",
               "whatsapp",
@@ -17067,6 +18941,7 @@
                 "enum": [
                   "instagram",
                   "tiktok",
+                  "tiktok_ads",
                   "facebook",
                   "meta_ads",
                   "whatsapp",
@@ -17354,6 +19229,7 @@
                   "enum": [
                     "instagram",
                     "tiktok",
+                    "tiktok_ads",
                     "facebook",
                     "meta_ads",
                     "whatsapp",
@@ -17559,6 +19435,7 @@
                       "enum": [
                         "instagram",
                         "tiktok",
+                        "tiktok_ads",
                         "facebook",
                         "meta_ads",
                         "whatsapp",
@@ -17604,6 +19481,7 @@
                   "enum": [
                     "instagram",
                     "tiktok",
+                    "tiktok_ads",
                     "facebook",
                     "meta_ads",
                     "whatsapp",
@@ -17794,6 +19672,7 @@
                   "enum": [
                     "instagram",
                     "tiktok",
+                    "tiktok_ads",
                     "facebook",
                     "meta_ads",
                     "whatsapp",
@@ -17939,6 +19818,7 @@
                   "enum": [
                     "instagram",
                     "tiktok",
+                    "tiktok_ads",
                     "facebook",
                     "meta_ads",
                     "whatsapp",
