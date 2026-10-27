@@ -55,6 +55,8 @@ try {
 import * as sdk from '@adeli/sdk';
 import * as helpers from '@adeli/sdk/helpers';
 import '@adeli/sdk/uploads';
+const signed = helpers.verifyWebhookSignature({ payload: '', header: 't=1793136000,v1=fb6126475a8948b0be6f64fb2ab49f6e733dd2392cd6caa1524cb64a8c4c7262', secret: 'whsec_test_secret', now: 1793136000 });
+if (!signed) throw new Error('packed webhook signature helper rejected the fixed vector');
 const details = { reconnect: { action: 'restart_oauth' } };
 if (!sdk.isPermissionRequiredDetails(details)) throw new Error('permission detail guard export is missing');
 const client = { getConnection: async () => ({ data: { status: 'pending_authorization' }, status: 200, headers: new Headers() }) };
@@ -71,6 +73,8 @@ try {
 const sdk = require('@adeli/sdk');
 const helpers = require('@adeli/sdk/helpers');
 require('@adeli/sdk/uploads');
+const signed = helpers.verifyWebhookSignature({ payload: '', header: 't=1793136000,v1=fb6126475a8948b0be6f64fb2ab49f6e733dd2392cd6caa1524cb64a8c4c7262', secret: 'whsec_test_secret', now: 1793136000 });
+if (!signed) throw new Error('packed webhook signature helper rejected the fixed vector');
 const details = { reconnect: { action: 'restart_oauth' } };
 if (!sdk.isPermissionRequiredDetails(details)) throw new Error('permission detail guard export is missing');
 const client = { getConnection: async () => ({ data: { status: 'pending_authorization' }, status: 200, headers: new Headers() }) };

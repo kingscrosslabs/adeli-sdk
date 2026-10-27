@@ -43,9 +43,10 @@ test('invokes every operation through the public resource surface', async () => 
     client.ads.getAdAccount({ path: { adAccountId: 'act_1' } }), client.ads.updateAdAccount({ path: { adAccountId: 'act_1' }, body: { spendCap: 0 } }), client.ads.getAdTree({ query: { adAccountId: 'act_1' } }), client.ads.getAdInsights({ query: { adAccountId: 'act_1' } }), client.ads.listAdLeads({}),
     client.ads.createCampaign({ body: { adAccountId: 'act_1', pagePostId: '1', dailyBudget: 0, startDate: '2025-01-01', endDate: '2025-01-02', campaignName: 'c' } }, { idempotencyKey: 'c' }),
     client.ads.deleteCampaign({ path: { campaignId: id }, query: { adAccountId: 'act_1' } }), client.ads.setAdStatus({ body: { adAccountId: id, objectId: '1', status: 'PAUSED' } }), client.usage.getXUsage({}),
+    client.webhooks.listWebhooks({ query: { profileId: id } }), client.webhooks.createWebhook({ body: { profileId: id, url: 'https://hooks.example/a', events: ['comment.created'] } }), client.webhooks.deleteWebhook({ path: { webhookId: id } }),
   ]);
   const apiRequests = requests.filter((request) => new URL(request.url).hostname === 'localhost');
-  expect(new Set(apiRequests.map((request) => `${request.method} ${new URL(request.url).pathname}`)).size).toBe(51);
+  expect(new Set(apiRequests.map((request) => `${request.method} ${new URL(request.url).pathname}`)).size).toBe(54);
   expect(requests.some((request) => new URL(request.url).hostname === 's3.example')).toBe(true);
 });
 

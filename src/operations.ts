@@ -57,5 +57,8 @@ export const operations = {
   listAdIdentities: { operationId: 'listAdIdentities', method: 'GET', path: '/ads/identities', retry: 'safe-read' },
   createAdIdentity: { operationId: 'createAdIdentity', method: 'POST', path: '/ads/identities', retry: 'never' },
   getXUsage: { operationId: 'getXUsage', method: 'GET', path: '/usage/x', retry: 'safe-read' },
+  listWebhooks: { operationId: 'listWebhooks', method: 'GET', path: '/webhooks', retry: 'safe-read' },
+  createWebhook: { operationId: 'createWebhook', method: 'POST', path: '/webhooks', retry: 'never' },
+  deleteWebhook: { operationId: 'deleteWebhook', method: 'DELETE', path: '/webhooks/{webhookId}', retry: 'never' },
 } as const satisfies Record<string, OperationMetadata>;
 export type OperationId = keyof typeof operations;

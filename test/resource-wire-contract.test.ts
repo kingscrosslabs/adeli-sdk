@@ -17,6 +17,7 @@ const account = { id, accountId: id, profileId: id, platform: 'x', providerId: n
 const profile = { id, name: 'Default', externalId: null, metadata: {}, isDefault: true, createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-02T00:00:00.000Z' };
 const comment = { id: 'comment-1', mediaId: 'media-1', parentId: null, authorName: 'Author', authorFullName: null, authorHandle: '@author', avatarUrl: null, profileUrl: null, body: 'hello', likeCount: 0, isCreator: false, isHidden: false, createdAt: '2025-01-01T00:00:00.000Z', authorId: 'author-1', liked: false, replyCount: 0, deletable: true };
 const message = { id: 'message-1', providerId: null, platform: 'facebook', accountId: id, profileId: id, direction: 'outbound', type: 'text', recipient: 'recipient', sender: null, body: 'hello', status: 'sent', occurredAt: '2025-01-01T00:00:00.000Z', createdAt: '2025-01-01T00:00:00.000Z' };
+const webhook = { id: 'webhook-1', profileId: id, url: 'https://hooks.example/adeli', events: ['comment.created', 'message.postback'], status: 'active', createdAt: '2025-01-01T00:00:00.000Z' };
 const errorRecord = { platform: 'x', accountId: id, code: 'permission_required', message: 'permission required', details: { missing: ['read'] } };
 
 type ContractDocument = { paths: Record<string, Record<string, { operationId?: string; responses?: Record<string, { content?: Record<string, { schema?: unknown }> }> }>> };
@@ -109,6 +110,8 @@ function wireResponse(operationId: string, _status?: string): unknown {
     case 'listAdTargeting': return { platform: 'tiktok_ads', accountId: id, adAccountId: '7000000001', type: 'regions', options: [{ id: '6252001', name: 'United States', parentId: null, level: 'COUNTRY' }] };
     case 'listAdIdentities': return { platform: 'tiktok_ads', accountId: id, adAccountId: '7000000001', identities: [{ id: 'identity-1', type: 'CUSTOMIZED_USER', displayName: 'Brand', avatarUrl: null }] };
     case 'createAdIdentity': return { platform: 'tiktok_ads', accountId: id, adAccountId: '7000000001', identity: { id: 'identity-1', type: 'CUSTOMIZED_USER', displayName: 'Brand', avatarUrl: null } };
+    case 'listWebhooks': return { webhooks: [webhook] };
+    case 'createWebhook': return { webhook, secret: 'whsec_created' };
     case 'getXUsage': return { from: '2025-01-01T00:00:00.000Z', to: '2025-02-01T00:00:00.000Z', ratesAsOf: '2025-01-01', totalCostMicros: 0, operations: [{ operation: 'list_posts', resourceType: 'post', resourceCount: 1, costMicros: 0 }] };
     default: throw new Error(`fixture missing for ${operationId}`);
   }
@@ -120,7 +123,7 @@ type WireCase = { id: string; call: (options: RequestOptions) => Promise<ApiResp
 function jsonBody(body: Record<string, unknown>): ExpectedBody { return body; }
 function requireRequest(value: Request | undefined, id: string): Request { if (value === undefined) throw new Error(`${id}: fetch was not called`); return value; }
 // Request expectations are deliberately written independently of operations metadata; the registry is only a coverage allow-list.
-test('all 55 registered operations preserve exact wire requests and response envelopes', async () => {
+test('all 58 registered operations preserve exact wire requests and response envelopes', async () => {
   let currentFixture: WireCase | undefined;
   let returnUnauthorized = false;
   const unauthorizedDetails = { reason: 'wire-contract', nested: { preserved: true } };
@@ -187,12 +190,15 @@ test('all 55 registered operations preserve exact wire requests and response env
     { id: 'listAdIdentities', call: (o) => client.ads.listAdIdentities({ query: { accountId: id, adAccountId: '7000000001' } }, o), method: 'GET', path: '/api/v1/ads/identities', query: `accountId=${id}&adAccountId=7000000001`, status: 200, response: wireResponse('listAdIdentities') },
     { id: 'createAdIdentity', call: (o) => client.ads.createAdIdentity({ query: { accountId: id }, body: { adAccountId: '7000000001', displayName: 'Brand', avatar: { url: 'https://cdn.example/a.png' } } }, o), method: 'POST', path: '/api/v1/ads/identities', query: `accountId=${id}`, body: jsonBody({ adAccountId: '7000000001', displayName: 'Brand', avatar: { url: 'https://cdn.example/a.png' } }), status: 201, response: wireResponse('createAdIdentity') },
     { id: 'getXUsage', call: (o) => client.usage.getXUsage({}, o), method: 'GET', path: '/api/v1/usage/x', status: 200, response: wireResponse('getXUsage') },
+    { id: 'listWebhooks', call: (o) => client.webhooks.listWebhooks({ query: { profileId: id } }, o), method: 'GET', path: '/api/v1/webhooks', query: `profileId=${id}`, status: 200, response: wireResponse('listWebhooks') },
+    { id: 'createWebhook', call: (o) => client.webhooks.createWebhook({ body: { profileId: id, url: 'https://hooks.example/adeli', events: ['comment.created', 'message.postback'] } }, o), method: 'POST', path: '/api/v1/webhooks', body: jsonBody({ profileId: id, url: 'https://hooks.example/adeli', events: ['comment.created', 'message.postback'] }), status: 201, response: wireResponse('createWebhook') },
+    { id: 'deleteWebhook', call: (o) => client.webhooks.deleteWebhook({ path: { webhookId: 'webhook/a' } }, o), method: 'DELETE', path: '/api/v1/webhooks/webhook%2Fa', status: 204, response: undefined },
   ];
 
   const { operations } = await import('../src/operations.js');
   expect(new Set(cases.map((item) => item.id))).toEqual(new Set(Object.keys(operations)));
   expect(cases).toHaveLength(Object.keys(operations).length);
-  expect(declaredSuccessPairs()).toHaveLength(64);
+  expect(declaredSuccessPairs()).toHaveLength(67);
   for (const fixture of cases) {
     for (const status of successStatuses(fixture.id)) {
       delete state.request;

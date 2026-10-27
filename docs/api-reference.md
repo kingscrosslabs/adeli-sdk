@@ -3,7 +3,7 @@
 Generated from `src/operations.ts` metadata, AST-extracted resource method declarations, and the checked-in verified public docs mapping `openapi/docs-links.json`; this file is not hand-maintained.
 
 - Contract status: **candidate-unreleased**
-- Candidate OpenAPI SHA-256: `150ee5778eabedf9b60981307c6c91674f135d1bced9ea132119df3b723173e5`
+- Candidate OpenAPI SHA-256: `e1a4cd95b91e14c2732275213493caebaa7ee3d83dffec27c001511eda32fc35`
 - Public endpoint documentation: https://www.tryadeli.com/docs/
 
 | Resource | Method signature | HTTP | Path | Endpoint docs |
@@ -63,6 +63,9 @@ Generated from `src/operations.ts` metadata, AST-extracted resource method decla
 | ads | `listAdIdentities(args: { readonly query: AdIdentitiesQuery }, options: RequestOptions = {}): Promise<ApiResponse<AdIdentitiesResponse>>` | GET | `/ads/identities` | [api/ads/list-identities](https://www.tryadeli.com/docs/api/ads/list-identities) |
 | ads | `createAdIdentity(args: { readonly query?: CreateAdIdentityQuery; readonly body: CreateAdIdentityBody }, options: RequestOptions = {}): Promise<ApiResponse<AdIdentityResponse>>` | POST | `/ads/identities` | [api/ads/create-identity](https://www.tryadeli.com/docs/api/ads/create-identity) |
 | usage | `getXUsage(_args: Record<never, never> = {}, options: RequestOptions = {}): Promise<ApiResponse<XUsageResponse>>` | GET | `/usage/x` | [pricing/x](https://www.tryadeli.com/docs/pricing/x) |
+| webhooks | `listWebhooks(args: { readonly query: ListWebhooksQuery }, options: RequestOptions = {}): Promise<ApiResponse<WebhooksResponse>>` | GET | `/webhooks` | [api/webhooks/list-webhooks](https://www.tryadeli.com/docs/api/webhooks/list-webhooks) |
+| webhooks | `createWebhook(args: { readonly body: CreateWebhookBody }, options: RequestOptions = {}): Promise<ApiResponse<CreatedWebhook>>` | POST | `/webhooks` | [api/webhooks/create-webhook](https://www.tryadeli.com/docs/api/webhooks/create-webhook) |
+| webhooks | `deleteWebhook(args: { readonly path: Path<'deleteWebhook'> }, options: RequestOptions = {}): Promise<ApiResponse<undefined>>` | DELETE | `/webhooks/{webhookId}` | [api/webhooks/delete-webhook](https://www.tryadeli.com/docs/api/webhooks/delete-webhook) |
 
 ## Compatibility note
 
