@@ -1,16 +1,9 @@
 # @adeli/sdk
 
-Server-only TypeScript SDK for Adeli, for **Node.js 22 and 24**. This repository currently contains the unpublished `0.1.0` candidate; it is not an npm availability claim. Until publication is authorized, consume a reviewed local tarball.
-
-Build and pack the reviewed candidate, then install that exact local file in an application:
+Server-only TypeScript SDK for Adeli, for **Node.js 22 and 24**.
 
 ```sh
-# SDK checkout
-npm run build
-npm pack
-
-# application checkout (use the tarball path printed by npm pack)
-npm install /absolute/path/to/adeli-sdk-0.1.0.tgz
+npm install @adeli/sdk
 ```
 
 The quickstart below only performs a read; it does not publish, connect an account, or mutate remote resources.

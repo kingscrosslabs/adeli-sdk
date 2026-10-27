@@ -25,7 +25,7 @@ try {
   await access('LICENSE');
   hasLicenseFile = true;
 } catch {
-  // The current candidate intentionally has no license file pending approval.
+  // A missing LICENSE file is reported below when license metadata requires one.
 }
 if (approvedLicense && !hasLicenseFile) errors.push('approved license metadata requires a LICENSE file');
 if (release && packageJson.license === 'UNLICENSED') errors.push('release blocked: license approval is still pending');
