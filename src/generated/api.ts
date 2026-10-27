@@ -726,7 +726,7 @@ export interface components {
                 message: string;
                 details?: {
                     /** @enum {string} */
-                    provider?: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                    provider?: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                     accountId?: string;
                     profileId?: string;
                     capability?: string;
@@ -753,7 +753,7 @@ export interface components {
                         method?: "POST";
                         href?: string | null;
                         /** @enum {string} */
-                        provider?: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                        provider?: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                         message?: string;
                     };
                 } & {
@@ -763,7 +763,7 @@ export interface components {
         };
         ApiErrorRecord: {
             /** @enum {string} */
-            platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+            platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
             accountId: string;
             code: string;
             message: string;
@@ -789,7 +789,7 @@ export interface components {
             /** Format: uuid */
             profileId: string;
             /** @enum {string} */
-            platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+            platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
             /** @enum {string} */
             status: "pending_authorization" | "processing" | "pending_page_selection" | "connected" | "failed" | "expired";
             accountId: string | null;
@@ -812,7 +812,7 @@ export interface components {
             /** Format: uuid */
             profileId: string;
             /** @enum {string} */
-            platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+            platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
             providerId: string | null;
             displayName: string | null;
             displayIdentifier: string | null;
@@ -859,7 +859,7 @@ export interface components {
                 method: "POST";
                 href: string | null;
                 /** @enum {string} */
-                provider: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                provider: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
             };
         };
         NormalizedPost: {
@@ -920,7 +920,7 @@ export interface components {
                 /** Format: uuid */
                 profileId: string;
                 /** @enum {string} */
-                platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                 providerId: string | null;
                 displayName: string | null;
                 displayIdentifier: string | null;
@@ -967,12 +967,12 @@ export interface components {
                     method: "POST";
                     href: string | null;
                     /** @enum {string} */
-                    provider: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                    provider: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                 };
             }[];
             errors: {
                 /** @enum {string} */
-                platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                 accountId: string;
                 code: string;
                 message: string;
@@ -1009,7 +1009,7 @@ export interface components {
             }[];
             errors: {
                 /** @enum {string} */
-                platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                 accountId: string;
                 code: string;
                 message: string;
@@ -1043,7 +1043,7 @@ export interface components {
             }[];
             errors: {
                 /** @enum {string} */
-                platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                 accountId: string;
                 code: string;
                 message: string;
@@ -1097,7 +1097,7 @@ export interface operations {
                             /** Format: uuid */
                             accountId: string;
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                             username: string | null;
                         }[];
                         /** Format: uri */
@@ -1527,7 +1527,7 @@ export interface operations {
             content: {
                 "application/json": {
                     /** @enum {string} */
-                    platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                    platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                     /** Format: uri */
                     redirectUrl?: string;
                     /** @enum {string} */
@@ -1549,7 +1549,7 @@ export interface operations {
                         /** Format: uuid */
                         profileId: string;
                         /** @enum {string} */
-                        platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                        platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                         /** @enum {string} */
                         status: "pending_authorization" | "processing" | "pending_page_selection" | "connected" | "failed" | "expired";
                         accountId: string | null;
@@ -1657,7 +1657,7 @@ export interface operations {
                         /** Format: uuid */
                         profileId: string;
                         /** @enum {string} */
-                        platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                        platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                         /** @enum {string} */
                         status: "pending_authorization" | "processing" | "pending_page_selection" | "connected" | "failed" | "expired";
                         accountId: string | null;
@@ -1715,7 +1715,7 @@ export interface operations {
     listAccounts: {
         parameters: {
             query?: {
-                platform?: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                platform?: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                 accountId?: string;
                 profileId?: string;
             };
@@ -1742,7 +1742,7 @@ export interface operations {
                             /** Format: uuid */
                             profileId: string;
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                             providerId: string | null;
                             displayName: string | null;
                             displayIdentifier: string | null;
@@ -1789,12 +1789,12 @@ export interface operations {
                                 method: "POST";
                                 href: string | null;
                                 /** @enum {string} */
-                                provider: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                                provider: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                             };
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                             accountId: string;
                             code: string;
                             message: string;
@@ -1820,7 +1820,7 @@ export interface operations {
                             /** Format: uuid */
                             profileId: string;
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                             providerId: string | null;
                             displayName: string | null;
                             displayIdentifier: string | null;
@@ -1867,12 +1867,12 @@ export interface operations {
                                 method: "POST";
                                 href: string | null;
                                 /** @enum {string} */
-                                provider: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                                provider: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                             };
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                             accountId: string;
                             code: string;
                             message: string;
@@ -1966,7 +1966,7 @@ export interface operations {
                             /** Format: uuid */
                             profileId: string;
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                             providerId: string | null;
                             displayName: string | null;
                             displayIdentifier: string | null;
@@ -2013,12 +2013,12 @@ export interface operations {
                                 method: "POST";
                                 href: string | null;
                                 /** @enum {string} */
-                                provider: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                                provider: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                             };
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                             accountId: string;
                             code: string;
                             message: string;
@@ -2044,7 +2044,7 @@ export interface operations {
                             /** Format: uuid */
                             profileId: string;
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                             providerId: string | null;
                             displayName: string | null;
                             displayIdentifier: string | null;
@@ -2091,12 +2091,12 @@ export interface operations {
                                 method: "POST";
                                 href: string | null;
                                 /** @enum {string} */
-                                provider: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                                provider: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                             };
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                             accountId: string;
                             code: string;
                             message: string;
@@ -2189,7 +2189,7 @@ export interface operations {
                         /** Format: uuid */
                         profileId: string;
                         /** @enum {string} */
-                        platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                        platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                         providerId: string | null;
                         displayName: string | null;
                         displayIdentifier: string | null;
@@ -2354,7 +2354,7 @@ export interface operations {
                         /** Format: uuid */
                         profileId: string;
                         /** @enum {string} */
-                        platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                        platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                         providerId: string | null;
                         displayName: string | null;
                         displayIdentifier: string | null;
@@ -2453,7 +2453,7 @@ export interface operations {
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                             accountId: string;
                             code: string;
                             message: string;
@@ -2487,7 +2487,7 @@ export interface operations {
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                             accountId: string;
                             code: string;
                             message: string;
@@ -2564,7 +2564,7 @@ export interface operations {
     listPosts: {
         parameters: {
             query?: {
-                platform?: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                platform?: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                 accountId?: string;
                 profileId?: string;
             };
@@ -2610,7 +2610,7 @@ export interface operations {
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                             accountId: string;
                             code: string;
                             message: string;
@@ -2655,7 +2655,7 @@ export interface operations {
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                             accountId: string;
                             code: string;
                             message: string;
@@ -5027,7 +5027,7 @@ export interface operations {
     listMessages: {
         parameters: {
             query?: {
-                platform?: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                platform?: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                 accountId?: string;
                 profileId?: string;
             };
@@ -5070,7 +5070,7 @@ export interface operations {
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                             accountId: string;
                             code: string;
                             message: string;
@@ -5112,7 +5112,7 @@ export interface operations {
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "facebook" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
                             accountId: string;
                             code: string;
                             message: string;
@@ -6197,9 +6197,9 @@ export interface operations {
     listAdBusinesses: {
         parameters: {
             query?: {
-                /** @description The connected account. It names its profile, so `profileId` can be left out. */
+                /** @description The Meta Ads account (`platform: meta_ads`). It names its profile, so `profileId` can be left out. A Facebook Pages account id is not accepted. */
                 accountId?: string;
-                /** @description The profile, when no `accountId` is given. */
+                /** @description The profile whose Meta Ads account to use, when no `accountId` is given. */
                 profileId?: string;
             };
             header?: never;
@@ -6216,7 +6216,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @constant */
-                        platform: "facebook";
+                        platform: "meta_ads";
                         /** Format: uuid */
                         accountId: string;
                         /** Format: uuid */
@@ -6305,9 +6305,9 @@ export interface operations {
     listAdAccounts: {
         parameters: {
             query?: {
-                /** @description The connected account. It names its profile, so `profileId` can be left out. */
+                /** @description The Meta Ads account (`platform: meta_ads`). It names its profile, so `profileId` can be left out. A Facebook Pages account id is not accepted. */
                 accountId?: string;
-                /** @description The profile, when no `accountId` is given. */
+                /** @description The profile whose Meta Ads account to use, when no `accountId` is given. */
                 profileId?: string;
                 /** @description Optional boolean string; `true` bypasses the cached list, while `false` (or omission) uses the cache. */
                 refresh?: "true" | "false";
@@ -6326,7 +6326,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @constant */
-                        platform: "facebook";
+                        platform: "meta_ads";
                         /** Format: uuid */
                         accountId: string;
                         /** Format: uuid */
@@ -6424,9 +6424,9 @@ export interface operations {
     createAdAccount: {
         parameters: {
             query?: {
-                /** @description The connected account. It names its profile, so `profileId` can be left out. */
+                /** @description The Meta Ads account (`platform: meta_ads`). It names its profile, so `profileId` can be left out. A Facebook Pages account id is not accepted. */
                 accountId?: string;
-                /** @description The profile, when no `accountId` is given. */
+                /** @description The profile whose Meta Ads account to use, when no `accountId` is given. */
                 profileId?: string;
             };
             header: {
@@ -6577,9 +6577,9 @@ export interface operations {
     getAdAccount: {
         parameters: {
             query?: {
-                /** @description The connected account. It names its profile, so `profileId` can be left out. */
+                /** @description The Meta Ads account (`platform: meta_ads`). It names its profile, so `profileId` can be left out. A Facebook Pages account id is not accepted. */
                 accountId?: string;
-                /** @description The profile, when no `accountId` is given. */
+                /** @description The profile whose Meta Ads account to use, when no `accountId` is given. */
                 profileId?: string;
             };
             header?: never;
@@ -6599,7 +6599,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @constant */
-                        platform: "facebook";
+                        platform: "meta_ads";
                         /** Format: uuid */
                         accountId: string;
                         /** Format: uuid */
@@ -6704,9 +6704,9 @@ export interface operations {
     updateAdAccount: {
         parameters: {
             query?: {
-                /** @description The connected account. It names its profile, so `profileId` can be left out. */
+                /** @description The Meta Ads account (`platform: meta_ads`). It names its profile, so `profileId` can be left out. A Facebook Pages account id is not accepted. */
                 accountId?: string;
-                /** @description The profile, when no `accountId` is given. */
+                /** @description The profile whose Meta Ads account to use, when no `accountId` is given. */
                 profileId?: string;
             };
             header?: never;
@@ -6733,7 +6733,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @constant */
-                        platform: "facebook";
+                        platform: "meta_ads";
                         /** Format: uuid */
                         accountId: string;
                         /** Format: uuid */
@@ -6838,9 +6838,9 @@ export interface operations {
     getAdTree: {
         parameters: {
             query: {
-                /** @description The connected account. It names its profile, so `profileId` can be left out. */
+                /** @description The Meta Ads account (`platform: meta_ads`). It names its profile, so `profileId` can be left out. A Facebook Pages account id is not accepted. */
                 accountId?: string;
-                /** @description The profile, when no `accountId` is given. */
+                /** @description The profile whose Meta Ads account to use, when no `accountId` is given. */
                 profileId?: string;
                 adAccountId: string;
                 since?: string;
@@ -6860,7 +6860,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @constant */
-                        platform: "facebook";
+                        platform: "meta_ads";
                         /** Format: uuid */
                         accountId: string;
                         /** Format: uuid */
@@ -7011,9 +7011,9 @@ export interface operations {
     getAdInsights: {
         parameters: {
             query: {
-                /** @description The connected account. It names its profile, so `profileId` can be left out. */
+                /** @description The Meta Ads account (`platform: meta_ads`). It names its profile, so `profileId` can be left out. A Facebook Pages account id is not accepted. */
                 accountId?: string;
-                /** @description The profile, when no `accountId` is given. */
+                /** @description The profile whose Meta Ads account to use, when no `accountId` is given. */
                 profileId?: string;
                 adAccountId: string;
                 /** @description A campaign, ad set, or ad id. */
@@ -7035,7 +7035,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @constant */
-                        platform: "facebook";
+                        platform: "meta_ads";
                         /** Format: uuid */
                         accountId: string;
                         /** Format: uuid */
@@ -7135,9 +7135,9 @@ export interface operations {
     listAdLeads: {
         parameters: {
             query?: {
-                /** @description The connected account. It names its profile, so `profileId` can be left out. */
+                /** @description The Meta Ads account (`platform: meta_ads`). It names its profile, so `profileId` can be left out. A Facebook Pages account id is not accepted. */
                 accountId?: string;
-                /** @description The profile, when no `accountId` is given. */
+                /** @description The profile whose Meta Ads account to use, when no `accountId` is given. */
                 profileId?: string;
                 /** @description Omit to list forms; pass a form id to list its leads. */
                 formId?: string;
@@ -7156,7 +7156,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @constant */
-                        platform: "facebook";
+                        platform: "meta_ads";
                         /** Format: uuid */
                         accountId: string;
                         /** Format: uuid */
@@ -7172,7 +7172,7 @@ export interface operations {
                         fetchedAt: string;
                     } | {
                         /** @constant */
-                        platform: "facebook";
+                        platform: "meta_ads";
                         /** Format: uuid */
                         accountId: string;
                         /** Format: uuid */
@@ -7270,9 +7270,9 @@ export interface operations {
     createCampaign: {
         parameters: {
             query?: {
-                /** @description The connected account. It names its profile, so `profileId` can be left out. */
+                /** @description The Meta Ads account (`platform: meta_ads`). It names its profile, so `profileId` can be left out. A Facebook Pages account id is not accepted. */
                 accountId?: string;
-                /** @description The profile, when no `accountId` is given. */
+                /** @description The profile whose Meta Ads account to use, when no `accountId` is given. */
                 profileId?: string;
             };
             header: {
@@ -7308,6 +7308,7 @@ export interface operations {
                             /** Format: uuid */
                             profileId: string;
                             facebookConnectionId: string | null;
+                            metaAdsConnectionId: string | null;
                             adAccountId: string;
                             pageId: string;
                             pagePostId: string;
@@ -7354,6 +7355,7 @@ export interface operations {
                             /** Format: uuid */
                             profileId: string;
                             facebookConnectionId: string | null;
+                            metaAdsConnectionId: string | null;
                             adAccountId: string;
                             pageId: string;
                             pagePostId: string;
@@ -7464,9 +7466,9 @@ export interface operations {
     deleteCampaign: {
         parameters: {
             query: {
-                /** @description The connected account. It names its profile, so `profileId` can be left out. */
+                /** @description The Meta Ads account (`platform: meta_ads`). It names its profile, so `profileId` can be left out. A Facebook Pages account id is not accepted. */
                 accountId?: string;
-                /** @description The profile, when no `accountId` is given. */
+                /** @description The profile whose Meta Ads account to use, when no `accountId` is given. */
                 profileId?: string;
                 adAccountId: string;
             };
@@ -7563,9 +7565,9 @@ export interface operations {
     setAdStatus: {
         parameters: {
             query?: {
-                /** @description The connected account. It names its profile, so `profileId` can be left out. */
+                /** @description The Meta Ads account (`platform: meta_ads`). It names its profile, so `profileId` can be left out. A Facebook Pages account id is not accepted. */
                 accountId?: string;
-                /** @description The profile, when no `accountId` is given. */
+                /** @description The profile whose Meta Ads account to use, when no `accountId` is given. */
                 profileId?: string;
             };
             header?: never;
@@ -7593,7 +7595,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @constant */
-                        platform: "facebook";
+                        platform: "meta_ads";
                         /** Format: uuid */
                         accountId: string;
                         objectId: string;
