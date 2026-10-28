@@ -1,6 +1,6 @@
 # @adeli/sdk
 
-Server-only TypeScript SDK for Adeli, for **Node.js 22 and 24**.
+Server-only TypeScript SDK for Adeli, for **Node.js 24**.
 
 ```sh
 npm install @adeli/sdk

@@ -16,7 +16,7 @@ const packageJson = JSON.parse(await readFile('package.json', 'utf8')) as Packag
 const release = process.argv.includes('--release');
 const errors: string[] = [];
 
-if (packageJson.engines?.node !== '>=22') errors.push('package engines.node must remain exactly >=22');
+if (packageJson.engines?.node !== '>=24') errors.push('package engines.node must remain exactly >=24');
 if (packageJson.dependencies && Object.keys(packageJson.dependencies).length > 0) errors.push('runtime dependencies are not permitted');
 if (typeof packageJson.license !== 'string' || packageJson.license.length === 0) errors.push('license metadata is required; use UNLICENSED until approval');
 const approvedLicense = typeof packageJson.license === 'string' && packageJson.license !== 'UNLICENSED';

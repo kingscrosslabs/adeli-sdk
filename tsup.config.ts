@@ -15,5 +15,5 @@ export default defineConfig({
   // Helpers/uploads import runtime errors from the package self-reference. Keeping
   // that import external prevents splitting:false from creating duplicate classes.
   external: ['@adeli/sdk'],
-  outDir: 'dist', target: 'node22', treeshake: true
+  outDir: 'dist', target: 'node24', treeshake: true
 });
