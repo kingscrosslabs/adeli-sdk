@@ -1,6 +1,6 @@
 # Releasing `@adeli/sdk`
 
-Releasing is two clicks: **Prepare release** bumps the version, checks it and tags it, then **Release SDK** publishes that tag to npm.
+Releasing is one click: **Release SDK** bumps the version, runs every check, tags the release and publishes it to npm.
 
 > **Never run `npm publish` locally or with a token.** Every release after `0.1.0` goes through Release SDK, which publishes with npm trusted publishing (OIDC) and provenance.
 
@@ -14,25 +14,22 @@ npx changeset
 
 Pick `patch`, `minor` or `major` and write one line for the changelog. Commit the generated `.changeset/*.md` file with the PR.
 
-## Release in two clicks
+## Release
 
-### 1. Prepare release
-
-**Actions → Prepare release → Run workflow** (from `main`).
-
-It turns the pending changesets into the next version (`package.json`, `CHANGELOG.md`, lockfile) and runs every check: generation drift, contract, lint, typecheck, tests, audit, build and package checks. **Only if all of them pass** does it commit **chore(release): X.Y.Z** to `main` and tag it `vX.Y.Z`, in one atomic push. If anything fails, nothing is pushed.
-
-It stops with an error if there are no changesets, or if the version is already tagged or on npm.
-
-### 2. Release SDK
-
-**Actions → Release SDK → Run workflow → Use workflow from → Tags → `vX.Y.Z` → Run workflow**, or:
+**Actions → Release SDK → Run workflow** (from `main`), or:
 
 ```sh
-gh workflow run release.yml --ref vX.Y.Z
+gh workflow run release.yml --ref main
 ```
 
-It validates the tag again, builds the tarball and publishes it. There's no approval step: running the workflow is the approval.
+That's it. You'll see two runs:
+
+1. **Release from main.** It turns the pending changesets into the next version (`package.json`, `CHANGELOG.md`, lockfile) and runs every check: generation drift, contract, lint, typecheck, tests, audit, build and package checks. **Only if all of them pass** does it commit **chore(release): X.Y.Z** to `main` and tag it `vX.Y.Z`, in one atomic push. If anything fails, nothing is pushed. Then it starts the second run.
+2. **Publish vX.Y.Z.** It starts automatically on the new tag, rebuilds from that exact commit, checks the tag matches `package.json`, and publishes to npm.
+
+The first run stops with an error if there are no changesets, or if the version is already tagged or on npm.
+
+Publishing happens in a separate run on the tag so that npm's provenance points at the exact release commit.
 
 Then confirm it's live (the registry can take a few minutes):
 
@@ -40,9 +37,21 @@ Then confirm it's live (the registry can take a few minutes):
 npm view @adeli/sdk@X.Y.Z version
 ```
 
+## If something fails
+
+**Release from main failed:** nothing was pushed. Fix the problem on `main` with a normal PR and run Release SDK again.
+
+**Publish vX.Y.Z failed:** the tag exists but nothing is on npm yet.
+
+- For a flaky runner, use **Re-run all jobs** on that run.
+- To retry without changes, run Release SDK on the tag: **Run workflow → Use workflow from → Tags → `vX.Y.Z`**, or `gh workflow run release.yml --ref vX.Y.Z`.
+- If the code needs a fix, merge it to `main`, then delete the tag (`git push origin :refs/tags/vX.Y.Z`) and retag the fixed commit **only if nothing was published**. Then run Release SDK on the tag as above.
+
+**Never move a tag or reuse a version number once it has been published.** Release a new patch version instead.
+
 ## Doing it by hand
 
-If Prepare release is unavailable, do its work locally, then run Release SDK as in step 2:
+If the bump-and-tag run can't be used, do its work locally, then run Release SDK on the tag:
 
 ```sh
 git switch main && git pull
@@ -52,35 +61,18 @@ npm run build && npm run release:check
 git commit -am "chore(release): X.Y.Z"
 git tag -a vX.Y.Z -m vX.Y.Z
 git push --atomic origin main vX.Y.Z
+gh workflow run release.yml --ref vX.Y.Z
 ```
-
-The tag must match the `version` in `package.json`, or Release SDK stops before building anything.
-
-## If Release SDK fails
-
-If the failure was a flaky runner, use **Re-run all jobs** on the run in GitHub Actions.
-
-If the code needs a fix, merge it to `main` with a normal PR. Then, **only if nothing was published**, move the tag and run Release SDK again on it:
-
-```sh
-git push origin :refs/tags/vX.Y.Z   # delete the remote tag
-git tag -d vX.Y.Z
-git fetch origin
-git tag -a vX.Y.Z origin/main -m vX.Y.Z
-git push origin vX.Y.Z
-```
-
-**Never move a tag or reuse a version number once it has been published.** Release a new patch version instead.
 
 ## How the workflow protects a release
 
-- **Tag only.** It rejects runs started from a branch, and stops before any package work if the tag doesn't match `package.json` or the checked-out commit doesn't match the tag.
-- **Validate, then publish the same bytes.** `validate` runs the full gate (generation drift, contract, lint, typecheck, tests, audit, build, package checks) and packs the tarball with its SHA-256 and identity. `publish` re-checks that identity and publishes only that tarball. It never rebuilds.
-- **Checked before it's tagged.** Prepare release runs the full gate before anything reaches `main`, and refuses versions that are already tagged or on npm.
+- **Checked before it's tagged.** The run on `main` runs the full gate before anything reaches `main`, and refuses versions that are already tagged or on npm.
+- **Publish from the tag only.** The publish run checks that the tag matches `package.json` and the checked-out commit before any package work.
+- **Validate, then publish the same bytes.** `validate` runs the full gate again and packs the tarball with its SHA-256 and identity. `publish` re-checks that identity and publishes only that tarball. It never rebuilds.
 - **Who can release.** Anyone who can run workflows (write access) can publish. The `npm-release` environment has no reviewers; it only allows tags, and npm's trusted publisher is bound to it.
-- **Pinned toolchain.** Both jobs run Node 24.22.1, whose bundled npm 11.19.1 meets the trusted-publishing minimum. The workflow checks that exact npm version instead of upgrading npm.
+- **Pinned toolchain.** Every job runs Node 24.22.1, whose bundled npm 11.19.1 meets the trusted-publishing minimum. The workflow checks that exact npm version instead of upgrading npm.
 
-External prerequisites (configured outside this repo): the `npm-release` environment limited to `v*` tags, `@adeli` scope ownership on npm, and the npm trusted publisher (`kingscrosslabs/adeli-sdk`, workflow `release.yml`, environment `npm-release`) with token publishing disabled.
+External prerequisites (configured outside this repo): the `npm-release` environment limited to `v*` tags, `@adeli` scope ownership on npm, and the npm trusted publisher (`kingscrosslabs/adeli-sdk`, workflow `release.yml`, environment `npm-release`) with token publishing disabled. The run on `main` pushes directly to `main`; if `main` gets a protection ruleset, add GitHub Actions as a bypass actor.
 
 ## History: the `0.1.0` bootstrap
 

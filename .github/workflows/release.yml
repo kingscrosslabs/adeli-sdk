@@ -1,15 +1,110 @@
 name: Release SDK
-run-name: Release ${{ github.ref_name }}
+run-name: ${{ github.ref_type == 'tag' && format('Publish {0}', github.ref_name) || 'Release from main' }}
 
-# Run it from the Actions tab: Run workflow → "Use workflow from" → Tags → pick
-# the release tag (for example v0.1.0). There are no other inputs: the version
-# comes from the tag and must match package.json. Branches are rejected.
+# One click: Actions → Release SDK → Run workflow (from main).
+#
+# 1. The run on main (job "prepare") turns the pending changesets into the next
+#    version and runs every check. Only if all of them pass does it commit the
+#    bump to main, tag it vX.Y.Z (one atomic push), and start this workflow
+#    again on that tag.
+# 2. The run on the tag (jobs "validate" and "publish") rebuilds from the tagged
+#    commit, checks the tag matches package.json, and publishes to npm with
+#    provenance for that exact commit.
 on:
   workflow_dispatch:
 
 jobs:
+  prepare:
+    name: Bump, check and tag
+    if: github.ref_type == 'branch'
+    permissions:
+      contents: write
+      actions: write
+    concurrency:
+      group: release-prepare
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require main
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "::error::Run Release SDK from main (got ${GITHUB_REF})."
+          exit 1
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.22.1'
+          cache: npm
+      - run: npm ci
+      - name: Require pending changesets
+        run: |
+          if ! ls .changeset/*.md >/dev/null 2>&1; then
+            echo "::error::No changesets to release. Add one in a PR with: npx changeset"
+            exit 1
+          fi
+      - name: Apply changesets
+        id: version
+        run: |
+          set -euo pipefail
+          npx changeset version
+          npm install --package-lock-only --ignore-scripts
+          version="$(node -p "require('./package.json').version")"
+          if git ls-remote --exit-code --tags origin "refs/tags/v${version}" >/dev/null; then
+            echo "::error::Tag v${version} already exists. Nothing new to release."
+            exit 1
+          fi
+          if npm view "@adeli/sdk@${version}" version >/dev/null 2>&1; then
+            echo "::error::@adeli/sdk@${version} is already on npm."
+            exit 1
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+      # The same gate as CI and Release SDK. Nothing is pushed unless all of it passes.
+      - run: npm run check:generated
+      - run: npm run check:contract
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm audit --audit-level=high
+      - run: npm run build
+      - run: npm run check:package
+      - run: npm run test:package
+      - run: npm run typecheck:examples
+      - run: npm run release:check
+      - name: Commit the version bump to main and tag it
+        id: push
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          tag="v${VERSION}"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m "chore(release): ${VERSION}"
+          git tag -a "$tag" -m "$tag"
+          # One atomic push: main and the tag land together, or neither does (for example if main moved).
+          git push --atomic origin HEAD:refs/heads/main "refs/tags/${tag}"
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+      # Publishing happens in a second run of this workflow on the new tag, so npm
+      # provenance points at the exact release commit. workflow_dispatch is the one
+      # event the workflow token is allowed to start.
+      - name: Start the publish run on the tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.push.outputs.tag }}
+        run: |
+          set -euo pipefail
+          gh workflow run release.yml --ref "$TAG"
+          {
+            echo "### Tagged ${TAG}"
+            echo "Publishing continues in the **Publish ${TAG}** run: https://github.com/${GITHUB_REPOSITORY}/actions/workflows/release.yml"
+          } >> "$GITHUB_STEP_SUMMARY"
+
   validate:
-    name: Validate reviewed release candidate
+    name: Validate tagged release
+    if: github.ref_type == 'tag'
     permissions:
       contents: read
     runs-on: ubuntu-latest
