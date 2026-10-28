@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: ['24.18.0']
+        node: ['24.22.1']
     steps:
       - uses: actions/checkout@v4
         with:
