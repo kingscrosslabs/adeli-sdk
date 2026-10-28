@@ -39,6 +39,7 @@ test('invokes every operation through the public resource surface', async () => 
     client.messages.listMessages({}), client.messages.sendMessage({ body: { platform: 'facebook', accountId: id, recipient: 'r', text: 'hi' } }), client.messages.sendInstagramMessage({ body: { accountId: id, recipient: { id: 'igsid' }, text: 'hi' } }),
     client.analytics.getInstagramAccountInsights({ query: { accountId: id } }), client.analytics.getFacebookPageMetrics({}), client.analytics.getTikTokAccountAnalytics({ query: { accountId: id } }),
     client.analytics.getTikTokAccountInsights({ query: { accountId: id } }), client.analytics.getTikTokVideoInsights({ query: { accountId: id } }), client.analytics.getYouTubeChannelInsights({ query: { accountId: id } }), client.analytics.getYouTubeVideoInsights({ query: { accountId: id } }),
+    client.analytics.getLinkedInAccountInsights({ query: { accountId: id } }), client.analytics.getLinkedInPostInsights({ query: { accountId: id } }),
     client.ads.listAdBusinesses({}), client.ads.listAdAccounts({}), client.ads.createAdAccount({ body: { businessId: 'b', name: 'a', timezone: 'UTC' } }, { idempotencyKey: 'a' }),
     client.ads.getAdAccount({ path: { adAccountId: 'act_1' } }), client.ads.updateAdAccount({ path: { adAccountId: 'act_1' }, body: { spendCap: 0 } }), client.ads.getAdTree({ query: { adAccountId: 'act_1' } }), client.ads.getAdInsights({ query: { adAccountId: 'act_1' } }), client.ads.listAdLeads({}),
     client.ads.createCampaign({ body: { adAccountId: 'act_1', pagePostId: '1', dailyBudget: 0, startDate: '2025-01-01', endDate: '2025-01-02', campaignName: 'c' } }, { idempotencyKey: 'c' }),
@@ -46,7 +47,7 @@ test('invokes every operation through the public resource surface', async () => 
     client.webhooks.listWebhooks({ query: { profileId: id } }), client.webhooks.createWebhook({ body: { profileId: id, url: 'https://hooks.example/a', events: ['comment.created'] } }), client.webhooks.deleteWebhook({ path: { webhookId: id } }),
   ]);
   const apiRequests = requests.filter((request) => new URL(request.url).hostname === 'localhost');
-  expect(new Set(apiRequests.map((request) => `${request.method} ${new URL(request.url).pathname}`)).size).toBe(54);
+  expect(new Set(apiRequests.map((request) => `${request.method} ${new URL(request.url).pathname}`)).size).toBe(56);
   expect(requests.some((request) => new URL(request.url).hostname === 's3.example')).toBe(true);
 });
 

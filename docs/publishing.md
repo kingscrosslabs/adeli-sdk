@@ -1,6 +1,6 @@
 # Publishing and uploads
 
-Publishing is server-side and provider-specific. Pass the real platform payload rather than assuming one universal post model. JSON Instagram image/carousel/Reel/story payloads retain `contentType`, base64 or supported URL media, captions, collaborators, user tags, and Reel feed options. Facebook text/image/video/Reel, TikTok JSON or multipart, YouTube multipart, X, and Bluesky have different fields and outcomes; preserve their response fields unchanged.
+Publishing is server-side and provider-specific. Pass the real platform payload rather than assuming one universal post model. JSON Instagram image/carousel/Reel/story payloads retain `contentType`, base64 or supported URL media, captions, collaborators, user tags, and Reel feed options. Facebook text/image/video/Reel, TikTok JSON or multipart, YouTube multipart, X, Bluesky, and LinkedIn have different fields and outcomes; preserve their response fields unchanged.
 
 ```ts
 import { Adeli } from '@adeli/sdk';
@@ -16,6 +16,8 @@ export async function uploadYouTube(input: { accountId: string; path: string }) 
   return response; // 202 is accepted work, not proof of public visibility.
 }
 ```
+
+LinkedIn's JSON variant uses `platform: 'linkedin'`, the `accountId` of a connected personal profile or organization Page, `commentary`, and optionally one `{ content_type, base64, title? }` JPEG, PNG, or GIF image. It publishes publicly and synchronously, and Adeli does not automatically retry ambiguous writes. The returned `providerId` is the post URN that `client.analytics.getLinkedInPostInsights` accepts.
 
 Use `Blob`/`File` values or the Node file-backed adapter. File-backed uploads avoid silently base64-encoding multi-GB media; supported URL media is sent to Adeli, not fetched by this SDK. Multipart field names, repeated `photos[]`, booleans, zero values, thumbnail, privacy, kids, scheduling, and retained filenames are serialized as documented by each operation. The current candidate API caps are: TikTok multipart accepts one video up to 1,000,000,000 bytes, or 1–35 photos with each photo at most 20 MiB; YouTube multipart accepts a video up to 4 GiB and an optional JPEG/PNG thumbnail up to 50 MiB, with the total multipart request capped at 4 GiB including fields and multipart overhead. JSON `POST /api/v1/posts` is capped at 96 MiB, and an inline base64 video must decode to at most 64 MiB. These are local candidate API caps, not a global provider limit or SDK-side preflight; provider restrictions and validation remain authoritative, and file plus thumbnail plus fields must fit the YouTube total request cap. See the public [TikTok publishing page](https://www.tryadeli.com/docs/api/posts/publish-tiktok), [YouTube file upload page](https://www.tryadeli.com/docs/api/posts/upload-youtube-video-file), and [YouTube upload guide](https://developers.google.com/youtube/v3/guides/implementation/videos) for the current candidate and provider behavior. The SDK does not expose dashboard-only Instagram/Facebook multipart routes.
 
