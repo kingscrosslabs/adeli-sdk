@@ -10,6 +10,7 @@ import { MessagesResource } from './resources/messages.js';
 import { AnalyticsResource } from './resources/analytics.js';
 import { AdsResource } from './resources/ads.js';
 import { UsageResource } from './resources/usage.js';
+import { WebhooksResource } from './resources/webhooks.js';
 
 /** Wire alias for the object serialized by apps/web/lib/public-api/me.ts. */
 export interface Identity {
@@ -34,6 +35,7 @@ export class Adeli {
   readonly analytics: AnalyticsResource;
   readonly ads: AdsResource;
   readonly usage: UsageResource;
+  readonly webhooks: WebhooksResource;
   private readonly transport: Transport;
   constructor(options: ClientOptions = {}) {
     this.transport = new Transport(resolveConfig(options));
@@ -45,6 +47,7 @@ export class Adeli {
     this.analytics = new AnalyticsResource(this.transport);
     this.ads = new AdsResource(this.transport);
     this.usage = new UsageResource(this.transport);
+    this.webhooks = new WebhooksResource(this.transport);
   }
   /** Do not serialize client internals or its API key. */
   toJSON(): Record<string, never> { return {}; }

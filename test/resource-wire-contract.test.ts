@@ -15,8 +15,9 @@ const key = 'wire-key';
 const post = { id: 'post-1', platform: 'x', accountId: id, profileId: id, providerId: 'provider-1', caption: null, media: [{ type: 'image', url: null, thumbnailUrl: null }], permalink: null, engagement: { likes: 1, comments: null, shares: 0, views: null, reach: null }, publishedAt: null };
 const account = { id, accountId: id, profileId: id, platform: 'x', providerId: null, displayName: null, displayIdentifier: '@wire', connectionStatus: 'connected', grantedPermissions: ['read'], recommendedPermissions: [{ code: 'inbox', label: 'Inbox' }], missingRecommendedPermissions: [], capabilities: { analytics: false, inbox: true }, capabilityRequirements: {}, reconnect: { action: 'restart_oauth', method: 'POST', href: null, provider: 'x' } };
 const profile = { id, name: 'Default', externalId: null, metadata: {}, isDefault: true, createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-02T00:00:00.000Z' };
-const comment = { id: 'comment-1', mediaId: 'media-1', parentId: null, authorName: 'Author', authorFullName: null, authorHandle: '@author', avatarUrl: null, profileUrl: null, body: 'hello', likeCount: 0, isCreator: false, isHidden: false, createdAt: '2025-01-01T00:00:00.000Z', liked: false, replyCount: 0, deletable: true };
+const comment = { id: 'comment-1', mediaId: 'media-1', parentId: null, authorName: 'Author', authorFullName: null, authorHandle: '@author', avatarUrl: null, profileUrl: null, body: 'hello', likeCount: 0, isCreator: false, isHidden: false, createdAt: '2025-01-01T00:00:00.000Z', authorId: 'author-1', liked: false, replyCount: 0, deletable: true };
 const message = { id: 'message-1', providerId: null, platform: 'facebook', accountId: id, profileId: id, direction: 'outbound', type: 'text', recipient: 'recipient', sender: null, body: 'hello', status: 'sent', occurredAt: '2025-01-01T00:00:00.000Z', createdAt: '2025-01-01T00:00:00.000Z' };
+const webhook = { id: 'webhook-1', profileId: id, url: 'https://hooks.example/adeli', events: ['comment.created', 'message.postback'], status: 'active', createdAt: '2025-01-01T00:00:00.000Z' };
 const errorRecord = { platform: 'x', accountId: id, code: 'permission_required', message: 'permission required', details: { missing: ['read'] } };
 
 type ContractDocument = { paths: Record<string, Record<string, { operationId?: string; responses?: Record<string, { content?: Record<string, { schema?: unknown }> }> }>> };
@@ -87,6 +88,7 @@ function wireResponse(operationId: string, _status?: string): unknown {
     case 'updateComment': return { platform: 'youtube', accountId: id, profileId: id, comment: { id: 'comment-1', hidden: false, liked: true } };
     case 'listMessages': return { status: 'partial', messages: [message], errors: [errorRecord] };
     case 'sendMessage': return message;
+    case 'sendInstagramMessage': return { ...message, platform: 'instagram', providerId: 'instagram_message_1', type: 'buttons', recipient: 'igsid-1', sender: 'igsid-business' };
     case 'getInstagramAccountInsights': return { platform: 'instagram', accountId: id, profileId: id, insights: [{ name: 'reach', title: 'Reach', period: 'day', total_value: { value: 0 }, values: [{ value: 0, end_time: '2025-01-01T00:00:00.000Z' }] }], fetchedAt: profile.updatedAt };
     case 'getFacebookPageMetrics': return { platform: 'facebook', accountId: id, profileId: id, page: { id: 'page-1', name: null, username: null, category: null, link: null }, metrics: { followers: null, fans: 0, recentPosts: 0, recentPostLikes: 0, recentPostComments: 0, recentPostShares: 0 }, insights: null, insightsUnavailable: 'permission_missing', fetchedAt: profile.updatedAt };
     case 'getTikTokAccountAnalytics': return { platform: 'tiktok', accountId: id, profileId: id, profile: { openId: 'open', username: null, displayName: null, avatarUrl: null, profileDeepLink: null, bioDescription: null, isVerified: null, isBusinessAccount: null }, analytics: { followers: 0, following: null, likes: null, videos: null }, fetchedAt: profile.updatedAt };
@@ -108,6 +110,8 @@ function wireResponse(operationId: string, _status?: string): unknown {
     case 'listAdTargeting': return { platform: 'tiktok_ads', accountId: id, adAccountId: '7000000001', type: 'regions', options: [{ id: '6252001', name: 'United States', parentId: null, level: 'COUNTRY' }] };
     case 'listAdIdentities': return { platform: 'tiktok_ads', accountId: id, adAccountId: '7000000001', identities: [{ id: 'identity-1', type: 'CUSTOMIZED_USER', displayName: 'Brand', avatarUrl: null }] };
     case 'createAdIdentity': return { platform: 'tiktok_ads', accountId: id, adAccountId: '7000000001', identity: { id: 'identity-1', type: 'CUSTOMIZED_USER', displayName: 'Brand', avatarUrl: null } };
+    case 'listWebhooks': return { webhooks: [webhook] };
+    case 'createWebhook': return { webhook, secret: 'whsec_created' };
     case 'getXUsage': return { from: '2025-01-01T00:00:00.000Z', to: '2025-02-01T00:00:00.000Z', ratesAsOf: '2025-01-01', totalCostMicros: 0, operations: [{ operation: 'list_posts', resourceType: 'post', resourceCount: 1, costMicros: 0 }] };
     default: throw new Error(`fixture missing for ${operationId}`);
   }
@@ -119,7 +123,7 @@ type WireCase = { id: string; call: (options: RequestOptions) => Promise<ApiResp
 function jsonBody(body: Record<string, unknown>): ExpectedBody { return body; }
 function requireRequest(value: Request | undefined, id: string): Request { if (value === undefined) throw new Error(`${id}: fetch was not called`); return value; }
 // Request expectations are deliberately written independently of operations metadata; the registry is only a coverage allow-list.
-test('all 54 registered operations preserve exact wire requests and response envelopes', async () => {
+test('all 58 registered operations preserve exact wire requests and response envelopes', async () => {
   let currentFixture: WireCase | undefined;
   let returnUnauthorized = false;
   const unauthorizedDetails = { reason: 'wire-contract', nested: { preserved: true } };
@@ -162,6 +166,7 @@ test('all 54 registered operations preserve exact wire requests and response env
     { id: 'deleteComment', call: (o) => client.comments.deleteComment({ path: { commentId: id }, query: { platform: 'youtube', accountId: id, profileId: id, banAuthor: 'false' } }, o), method: 'DELETE', path: `/api/v1/comments/${id}`, query: `platform=youtube&accountId=${id}&profileId=${id}&banAuthor=false`, status: 204, response: undefined },
     { id: 'listMessages', call: (o) => client.messages.listMessages({ query: { platform: 'facebook', accountId: id, profileId: id } }, o), method: 'GET', path: '/api/v1/messages', query: `platform=facebook&accountId=${id}&profileId=${id}`, status: 207, response: wireResponse('listMessages') },
     { id: 'sendMessage', call: (o) => client.messages.sendMessage({ body: { platform: 'facebook', accountId: id, profileId: id, recipient: 'r', text: 'hello' } }, o), method: 'POST', path: '/api/v1/messages', body: jsonBody({ platform: 'facebook', accountId: id, profileId: id, recipient: 'r', text: 'hello' }), status: 201, response: wireResponse('sendMessage') },
+    { id: 'sendInstagramMessage', call: (o) => client.messages.sendInstagramMessage({ body: { accountId: id, profileId: id, recipient: { commentId: 'comment-1' }, text: 'hello', buttons: [{ type: 'postback', title: 'Yes', payload: 'yes' }, { type: 'url', title: 'Shop', url: 'https://shop.example/' }] } }, o), method: 'POST', path: '/api/v1/messages/instagram', body: jsonBody({ accountId: id, profileId: id, recipient: { commentId: 'comment-1' }, text: 'hello', buttons: [{ type: 'postback', title: 'Yes', payload: 'yes' }, { type: 'url', title: 'Shop', url: 'https://shop.example/' }] }), status: 201, response: wireResponse('sendInstagramMessage') },
     { id: 'getInstagramAccountInsights', call: (o) => client.analytics.getInstagramAccountInsights({ query: { accountId: id, profileId: id } }, o), method: 'GET', path: '/api/v1/analytics/instagram/account-insights', query: `accountId=${id}&profileId=${id}`, status: 200, response: wireResponse('getInstagramAccountInsights') },
     { id: 'getFacebookPageMetrics', call: (o) => client.analytics.getFacebookPageMetrics({ query: { accountId: id, profileId: id } }, o), method: 'GET', path: '/api/v1/analytics/facebook/page-metrics', query: `accountId=${id}&profileId=${id}`, status: 200, response: wireResponse('getFacebookPageMetrics') },
     { id: 'getTikTokAccountAnalytics', call: (o) => client.analytics.getTikTokAccountAnalytics({ query: { accountId: id, profileId: id } }, o), method: 'GET', path: '/api/v1/analytics/tiktok/account-analytics', query: `accountId=${id}&profileId=${id}`, status: 200, response: wireResponse('getTikTokAccountAnalytics') },
@@ -185,12 +190,15 @@ test('all 54 registered operations preserve exact wire requests and response env
     { id: 'listAdIdentities', call: (o) => client.ads.listAdIdentities({ query: { accountId: id, adAccountId: '7000000001' } }, o), method: 'GET', path: '/api/v1/ads/identities', query: `accountId=${id}&adAccountId=7000000001`, status: 200, response: wireResponse('listAdIdentities') },
     { id: 'createAdIdentity', call: (o) => client.ads.createAdIdentity({ query: { accountId: id }, body: { adAccountId: '7000000001', displayName: 'Brand', avatar: { url: 'https://cdn.example/a.png' } } }, o), method: 'POST', path: '/api/v1/ads/identities', query: `accountId=${id}`, body: jsonBody({ adAccountId: '7000000001', displayName: 'Brand', avatar: { url: 'https://cdn.example/a.png' } }), status: 201, response: wireResponse('createAdIdentity') },
     { id: 'getXUsage', call: (o) => client.usage.getXUsage({}, o), method: 'GET', path: '/api/v1/usage/x', status: 200, response: wireResponse('getXUsage') },
+    { id: 'listWebhooks', call: (o) => client.webhooks.listWebhooks({ query: { profileId: id } }, o), method: 'GET', path: '/api/v1/webhooks', query: `profileId=${id}`, status: 200, response: wireResponse('listWebhooks') },
+    { id: 'createWebhook', call: (o) => client.webhooks.createWebhook({ body: { profileId: id, url: 'https://hooks.example/adeli', events: ['comment.created', 'message.postback'] } }, o), method: 'POST', path: '/api/v1/webhooks', body: jsonBody({ profileId: id, url: 'https://hooks.example/adeli', events: ['comment.created', 'message.postback'] }), status: 201, response: wireResponse('createWebhook') },
+    { id: 'deleteWebhook', call: (o) => client.webhooks.deleteWebhook({ path: { webhookId: 'webhook/a' } }, o), method: 'DELETE', path: '/api/v1/webhooks/webhook%2Fa', status: 204, response: undefined },
   ];
 
   const { operations } = await import('../src/operations.js');
   expect(new Set(cases.map((item) => item.id))).toEqual(new Set(Object.keys(operations)));
   expect(cases).toHaveLength(Object.keys(operations).length);
-  expect(declaredSuccessPairs()).toHaveLength(63);
+  expect(declaredSuccessPairs()).toHaveLength(67);
   for (const fixture of cases) {
     for (const status of successStatuses(fixture.id)) {
       delete state.request;
@@ -245,4 +253,28 @@ test('idempotent Ads writes preserve fresh 201 and replay 200 responses', async 
   await expect(client.ads.createAdAccount(args, { idempotencyKey: 'stable-ad-key' })).resolves.toMatchObject({ status: 201, data: bodies[0] });
   await expect(client.ads.createAdAccount(args, { idempotencyKey: 'stable-ad-key' })).resolves.toMatchObject({ status: 200, data: bodies[1] });
   expect(seenKeys).toEqual(['stable-ad-key', 'stable-ad-key']);
+});
+
+test('comment responses carry the nullable authorId through listComments and Instagram createComment', async () => {
+  const anonymous = { ...comment, id: 'comment-2', authorId: null };
+  const bodies = [
+    { platform: 'instagram', accountId: id, profileId: id, postId: null, posts: [], comments: [comment, anonymous], nextCursor: null, complete: true, syncedAt: null },
+    { platform: 'instagram', accountId: id, profileId: id, comment },
+  ];
+  let call = 0;
+  const client = new Adeli({ apiKey: key, baseURL, fetch: async () => {
+    const index = call++;
+    return new Response(JSON.stringify(bodies[index]), { status: index === 0 ? 200 : 201, headers: { 'content-type': 'application/json' } });
+  } });
+  const listed = await client.comments.listComments({ query: { platform: 'instagram', accountId: id } });
+  validateSuccess('listComments', '200', listed.data);
+  expect(listed.data.comments.map((item) => item.authorId)).toEqual(['author-1', null]);
+  const created = await client.comments.createComment({ body: { platform: 'instagram', accountId: id, postId: 'media-1', message: 'hello' } });
+  validateSuccess('createComment', '201', created.data);
+  expect(created.data).toMatchObject({ comment: { id: 'comment-1', authorId: 'author-1' } });
+});
+
+test('Instagram private-reply conflicts surface their documented error codes', async () => {
+  const client = new Adeli({ apiKey: key, baseURL, fetch: async () => new Response(JSON.stringify({ error: { code: 'private_reply_already_sent', message: 'A private reply was already sent for this comment', details: null } }), { status: 409, headers: { 'content-type': 'application/json' } }) });
+  await expect(client.messages.sendInstagramMessage({ body: { accountId: id, recipient: { commentId: 'comment-1' }, text: 'hello' } })).rejects.toMatchObject({ status: 409, code: 'private_reply_already_sent' });
 });

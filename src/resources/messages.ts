@@ -8,6 +8,8 @@ export type ListMessagesQuery = MessagesQuery;
 export type SendMessageBody = JsonBody<'sendMessage'>;
 export type MessagesResponse = SuccessBody<'listMessages'>;
 export type SentMessage = SuccessBody<'sendMessage'>;
+export type SendInstagramMessageBody = JsonBody<'sendInstagramMessage'>;
+export type SentInstagramMessage = SuccessBody<'sendInstagramMessage'>;
 
 export class MessagesResource {
   constructor(private readonly transport: Transport) {}
@@ -16,5 +18,8 @@ export class MessagesResource {
   }
   sendMessage(args: { readonly body: SendMessageBody }, options: RequestOptions = {}): Promise<ApiResponse<SentMessage>> {
     return this.transport.request({ operation: operations.sendMessage, body: args.body, signal: options.signal, timeoutMs: options.timeoutMs });
+  }
+  sendInstagramMessage(args: { readonly body: SendInstagramMessageBody }, options: RequestOptions = {}): Promise<ApiResponse<SentInstagramMessage>> {
+    return this.transport.request({ operation: operations.sendInstagramMessage, body: args.body, signal: options.signal, timeoutMs: options.timeoutMs });
   }
 }

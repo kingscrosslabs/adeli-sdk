@@ -8,7 +8,7 @@ const outputIndex = process.argv.indexOf('--output');
 const outputPath = outputArgument?.startsWith('--output=') ? outputArgument.slice('--output='.length) : outputIndex >= 0 ? process.argv[outputIndex + 1] : 'docs/api-reference.md';
 if (!outputPath) throw new Error('--output requires a file path');
 
-const resourceFiles = ['src/client.ts', 'src/resources/profiles.ts', 'src/resources/accounts.ts', 'src/resources/posts.ts', 'src/resources/comments.ts', 'src/resources/messages.ts', 'src/resources/analytics.ts', 'src/resources/ads.ts', 'src/resources/usage.ts'];
+const resourceFiles = ['src/client.ts', 'src/resources/profiles.ts', 'src/resources/accounts.ts', 'src/resources/posts.ts', 'src/resources/comments.ts', 'src/resources/messages.ts', 'src/resources/analytics.ts', 'src/resources/ads.ts', 'src/resources/usage.ts', 'src/resources/webhooks.ts'];
 const source = new Map<string, string>();
 for (const file of resourceFiles) source.set(file, await readFile(file, 'utf8'));
 const provenance = JSON.parse(await readFile('openapi/provenance.json', 'utf8')) as { sha256?: string; status?: string };

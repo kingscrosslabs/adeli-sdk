@@ -3,7 +3,7 @@
 Generated from `src/operations.ts` metadata, AST-extracted resource method declarations, and the checked-in verified public docs mapping `openapi/docs-links.json`; this file is not hand-maintained.
 
 - Contract status: **candidate-unreleased**
-- Candidate OpenAPI SHA-256: `db146aa810d1eceedf233c3a46247791388f2eef54eaebdfb99d7ff88e98e898`
+- Candidate OpenAPI SHA-256: `e1a4cd95b91e14c2732275213493caebaa7ee3d83dffec27c001511eda32fc35`
 - Public endpoint documentation: https://www.tryadeli.com/docs/
 
 | Resource | Method signature | HTTP | Path | Endpoint docs |
@@ -39,6 +39,7 @@ Generated from `src/operations.ts` metadata, AST-extracted resource method decla
 | comments | `deleteComment(args: { readonly path: Path<'deleteComment'>; readonly query: JsonQuery<'deleteComment'> }, options: RequestOptions = {}): Promise<ApiResponse<undefined>>` | DELETE | `/comments/{commentId}` | [api/comments/delete-comment](https://www.tryadeli.com/docs/api/comments/delete-comment) |
 | messages | `listMessages(args: { readonly query?: MessagesQuery } = {}, options: RequestOptions = {}): Promise<ApiResponse<MessagesResponse>>` | GET | `/messages` | [api/messages/list-messages](https://www.tryadeli.com/docs/api/messages/list-messages) |
 | messages | `sendMessage(args: { readonly body: SendMessageBody }, options: RequestOptions = {}): Promise<ApiResponse<SentMessage>>` | POST | `/messages` | [api/messages/send-message](https://www.tryadeli.com/docs/api/messages/send-message) |
+| messages | `sendInstagramMessage(args: { readonly body: SendInstagramMessageBody }, options: RequestOptions = {}): Promise<ApiResponse<SentInstagramMessage>>` | POST | `/messages/instagram` | [api/messages/send-instagram-message](https://www.tryadeli.com/docs/api/messages/send-instagram-message) |
 | analytics | `getInstagramAccountInsights(args: { readonly query: InstagramAccountInsightsQuery }, options: RequestOptions = {}): Promise<ApiResponse<InstagramAccountInsightsResponse>>` | GET | `/analytics/instagram/account-insights` | [api/analytics/instagram-account-insights](https://www.tryadeli.com/docs/api/analytics/instagram-account-insights) |
 | analytics | `getFacebookPageMetrics(args: { readonly query?: FacebookPageMetricsQuery }, options: RequestOptions = {}): Promise<ApiResponse<FacebookPageMetricsResponse>>` | GET | `/analytics/facebook/page-metrics` | [api/analytics/facebook-page-metrics](https://www.tryadeli.com/docs/api/analytics/facebook-page-metrics) |
 | analytics | `getTikTokAccountAnalytics(args: { readonly query: TikTokAccountAnalyticsQuery }, options: RequestOptions = {}): Promise<ApiResponse<TikTokAccountAnalyticsResponse>>` | GET | `/analytics/tiktok/account-analytics` | [api/analytics/tiktok-account-analytics](https://www.tryadeli.com/docs/api/analytics/tiktok-account-analytics) |
@@ -62,6 +63,9 @@ Generated from `src/operations.ts` metadata, AST-extracted resource method decla
 | ads | `listAdIdentities(args: { readonly query: AdIdentitiesQuery }, options: RequestOptions = {}): Promise<ApiResponse<AdIdentitiesResponse>>` | GET | `/ads/identities` | [api/ads/list-identities](https://www.tryadeli.com/docs/api/ads/list-identities) |
 | ads | `createAdIdentity(args: { readonly query?: CreateAdIdentityQuery; readonly body: CreateAdIdentityBody }, options: RequestOptions = {}): Promise<ApiResponse<AdIdentityResponse>>` | POST | `/ads/identities` | [api/ads/create-identity](https://www.tryadeli.com/docs/api/ads/create-identity) |
 | usage | `getXUsage(_args: Record<never, never> = {}, options: RequestOptions = {}): Promise<ApiResponse<XUsageResponse>>` | GET | `/usage/x` | [pricing/x](https://www.tryadeli.com/docs/pricing/x) |
+| webhooks | `listWebhooks(args: { readonly query: ListWebhooksQuery }, options: RequestOptions = {}): Promise<ApiResponse<WebhooksResponse>>` | GET | `/webhooks` | [api/webhooks/list-webhooks](https://www.tryadeli.com/docs/api/webhooks/list-webhooks) |
+| webhooks | `createWebhook(args: { readonly body: CreateWebhookBody }, options: RequestOptions = {}): Promise<ApiResponse<CreatedWebhook>>` | POST | `/webhooks` | [api/webhooks/create-webhook](https://www.tryadeli.com/docs/api/webhooks/create-webhook) |
+| webhooks | `deleteWebhook(args: { readonly path: Path<'deleteWebhook'> }, options: RequestOptions = {}): Promise<ApiResponse<undefined>>` | DELETE | `/webhooks/{webhookId}` | [api/webhooks/delete-webhook](https://www.tryadeli.com/docs/api/webhooks/delete-webhook) |
 
 ## Compatibility note
 
