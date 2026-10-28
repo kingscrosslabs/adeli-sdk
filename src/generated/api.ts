@@ -591,6 +591,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/analytics/linkedin/account-insights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * LinkedIn account insights
+         * @description Followers and a daily series of impressions, reactions, comments, shares and follower gain for a LinkedIn Page or personal profile; clicks and Page views are reported for Pages only. Served from a snapshot refreshed at most every six hours; `stale` is true when LinkedIn rate-limited the refresh.
+         */
+        get: operations["getLinkedInAccountInsights"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/analytics/linkedin/post-insights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * LinkedIn post insights
+         * @description Lifetime counters for up to five LinkedIn posts, or the account's recent posts when postUrns is omitted. A personal profile's posts must have been published through Adeli.
+         */
+        get: operations["getLinkedInPostInsights"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/ads/businesses": {
         parameters: {
             query?: never;
@@ -906,7 +946,7 @@ export interface components {
         };
         ApiErrorRecord: {
             /** @enum {string} */
-            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
             accountId: string;
             code: string;
             message: string;
@@ -932,7 +972,7 @@ export interface components {
             /** Format: uuid */
             profileId: string;
             /** @enum {string} */
-            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
             /** @enum {string} */
             status: "pending_authorization" | "processing" | "pending_page_selection" | "connected" | "failed" | "expired";
             accountId: string | null;
@@ -955,7 +995,7 @@ export interface components {
             /** Format: uuid */
             profileId: string;
             /** @enum {string} */
-            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
             providerId: string | null;
             displayName: string | null;
             displayIdentifier: string | null;
@@ -1002,13 +1042,13 @@ export interface components {
                 method: "POST";
                 href: string | null;
                 /** @enum {string} */
-                provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
             };
         };
         NormalizedPost: {
             id: string;
             /** @enum {string} */
-            platform: "instagram" | "tiktok" | "facebook" | "youtube" | "x" | "bluesky";
+            platform: "instagram" | "tiktok" | "facebook" | "youtube" | "x" | "bluesky" | "linkedin";
             /** Format: uuid */
             accountId: string;
             /** Format: uuid */
@@ -1063,7 +1103,7 @@ export interface components {
                 /** Format: uuid */
                 profileId: string;
                 /** @enum {string} */
-                platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                 providerId: string | null;
                 displayName: string | null;
                 displayIdentifier: string | null;
@@ -1110,12 +1150,12 @@ export interface components {
                     method: "POST";
                     href: string | null;
                     /** @enum {string} */
-                    provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                    provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                 };
             }[];
             errors: {
                 /** @enum {string} */
-                platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                 accountId: string;
                 code: string;
                 message: string;
@@ -1128,7 +1168,7 @@ export interface components {
             posts: {
                 id: string;
                 /** @enum {string} */
-                platform: "instagram" | "tiktok" | "facebook" | "youtube" | "x" | "bluesky";
+                platform: "instagram" | "tiktok" | "facebook" | "youtube" | "x" | "bluesky" | "linkedin";
                 /** Format: uuid */
                 accountId: string;
                 /** Format: uuid */
@@ -1152,7 +1192,7 @@ export interface components {
             }[];
             errors: {
                 /** @enum {string} */
-                platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                 accountId: string;
                 code: string;
                 message: string;
@@ -1186,7 +1226,7 @@ export interface components {
             }[];
             errors: {
                 /** @enum {string} */
-                platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                 accountId: string;
                 code: string;
                 message: string;
@@ -1240,7 +1280,7 @@ export interface operations {
                             /** Format: uuid */
                             accountId: string;
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                             username: string | null;
                         }[];
                         /** Format: uri */
@@ -1670,7 +1710,7 @@ export interface operations {
             content: {
                 "application/json": {
                     /** @enum {string} */
-                    platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                    platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                     /** Format: uri */
                     redirectUrl?: string;
                     /** @enum {string} */
@@ -1692,7 +1732,7 @@ export interface operations {
                         /** Format: uuid */
                         profileId: string;
                         /** @enum {string} */
-                        platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                        platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                         /** @enum {string} */
                         status: "pending_authorization" | "processing" | "pending_page_selection" | "connected" | "failed" | "expired";
                         accountId: string | null;
@@ -1800,7 +1840,7 @@ export interface operations {
                         /** Format: uuid */
                         profileId: string;
                         /** @enum {string} */
-                        platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                        platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                         /** @enum {string} */
                         status: "pending_authorization" | "processing" | "pending_page_selection" | "connected" | "failed" | "expired";
                         accountId: string | null;
@@ -1858,7 +1898,7 @@ export interface operations {
     listAccounts: {
         parameters: {
             query?: {
-                platform?: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                platform?: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                 accountId?: string;
                 profileId?: string;
             };
@@ -1885,7 +1925,7 @@ export interface operations {
                             /** Format: uuid */
                             profileId: string;
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                             providerId: string | null;
                             displayName: string | null;
                             displayIdentifier: string | null;
@@ -1932,12 +1972,12 @@ export interface operations {
                                 method: "POST";
                                 href: string | null;
                                 /** @enum {string} */
-                                provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                                provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                             };
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                             accountId: string;
                             code: string;
                             message: string;
@@ -1963,7 +2003,7 @@ export interface operations {
                             /** Format: uuid */
                             profileId: string;
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                             providerId: string | null;
                             displayName: string | null;
                             displayIdentifier: string | null;
@@ -2010,12 +2050,12 @@ export interface operations {
                                 method: "POST";
                                 href: string | null;
                                 /** @enum {string} */
-                                provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                                provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                             };
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                             accountId: string;
                             code: string;
                             message: string;
@@ -2109,7 +2149,7 @@ export interface operations {
                             /** Format: uuid */
                             profileId: string;
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                             providerId: string | null;
                             displayName: string | null;
                             displayIdentifier: string | null;
@@ -2156,12 +2196,12 @@ export interface operations {
                                 method: "POST";
                                 href: string | null;
                                 /** @enum {string} */
-                                provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                                provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                             };
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                             accountId: string;
                             code: string;
                             message: string;
@@ -2187,7 +2227,7 @@ export interface operations {
                             /** Format: uuid */
                             profileId: string;
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                             providerId: string | null;
                             displayName: string | null;
                             displayIdentifier: string | null;
@@ -2234,12 +2274,12 @@ export interface operations {
                                 method: "POST";
                                 href: string | null;
                                 /** @enum {string} */
-                                provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                                provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                             };
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                             accountId: string;
                             code: string;
                             message: string;
@@ -2332,7 +2372,7 @@ export interface operations {
                         /** Format: uuid */
                         profileId: string;
                         /** @enum {string} */
-                        platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                        platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                         providerId: string | null;
                         displayName: string | null;
                         displayIdentifier: string | null;
@@ -2497,7 +2537,7 @@ export interface operations {
                         /** Format: uuid */
                         profileId: string;
                         /** @enum {string} */
-                        platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                        platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                         providerId: string | null;
                         displayName: string | null;
                         displayIdentifier: string | null;
@@ -2596,7 +2636,7 @@ export interface operations {
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                             accountId: string;
                             code: string;
                             message: string;
@@ -2630,7 +2670,7 @@ export interface operations {
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                             accountId: string;
                             code: string;
                             message: string;
@@ -2707,7 +2747,7 @@ export interface operations {
     listPosts: {
         parameters: {
             query?: {
-                platform?: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                platform?: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                 accountId?: string;
                 profileId?: string;
             };
@@ -2729,7 +2769,7 @@ export interface operations {
                         posts: {
                             id: string;
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "facebook" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "facebook" | "youtube" | "x" | "bluesky" | "linkedin";
                             /** Format: uuid */
                             accountId: string;
                             /** Format: uuid */
@@ -2753,7 +2793,7 @@ export interface operations {
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                             accountId: string;
                             code: string;
                             message: string;
@@ -2774,7 +2814,7 @@ export interface operations {
                         posts: {
                             id: string;
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "facebook" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "facebook" | "youtube" | "x" | "bluesky" | "linkedin";
                             /** Format: uuid */
                             accountId: string;
                             /** Format: uuid */
@@ -2798,7 +2838,7 @@ export interface operations {
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                             accountId: string;
                             code: string;
                             message: string;
@@ -3326,6 +3366,20 @@ export interface operations {
                             altText?: string;
                         };
                     }[];
+                } | {
+                    /** @constant */
+                    platform: "linkedin";
+                    /** Format: uuid */
+                    accountId: string;
+                    /** Format: uuid */
+                    profileId?: string;
+                    commentary: string;
+                    image?: {
+                        /** @enum {string} */
+                        content_type: "image/jpeg" | "image/png" | "image/gif";
+                        base64: string;
+                        title?: string;
+                    };
                 };
                 "multipart/form-data": {
                     /** @description `tiktok`. */
@@ -3377,7 +3431,7 @@ export interface operations {
                     "application/json": {
                         id: string;
                         /** @enum {string} */
-                        platform: "instagram" | "tiktok" | "facebook" | "youtube" | "x" | "bluesky";
+                        platform: "instagram" | "tiktok" | "facebook" | "youtube" | "x" | "bluesky" | "linkedin";
                         /** Format: uuid */
                         accountId: string;
                         /** Format: uuid */
@@ -4176,7 +4230,7 @@ export interface operations {
                         post: {
                             id: string;
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "facebook" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "facebook" | "youtube" | "x" | "bluesky" | "linkedin";
                             /** Format: uuid */
                             accountId: string;
                             /** Format: uuid */
@@ -5172,7 +5226,7 @@ export interface operations {
     listMessages: {
         parameters: {
             query?: {
-                platform?: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                platform?: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                 accountId?: string;
                 profileId?: string;
             };
@@ -5215,7 +5269,7 @@ export interface operations {
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                             accountId: string;
                             code: string;
                             message: string;
@@ -5257,7 +5311,7 @@ export interface operations {
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
                             accountId: string;
                             code: string;
                             message: string;
@@ -6669,6 +6723,248 @@ export interface operations {
             };
             /** @description Invalid request or provider failure */
             502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getLinkedInAccountInsights: {
+        parameters: {
+            query: {
+                accountId: string;
+                profileId?: string;
+                days?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        platform: "linkedin";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        /** @enum {string} */
+                        targetType: "organization" | "member";
+                        followers: number | null;
+                        startDate: string;
+                        endDate: string;
+                        daily: {
+                            date: string;
+                            impressions: number | null;
+                            clicks: number | null;
+                            reactions: number | null;
+                            comments: number | null;
+                            shares: number | null;
+                            followerGain: number | null;
+                            pageViews: number | null;
+                        }[];
+                        unavailable: string[];
+                        /** Format: date-time */
+                        fetchedAt: string;
+                        stale: boolean;
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connection lacks a permission or provider-confirmed resource */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PermissionRequiredError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connected account cannot perform this operation */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Provider quota or rate limit exhausted */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The platform is temporarily unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getLinkedInPostInsights: {
+        parameters: {
+            query: {
+                accountId: string;
+                profileId?: string;
+                postUrns?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        platform: "linkedin";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        /** @enum {string} */
+                        targetType: "organization" | "member";
+                        posts: {
+                            postUrn: string;
+                            /** Format: uri */
+                            permalink: string;
+                            title: string | null;
+                            publishedAt: string | null;
+                            hasImage: boolean;
+                            impressions: number | null;
+                            clicks: number | null;
+                            reactions: number | null;
+                            comments: number | null;
+                            shares: number | null;
+                        }[];
+                        /** Format: date-time */
+                        fetchedAt: string;
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connection lacks a permission or provider-confirmed resource */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PermissionRequiredError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connected account cannot perform this operation */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Provider quota or rate limit exhausted */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The platform is temporarily unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };

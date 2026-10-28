@@ -3,7 +3,7 @@
 Generated from `src/operations.ts` metadata, AST-extracted resource method declarations, and the checked-in verified public docs mapping `openapi/docs-links.json`; this file is not hand-maintained.
 
 - Contract status: **candidate-unreleased**
-- Candidate OpenAPI SHA-256: `e1a4cd95b91e14c2732275213493caebaa7ee3d83dffec27c001511eda32fc35`
+- Candidate OpenAPI SHA-256: `1c7c87c67101ceeaa7b94e5c1614065ad819d08955cbc3273ccb1b4895263371`
 - Public endpoint documentation: https://www.tryadeli.com/docs/
 
 | Resource | Method signature | HTTP | Path | Endpoint docs |
@@ -47,6 +47,8 @@ Generated from `src/operations.ts` metadata, AST-extracted resource method decla
 | analytics | `getTikTokVideoInsights(args: { readonly query: TikTokVideoInsightsQuery }, options: RequestOptions = {}): Promise<ApiResponse<TikTokVideoInsightsResponse>>` | GET | `/analytics/tiktok/video-insights` | [api/analytics/tiktok-post-insights](https://www.tryadeli.com/docs/api/analytics/tiktok-post-insights) |
 | analytics | `getYouTubeChannelInsights(args: { readonly query: YouTubeChannelInsightsQuery }, options: RequestOptions = {}): Promise<ApiResponse<YouTubeChannelInsightsResponse>>` | GET | `/analytics/youtube/channel-insights` | [api/analytics/youtube-channel-insights](https://www.tryadeli.com/docs/api/analytics/youtube-channel-insights) |
 | analytics | `getYouTubeVideoInsights(args: { readonly query: YouTubeVideoInsightsQuery }, options: RequestOptions = {}): Promise<ApiResponse<YouTubeVideoInsightsResponse>>` | GET | `/analytics/youtube/video-insights` | [api/analytics/youtube-video-insights](https://www.tryadeli.com/docs/api/analytics/youtube-video-insights) |
+| analytics | `getLinkedInAccountInsights(args: { readonly query: LinkedInAccountInsightsQuery }, options: RequestOptions = {}): Promise<ApiResponse<LinkedInAccountInsightsResponse>>` | GET | `/analytics/linkedin/account-insights` | [api/analytics/linkedin-account-insights](https://www.tryadeli.com/docs/api/analytics/linkedin-account-insights) |
+| analytics | `getLinkedInPostInsights(args: { readonly query: LinkedInPostInsightsQuery }, options: RequestOptions = {}): Promise<ApiResponse<LinkedInPostInsightsResponse>>` | GET | `/analytics/linkedin/post-insights` | [api/analytics/linkedin-post-insights](https://www.tryadeli.com/docs/api/analytics/linkedin-post-insights) |
 | ads | `listAdBusinesses(args: { readonly query?: AdBusinessesQuery } = {}, options: RequestOptions = {}): Promise<ApiResponse<ListAdBusinessesResponse>>` | GET | `/ads/businesses` | [api/ads/list-businesses](https://www.tryadeli.com/docs/api/ads/list-businesses) |
 | ads | `listAdAccounts(args: { readonly query?: AdAccountsQuery } = {}, options: RequestOptions = {}): Promise<ApiResponse<ListAdAccountsResponse>>` | GET | `/ads/accounts` | [api/ads/list-ad-accounts](https://www.tryadeli.com/docs/api/ads/list-ad-accounts) |
 | ads | `createAdAccount(args: { readonly query?: CreateAdAccountQuery; readonly body: CreateAdAccountBody }, options: IdempotentOptions): Promise<ApiResponse<CreateAdAccountResponse>>` | POST | `/ads/accounts` | [api/ads/create-ad-account](https://www.tryadeli.com/docs/api/ads/create-ad-account) |
