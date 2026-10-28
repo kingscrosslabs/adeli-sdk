@@ -25,6 +25,21 @@ npm trusted publishing only works for a package that already exists on the regis
 
 The scheduled/manual drift workflow preserves raw SHA evidence but compares parsed canonical OpenAPI JSON. Formatting/key-order-only changes are reported without failing; meaningful canonical changes and malformed/non-OpenAPI responses fail with review evidence. Fetching is bounded and workflow-only; no drift update, publication, or auto-merge occurs.
 
+## Releasing
+
+Every release after `0.1.0` goes through `release.yml` and its OIDC `publish` job. Never run `npm publish` locally or with a token.
+
+1. Each change that should ship adds a changeset in its own PR: `npx changeset`.
+2. Open a release PR from `release/X.Y.Z`: run `npx changeset version`, which bumps `package.json`, writes `CHANGELOG.md` and deletes the consumed changesets. Then run `npm install --package-lock-only` so the lockfile version matches, and `npm run release:check`. Merge after review.
+3. Tag the merge commit and push the tag:
+   `git fetch origin && git tag -a vX.Y.Z origin/main -m vX.Y.Z && git push origin vX.Y.Z`
+4. Dispatch the workflow on that tag:
+   `gh workflow run release.yml --ref vX.Y.Z -f reviewed_version=X.Y.Z -f release_tag=vX.Y.Z`
+5. When `validate` passes, the `publish` job waits for an `npm-release` reviewer. Approve it in the Actions run to publish with provenance.
+6. Confirm the release: `npm view @adeli/sdk@X.Y.Z version`. The registry can take a few minutes to show a new version.
+
+If `validate` fails, fix it on `main` with a normal PR. As long as nothing was published, delete the tag (`git push origin :refs/tags/vX.Y.Z`), retag the new merge commit and dispatch again. Never move a tag or reuse a version number once it has been published.
+
 ## Evidence format
 
 Record the exact SDK revision, package version, contract SHA-256, source label, commands and results, tarball filename/hash, known blocked gates, release owner, and follow-up owner. A successful local build is not release readiness, API deployment, npm publication, or runtime smoke evidence. Close the private handoff only after an authorized publication, API availability, public documentation/migration notes, and verified tag/version are confirmed.
