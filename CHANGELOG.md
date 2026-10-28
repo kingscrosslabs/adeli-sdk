@@ -1,5 +1,11 @@
 # @adeli/sdk
 
+## 0.1.1
+
+### Patch Changes
+
+- 94f660e: empty release to test publishing to npmjs
+
 ## 0.1.0
 
 ### Minor Changes
