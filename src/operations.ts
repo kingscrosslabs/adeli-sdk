@@ -41,6 +41,8 @@ export const operations = {
   getTikTokVideoInsights: { operationId: 'getTikTokVideoInsights', method: 'GET', path: '/analytics/tiktok/video-insights', retry: 'safe-read' },
   getYouTubeChannelInsights: { operationId: 'getYouTubeChannelInsights', method: 'GET', path: '/analytics/youtube/channel-insights', retry: 'safe-read' },
   getYouTubeVideoInsights: { operationId: 'getYouTubeVideoInsights', method: 'GET', path: '/analytics/youtube/video-insights', retry: 'safe-read' },
+  getLinkedInAccountInsights: { operationId: 'getLinkedInAccountInsights', method: 'GET', path: '/analytics/linkedin/account-insights', retry: 'safe-read' },
+  getLinkedInPostInsights: { operationId: 'getLinkedInPostInsights', method: 'GET', path: '/analytics/linkedin/post-insights', retry: 'safe-read' },
   listAdBusinesses: { operationId: 'listAdBusinesses', method: 'GET', path: '/ads/businesses', retry: 'safe-read' },
   listAdAccounts: { operationId: 'listAdAccounts', method: 'GET', path: '/ads/accounts', retry: 'safe-read' },
   createAdAccount: { operationId: 'createAdAccount', method: 'POST', path: '/ads/accounts', retry: 'never' },

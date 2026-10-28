@@ -8,6 +8,7 @@ const id = '00000000-0000-0000-0000-000000000001';
 const image = { contentType: 'image/jpeg' as const, base64: 'aGVsbG8=' };
 
 const instagramImage: CreatePostBody = { platform: 'instagram', accountId: id, image };
+const linkedinPost: CreatePostBody = { platform: 'linkedin', accountId: id, commentary: 'A new update', image: { content_type: 'image/png', base64: 'aGVsbG8=', title: 'Launch' } };
 const youtubeVideo: CreatePostBody = { platform: 'youtube', accountId: id, title: 'video', privacy_status: 'private', made_for_kids: false, video: { url: 'https://media.example/video.mp4' } };
 const tiktokFiles: TikTokMultipartBody = { platform: 'tiktok', accountId: id, music_usage_confirmed: true, video: new Blob(['video'], { type: 'video/mp4' }), disable_comment: false, photo_cover_index: 0 };
 const file = new File(['media'], 'media.jpg', { type: 'image/jpeg' });
@@ -27,9 +28,12 @@ const completeAccount: Account = {
   capabilities: {}, capabilityRequirements: {}, reconnect: { action: 'restart_oauth', method: 'POST', href: null, provider: 'x' },
 };
 const supportedConnection: StartConnectionBody = { platform: 'youtube' };
+const linkedinConnection: StartConnectionBody = { platform: 'linkedin' };
 void nullableProfile;
 void completeAccount;
 void supportedConnection;
+void linkedinConnection;
+void linkedinPost;
 void instagramImage;
 void youtubeVideo;
 void tiktokFiles;

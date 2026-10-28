@@ -10,6 +10,8 @@ export type TikTokAccountInsightsQuery = JsonQuery<'getTikTokAccountInsights'>;
 export type TikTokVideoInsightsQuery = JsonQuery<'getTikTokVideoInsights'>;
 export type YouTubeChannelInsightsQuery = JsonQuery<'getYouTubeChannelInsights'>;
 export type YouTubeVideoInsightsQuery = JsonQuery<'getYouTubeVideoInsights'>;
+export type LinkedInAccountInsightsQuery = JsonQuery<'getLinkedInAccountInsights'>;
+export type LinkedInPostInsightsQuery = JsonQuery<'getLinkedInPostInsights'>;
 export type InstagramAccountInsightsResponse = SuccessBody<'getInstagramAccountInsights'>;
 export type FacebookPageMetricsResponse = SuccessBody<'getFacebookPageMetrics'>;
 export type TikTokAccountAnalyticsResponse = SuccessBody<'getTikTokAccountAnalytics'>;
@@ -17,6 +19,8 @@ export type TikTokAccountInsightsResponse = SuccessBody<'getTikTokAccountInsight
 export type TikTokVideoInsightsResponse = SuccessBody<'getTikTokVideoInsights'>;
 export type YouTubeChannelInsightsResponse = SuccessBody<'getYouTubeChannelInsights'>;
 export type YouTubeVideoInsightsResponse = SuccessBody<'getYouTubeVideoInsights'>;
+export type LinkedInAccountInsightsResponse = SuccessBody<'getLinkedInAccountInsights'>;
+export type LinkedInPostInsightsResponse = SuccessBody<'getLinkedInPostInsights'>;
 
 export class AnalyticsResource {
   constructor(private readonly transport: Transport) {}
@@ -27,4 +31,8 @@ export class AnalyticsResource {
   getTikTokVideoInsights(args: { readonly query: TikTokVideoInsightsQuery }, options: RequestOptions = {}): Promise<ApiResponse<TikTokVideoInsightsResponse>> { return this.transport.request({ operation: operations.getTikTokVideoInsights, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs }); }
   getYouTubeChannelInsights(args: { readonly query: YouTubeChannelInsightsQuery }, options: RequestOptions = {}): Promise<ApiResponse<YouTubeChannelInsightsResponse>> { return this.transport.request({ operation: operations.getYouTubeChannelInsights, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs }); }
   getYouTubeVideoInsights(args: { readonly query: YouTubeVideoInsightsQuery }, options: RequestOptions = {}): Promise<ApiResponse<YouTubeVideoInsightsResponse>> { return this.transport.request({ operation: operations.getYouTubeVideoInsights, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs }); }
+  /** A LinkedIn Page's or personal profile's followers and daily series, from a snapshot Adeli refreshes at most every six hours. */
+  getLinkedInAccountInsights(args: { readonly query: LinkedInAccountInsightsQuery }, options: RequestOptions = {}): Promise<ApiResponse<LinkedInAccountInsightsResponse>> { return this.transport.request({ operation: operations.getLinkedInAccountInsights, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs }); }
+  /** Lifetime counters for up to five LinkedIn posts; a personal profile's posts must have been published through Adeli. */
+  getLinkedInPostInsights(args: { readonly query: LinkedInPostInsightsQuery }, options: RequestOptions = {}): Promise<ApiResponse<LinkedInPostInsightsResponse>> { return this.transport.request({ operation: operations.getLinkedInPostInsights, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs }); }
 }

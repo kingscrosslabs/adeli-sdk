@@ -1,8 +1,8 @@
 {
-  "source": "adeli-core-working-tree",
+  "source": "adeli-core-linkedin-analytics-plus-comment-to-dm",
   "specUrl": "candidate file",
-  "retrievedAt": "2026-10-27T21:49:51.525Z",
-  "sha256": "e1a4cd95b91e14c2732275213493caebaa7ee3d83dffec27c001511eda32fc35",
+  "retrievedAt": "2026-10-28T18:59:23.129Z",
+  "sha256": "1c7c87c67101ceeaa7b94e5c1614065ad819d08955cbc3273ccb1b4895263371",
   "upstreamCommit": null,
   "status": "candidate-unreleased"
 }

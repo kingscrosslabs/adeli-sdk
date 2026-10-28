@@ -51,6 +51,8 @@
     "getTikTokVideoInsights": [{"method":"GET","path":"/api/v1/analytics/tiktok/video-insights","href":"/docs/api/analytics/tiktok-post-insights"}],
     "getYouTubeChannelInsights": [{"method":"GET","path":"/api/v1/analytics/youtube/channel-insights","href":"/docs/api/analytics/youtube-channel-insights"}],
     "getYouTubeVideoInsights": [{"method":"GET","path":"/api/v1/analytics/youtube/video-insights","href":"/docs/api/analytics/youtube-video-insights"}],
+    "getLinkedInAccountInsights": [{"method":"GET","path":"/api/v1/analytics/linkedin/account-insights","href":"/docs/api/analytics/linkedin-account-insights"}],
+    "getLinkedInPostInsights": [{"method":"GET","path":"/api/v1/analytics/linkedin/post-insights","href":"/docs/api/analytics/linkedin-post-insights"}],
     "listAdBusinesses": [{"method":"GET","path":"/api/v1/ads/businesses","href":"/docs/api/ads/list-businesses"}],
     "listAdAccounts": [{"method":"GET","path":"/api/v1/ads/accounts","href":"/docs/api/ads/list-ad-accounts"}],
     "createAdAccount": [{"method":"POST","path":"/api/v1/ads/accounts","href":"/docs/api/ads/create-ad-account"}],
