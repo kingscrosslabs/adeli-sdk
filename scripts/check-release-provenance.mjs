@@ -4,22 +4,28 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { basename, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+// Files the release commit may touch on top of the commit the run started from.
+const RELEASE_FILES = new Set(['package.json', 'package-lock.json', 'CHANGELOG.md']);
+const isReleaseFile = file => RELEASE_FILES.has(file) || /^\.changeset\/[^/]+\.md$/.test(file);
+
+// A release run starts on main at eventSha. Its first job commits the version bump
+// directly on top of eventSha and tags it releaseTag. Every later job checks out that
+// tag and must prove it is exactly that commit before any package work.
 export function validateReleaseIdentity(input) {
   const errors = [];
-  if (input.eventRefType !== 'tag') {
-    throw new Error(`Release provenance validation failed:\n- release must run on a tag ref (received ${input.eventRefType || 'missing'}); pick the release tag under "Use workflow from" → Tags`);
-  }
-  if (input.eventRef !== `refs/tags/${input.releaseTag}`) errors.push(`event ref ${input.eventRef} does not match refs/tags/${input.releaseTag}`);
-  if (input.eventRefName !== input.releaseTag) errors.push(`event ref name ${input.eventRefName} does not match release tag ${input.releaseTag}`);
-  if (input.eventSha !== input.headSha) errors.push(`checked-out HEAD ${input.headSha} does not match workflow event SHA ${input.eventSha}`);
-  if (`v${input.reviewedVersion}` !== input.releaseTag) errors.push(`reviewed version ${input.reviewedVersion} does not match release tag ${input.releaseTag}`);
+  if (input.eventRef !== 'refs/heads/main') errors.push(`release must run from main (received ${input.eventRef || 'missing'})`);
+  if (input.headSha !== input.tagSha) errors.push(`checked-out HEAD ${input.headSha} is not the commit tagged ${input.releaseTag} (${input.tagSha})`);
+  if (input.parentSha !== input.eventSha) errors.push(`release commit's parent ${input.parentSha} is not the run's starting commit ${input.eventSha}`);
+  if (input.releaseTag !== `v${input.packageVersion}`) errors.push(`release tag ${input.releaseTag} does not match package version ${input.packageVersion}`);
   if (input.packageName !== '@adeli/sdk') errors.push(`package name ${input.packageName} is not @adeli/sdk`);
-  if (input.packageVersion !== input.reviewedVersion) errors.push(`package version ${input.packageVersion} does not match reviewed version ${input.reviewedVersion}`);
+  const changed = input.changedFiles ?? [];
+  if (!changed.includes('package.json')) errors.push('release commit does not change package.json');
+  const unexpected = changed.filter(file => !isReleaseFile(file));
+  if (unexpected.length) errors.push(`release commit changes files other than the version bump: ${unexpected.join(', ')}`);
   if (input.identity) {
-    for (const field of ['eventRefType', 'eventRef', 'eventRefName', 'eventSha', 'releaseTag', 'reviewedVersion', 'packageName']) {
-      if (input.identity[field] !== input[field]) errors.push(`publish event ${field} differs from validated event identity`);
+    for (const field of ['eventRef', 'eventSha', 'headSha', 'releaseTag', 'packageName', 'packageVersion']) {
+      if (input.identity[field] !== input[field]) errors.push(`publish ${field} differs from validated release identity`);
     }
-    if (input.identity.headSha !== input.headSha) errors.push('publish checkout HEAD differs from validated checkout HEAD');
   }
   if (errors.length) throw new Error(`Release provenance validation failed:\n${errors.map(error => `- ${error}`).join('\n')}`);
   return { ok: true };
@@ -40,15 +46,18 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1
   const identityFile = valueAfter(args, '--identity-file');
   const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
   const identity = identityFile ? JSON.parse(readFileSync(identityFile, 'utf8')) : undefined;
+  const git = (...gitArgs) => execFileSync('git', gitArgs, { encoding: 'utf8' }).trim();
+  const releaseTag = process.env.RELEASE_TAG;
+  const eventSha = process.env.EVENT_SHA;
+  const headSha = git('rev-parse', 'HEAD');
   const input = {
-    eventRefType: process.env.EVENT_REF_TYPE,
     eventRef: process.env.EVENT_REF,
-    eventRefName: process.env.EVENT_REF_NAME,
-    eventSha: process.env.EVENT_SHA,
-    headSha: process.env.HEAD_SHA,
-    // The release tag is the pushed tag; its version is the tag without the leading "v".
-    releaseTag: process.env.EVENT_REF_NAME,
-    reviewedVersion: process.env.EVENT_REF_NAME?.replace(/^v/, ''),
+    eventSha,
+    headSha,
+    tagSha: releaseTag ? git('rev-parse', `refs/tags/${releaseTag}^{commit}`) : undefined,
+    parentSha: git('rev-parse', 'HEAD^'),
+    releaseTag,
+    changedFiles: eventSha ? git('diff', '--name-only', eventSha, headSha).split('\n').filter(Boolean) : undefined,
     packageName: packageJson.name,
     packageVersion: packageJson.version,
     identity,
@@ -57,8 +66,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1
   if (artifact) {
     const artifactPath = resolve(artifact);
     const metadata = packageMetadataFromTarball(artifactPath);
-    if (metadata.name !== input.packageName || metadata.version !== input.reviewedVersion) {
-      throw new Error(`Packed artifact metadata ${metadata.name}@${metadata.version} does not match ${input.packageName}@${input.reviewedVersion}`);
+    if (metadata.name !== input.packageName || metadata.version !== input.packageVersion) {
+      throw new Error(`Packed artifact metadata ${metadata.name}@${metadata.version} does not match ${input.packageName}@${input.packageVersion}`);
     }
     const artifactSha256 = sha256(artifactPath);
     if (identity?.artifactSha256 && identity.artifactSha256 !== artifactSha256) throw new Error('Packed artifact hash differs from validated artifact hash');
@@ -67,8 +76,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1
       if (!output) throw new Error('--write-identity requires an output path');
       writeFileSync(output, `${JSON.stringify({ ...input, artifactSha256, artifactName: basename(artifactPath) }, null, 2)}\n`);
     }
-    console.log(`Release identity and artifact validated: ${input.packageName}@${input.reviewedVersion} ${artifactSha256}`);
+    console.log(`Release identity and artifact validated: ${input.packageName}@${input.packageVersion} ${artifactSha256}`);
   } else {
-    console.log(`Release identity validated: ${input.eventRef} at ${input.headSha}`);
+    console.log(`Release identity validated: ${input.releaseTag} at ${input.headSha} (bump on top of ${input.eventSha})`);
   }
 }
