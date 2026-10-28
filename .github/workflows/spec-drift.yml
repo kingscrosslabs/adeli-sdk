@@ -12,7 +12,7 @@ jobs:
   compare:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - name: Fetch public candidate and write review report
@@ -35,7 +35,7 @@ jobs:
           test "$status" -eq 0
       - name: Upload drift evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: openapi-drift-report
           path: .drift-report
