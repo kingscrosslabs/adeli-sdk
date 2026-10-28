@@ -10,7 +10,7 @@ describe('release tooling policy', () => {
       files?: string[];
     };
     expect(packageJson.dependencies ?? {}).toEqual({});
-    expect(packageJson.license).toBe('UNLICENSED');
+    expect(packageJson.license).toBe('MIT');
     expect(Object.keys(packageJson.exports ?? {})).toEqual(['.', './helpers', './uploads']);
     expect(packageJson.files).not.toContain('test');
     expect(packageJson.files).not.toContain('plans');
