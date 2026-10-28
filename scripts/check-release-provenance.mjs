@@ -6,7 +6,9 @@ import { fileURLToPath } from 'node:url';
 
 export function validateReleaseIdentity(input) {
   const errors = [];
-  if (input.eventRefType !== 'tag') errors.push(`workflow_dispatch must run on a tag ref (received ${input.eventRefType || 'missing'})`);
+  if (input.eventRefType !== 'tag') {
+    throw new Error(`Release provenance validation failed:\n- release must run on a tag ref (received ${input.eventRefType || 'missing'}); pick the release tag under "Use workflow from" → Tags`);
+  }
   if (input.eventRef !== `refs/tags/${input.releaseTag}`) errors.push(`event ref ${input.eventRef} does not match refs/tags/${input.releaseTag}`);
   if (input.eventRefName !== input.releaseTag) errors.push(`event ref name ${input.eventRefName} does not match release tag ${input.releaseTag}`);
   if (input.eventSha !== input.headSha) errors.push(`checked-out HEAD ${input.headSha} does not match workflow event SHA ${input.eventSha}`);
@@ -44,8 +46,9 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1
     eventRefName: process.env.EVENT_REF_NAME,
     eventSha: process.env.EVENT_SHA,
     headSha: process.env.HEAD_SHA,
-    releaseTag: process.env.RELEASE_TAG,
-    reviewedVersion: process.env.REVIEWED_VERSION,
+    // The release tag is the pushed tag; its version is the tag without the leading "v".
+    releaseTag: process.env.EVENT_REF_NAME,
+    reviewedVersion: process.env.EVENT_REF_NAME?.replace(/^v/, ''),
     packageName: packageJson.name,
     packageVersion: packageJson.version,
     identity,
