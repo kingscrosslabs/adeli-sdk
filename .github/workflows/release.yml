@@ -1,28 +1,26 @@
 name: Release SDK
-run-name: ${{ github.ref_type == 'tag' && format('Publish {0}', github.ref_name) || 'Release from main' }}
 
-# One click: Actions → Release SDK → Run workflow (from main).
+# One click: Actions → Release SDK → Run workflow (from main). Three jobs run in order:
 #
-# 1. The run on main (job "prepare") turns the pending changesets into the next
-#    version and runs every check. Only if all of them pass does it commit the
-#    bump to main, tag it vX.Y.Z (one atomic push), and start this workflow
-#    again on that tag.
-# 2. The run on the tag (jobs "validate" and "publish") rebuilds from the tagged
-#    commit, checks the tag matches package.json, and publishes to npm with
-#    provenance for that exact commit.
+# 1. prepare: turn the pending changesets into the next version and run every check.
+#    Only if all of them pass, commit the bump to main and tag it vX.Y.Z (one atomic push).
+# 2. build: check out the tag, prove it is exactly that version bump on top of the
+#    commit this run started from, and pack the tarball.
+# 3. publish: publish that tarball to npm with provenance.
 on:
   workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   prepare:
     name: Bump, check and tag
-    if: github.ref_type == 'branch'
     permissions:
       contents: write
-      actions: write
-    concurrency:
-      group: release-prepare
-      cancel-in-progress: false
+    outputs:
+      tag: ${{ steps.push.outputs.tag }}
     runs-on: ubuntu-latest
     steps:
       - name: Require main
@@ -87,72 +85,45 @@ jobs:
           # One atomic push: main and the tag land together, or neither does (for example if main moved).
           git push --atomic origin HEAD:refs/heads/main "refs/tags/${tag}"
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"
-      # Publishing happens in a second run of this workflow on the new tag, so npm
-      # provenance points at the exact release commit. workflow_dispatch is the one
-      # event the workflow token is allowed to start.
-      - name: Start the publish run on the tag
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ steps.push.outputs.tag }}
-        run: |
-          set -euo pipefail
-          gh workflow run release.yml --ref "$TAG"
-          {
-            echo "### Tagged ${TAG}"
-            echo "Publishing continues in the **Publish ${TAG}** run: https://github.com/${GITHUB_REPOSITORY}/actions/workflows/release.yml"
-          } >> "$GITHUB_STEP_SUMMARY"
 
-  validate:
-    name: Validate tagged release
-    if: github.ref_type == 'tag'
+  build:
+    name: Build tarball from the tag
+    needs: prepare
     permissions:
       contents: read
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          # Use the event ref, never an arbitrary input ref. GITHUB_SHA is the
-          # commit GitHub will associate with provenance for this run.
-          ref: ${{ github.ref }}
+          ref: refs/tags/${{ needs.prepare.outputs.tag }}
+          fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '24.22.1'
           cache: npm
-      - name: Verify event identity before any package work
+      - name: Verify the tag is exactly the version bump
         env:
           EVENT_REF: ${{ github.ref }}
-          EVENT_REF_NAME: ${{ github.ref_name }}
-          EVENT_REF_TYPE: ${{ github.ref_type }}
           EVENT_SHA: ${{ github.sha }}
+          RELEASE_TAG: ${{ needs.prepare.outputs.tag }}
         run: |
           set -euo pipefail
-          export HEAD_SHA="$(git rev-parse HEAD)"
           test "$(npm --version)" = "11.19.1"
           node scripts/check-release-provenance.mjs
       - run: npm ci --ignore-scripts
-      # check:generated writes only to a temporary directory and detects committed drift.
-      - run: npm run check:generated
-      - run: npm run check:contract
-      - run: npm run lint
-      - run: npm run typecheck
-      - run: npm test
-      - run: npm audit --audit-level=high
       - run: npm run build
       - run: npm run check:package
       - run: npm run test:package
-      - run: npm run typecheck:examples
       - name: Require approved license before creating publish artifact
         run: test "$(node -p "require('./package.json').license")" != "UNLICENSED"
-      - name: Pack validated candidate without lifecycle scripts
+      - name: Pack the tarball without lifecycle scripts
         env:
           EVENT_REF: ${{ github.ref }}
-          EVENT_REF_NAME: ${{ github.ref_name }}
-          EVENT_REF_TYPE: ${{ github.ref_type }}
           EVENT_SHA: ${{ github.sha }}
+          RELEASE_TAG: ${{ needs.prepare.outputs.tag }}
         run: |
           set -euo pipefail
-          export HEAD_SHA="$(git rev-parse HEAD)"
           mkdir -p "$RUNNER_TEMP/sdk-release"
           npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP/sdk-release"
           artifact="$(find "$RUNNER_TEMP/sdk-release" -maxdepth 1 -name '*.tgz' -print -quit)"
@@ -169,9 +140,9 @@ jobs:
           if-no-files-found: error
 
   publish:
-    name: Publish tarball
-    needs: validate
-    # npm's trusted publisher is bound to this environment name. It only allows tags (v*); there is no approval step.
+    name: Publish to npm
+    needs: [prepare, build]
+    # npm's trusted publisher is bound to this workflow file and environment name.
     environment: npm-release
     permissions:
       contents: read
@@ -180,7 +151,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref }}
+          ref: refs/tags/${{ needs.prepare.outputs.tag }}
+          fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
@@ -190,22 +162,21 @@ jobs:
         with:
           name: sdk-release-tarball
           path: release
-      - name: Recheck event identity and artifact before publication
+      - name: Recheck the release identity and tarball
         env:
           EVENT_REF: ${{ github.ref }}
-          EVENT_REF_NAME: ${{ github.ref_name }}
-          EVENT_REF_TYPE: ${{ github.ref_type }}
           EVENT_SHA: ${{ github.sha }}
+          RELEASE_TAG: ${{ needs.prepare.outputs.tag }}
         run: |
           set -euo pipefail
-          export HEAD_SHA="$(git rev-parse HEAD)"
           test "$(npm --version)" = "11.19.1"
           artifact="$(find release -maxdepth 1 -name '*.tgz' -print -quit)"
           test -n "$artifact"
           node scripts/check-release-provenance.mjs --artifact "$artifact" --identity-file release/identity.json
-      - name: Publish validated tarball with OIDC provenance
+      - name: Publish the tarball with OIDC provenance
         run: |
           set -euo pipefail
-          set -- release/*.tgz
+          set -- ./release/*.tgz
           test "$#" -eq 1
+          # The ./ matters: without it npm reads release/x.tgz as a GitHub user/repo.
           npm publish "$1" --ignore-scripts --provenance --access public
