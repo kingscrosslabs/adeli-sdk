@@ -47,7 +47,7 @@ for (const file of packedFiles) if (forbidden.test(file)) errors.push(`forbidden
 for (const required of ['dist/index.js', 'dist/index.cjs', 'dist/index.d.ts', 'dist/index.d.cts', 'openapi/adeli.openapi.json', 'openapi/provenance.json']) {
   if (!packedFiles.includes(required)) errors.push(`tarball is missing required file ${required}`);
 }
-for (const required of ['README.md', 'docs/client.md', 'docs/publishing.md', 'docs/api-reference.md', 'docs/maintenance.md']) {
+for (const required of ['README.md', 'docs/client.md', 'docs/publishing.md', 'docs/api-reference.md', 'docs/maintenance.md', 'docs/releasing.md']) {
   if (!packedFiles.includes(required)) errors.push(`tarball is missing public documentation ${required}`);
 }
 if (approvedLicense && !packedFiles.includes('LICENSE')) errors.push('tarball is missing the approved LICENSE file');
