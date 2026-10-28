@@ -30,10 +30,8 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
-          node-version: '22.22.2'
+          node-version: '24.22.1'
           cache: npm
-      - name: Pin npm for trusted publishing compatibility
-        run: npm install --global --ignore-scripts npm@11.16.0
       - name: Verify event identity before any package work
         env:
           EVENT_REF: ${{ github.ref }}
@@ -45,7 +43,7 @@ jobs:
         run: |
           set -euo pipefail
           export HEAD_SHA="$(git rev-parse HEAD)"
-          test "$(npm --version)" = "11.16.0"
+          test "$(npm --version)" = "11.19.1"
           node scripts/check-release-provenance.mjs
       - run: npm ci --ignore-scripts
       # check:generated writes only to a temporary directory and detects committed drift.
@@ -102,10 +100,8 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
-          node-version: '22.22.2'
+          node-version: '24.22.1'
           registry-url: https://registry.npmjs.org
-      - name: Pin npm for trusted publishing compatibility without lifecycle scripts
-        run: npm install --global --ignore-scripts npm@11.16.0
       - uses: actions/download-artifact@v4
         with:
           name: sdk-release-tarball
@@ -121,7 +117,7 @@ jobs:
         run: |
           set -euo pipefail
           export HEAD_SHA="$(git rev-parse HEAD)"
-          test "$(npm --version)" = "11.16.0"
+          test "$(npm --version)" = "11.19.1"
           artifact="$(find release -maxdepth 1 -name '*.tgz' -print -quit)"
           test -n "$artifact"
           node scripts/check-release-provenance.mjs --artifact "$artifact" --identity-file release/identity.json

@@ -1,6 +1,6 @@
 # SDK smoke runbook
 
-This is an opt-in runbook, not an automated release claim. Record Node version (22 or 24), package version or local tarball filename, SDK revision, the contract provenance from `openapi/provenance.json` (do not hardcode a future/stale hash), test-account identifiers (never credentials), timestamps, each scenario's result, and cleanup evidence. After every aborted write/upload, record the remote outcome as confirmed-success, confirmed-failure, or unknown before considering resubmission.
+This is an opt-in runbook, not an automated release claim. Record Node version (24), package version or local tarball filename, SDK revision, the contract provenance from `openapi/provenance.json` (do not hardcode a future/stale hash), test-account identifiers (never credentials), timestamps, each scenario's result, and cleanup evidence. After every aborted write/upload, record the remote outcome as confirmed-success, confirmed-failure, or unknown before considering resubmission.
 
 ## Offline package gate
 

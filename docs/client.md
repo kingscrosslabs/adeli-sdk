@@ -1,6 +1,6 @@
 # Client and request semantics
 
-`@adeli/sdk` is a server-only SDK for Node.js 22+. It is not supported in browsers, Bun, Deno, or edge runtimes. Construct `Adeli` only in a caller-invoked server function; module import does not read environment variables or make requests.
+`@adeli/sdk` is a server-only SDK for Node.js 24+. It is not supported in browsers, Bun, Deno, or edge runtimes. Construct `Adeli` only in a caller-invoked server function; module import does not read environment variables or make requests.
 
 ```ts
 import { Adeli } from '@adeli/sdk';

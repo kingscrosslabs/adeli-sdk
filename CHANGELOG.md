@@ -4,7 +4,7 @@
 
 ### Minor Changes
 
-- Initial release of the server-side TypeScript SDK for Adeli on Node.js 22 and 24, with ESM and CommonJS entry points (`@adeli/sdk`, `@adeli/sdk/helpers`, `@adeli/sdk/uploads`), zero runtime dependencies, and types generated from the pinned OpenAPI contract.
+- Initial release of the server-side TypeScript SDK for Adeli on Node.js 24, with ESM and CommonJS entry points (`@adeli/sdk`, `@adeli/sdk/helpers`, `@adeli/sdk/uploads`), zero runtime dependencies, and types generated from the pinned OpenAPI contract.
 - Add universal direct-to-S3 media uploads, staged post references, the `createMediaUploads` operation, and durable Instagram publication status/polling helpers while retaining file-oriented post helpers.
 - Add the `meta_ads` platform for accounts and `startConnection`. Ads operations take a Meta Ads account, connected separately from Facebook: pass its `accountId` (or a `profileId`), and Ads responses report `platform: 'meta_ads'`. A Facebook account id is not accepted by Ads operations and returns `account_not_found`. Campaign records add `metaAdsConnectionId`.
 - Add TikTok Ads: the `tiktok_ads` account platform, TikTok bodies for `createCampaign` and `setAdStatus` (with `level`), audience `breakdown` on `getAdInsights`, and the TikTok-only `updateAdGroup`, `listAdTargeting`, `listAdIdentities`, and `createAdIdentity` operations.
