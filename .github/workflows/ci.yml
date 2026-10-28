@@ -4,8 +4,6 @@ on:
   pull_request:
   push:
     branches: [main]
-  # Prepare release starts CI on release/* branches, because PRs opened by the workflow token don't trigger pull_request runs.
-  workflow_dispatch:
 
 permissions:
   contents: read

@@ -74,8 +74,9 @@ jobs:
           if-no-files-found: error
 
   publish:
-    name: Publish approved tarball
+    name: Publish tarball
     needs: validate
+    # npm's trusted publisher is bound to this environment name. It only allows tags (v*); there is no approval step.
     environment: npm-release
     permissions:
       contents: read
