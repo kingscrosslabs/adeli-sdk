@@ -1,19 +1,11 @@
 name: Release SDK
+run-name: Release ${{ github.ref_name }}
 
-# Dispatch this workflow with GitHub's ref set to the exact reviewed tag, for
-# example: gh workflow run release.yml --ref v0.1.0 -f reviewed_version=0.1.0 -f release_tag=v0.1.0
-# A branch dispatch is rejected before dependencies, packing, or publication.
+# Run it from the Actions tab: Run workflow → "Use workflow from" → Tags → pick
+# the release tag (for example v0.1.0). There are no other inputs: the version
+# comes from the tag and must match package.json. Branches are rejected.
 on:
   workflow_dispatch:
-    inputs:
-      reviewed_version:
-        description: 'Reviewed package version (must match package.json and the release tag)'
-        required: true
-        type: string
-      release_tag:
-        description: 'Reviewed git tag (for example v0.1.0; dispatch --ref must be this tag)'
-        required: true
-        type: string
 
 jobs:
   validate:
@@ -25,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           # Use the event ref, never an arbitrary input ref. GITHUB_SHA is the
-          # commit GitHub will associate with provenance for this dispatch.
+          # commit GitHub will associate with provenance for this run.
           ref: ${{ github.ref }}
           persist-credentials: false
       - uses: actions/setup-node@v4
@@ -38,8 +30,6 @@ jobs:
           EVENT_REF_NAME: ${{ github.ref_name }}
           EVENT_REF_TYPE: ${{ github.ref_type }}
           EVENT_SHA: ${{ github.sha }}
-          RELEASE_TAG: ${{ inputs.release_tag }}
-          REVIEWED_VERSION: ${{ inputs.reviewed_version }}
         run: |
           set -euo pipefail
           export HEAD_SHA="$(git rev-parse HEAD)"
@@ -61,8 +51,6 @@ jobs:
         run: test "$(node -p "require('./package.json').license")" != "UNLICENSED"
       - name: Pack validated candidate without lifecycle scripts
         env:
-          RELEASE_TAG: ${{ inputs.release_tag }}
-          REVIEWED_VERSION: ${{ inputs.reviewed_version }}
           EVENT_REF: ${{ github.ref }}
           EVENT_REF_NAME: ${{ github.ref_name }}
           EVENT_REF_TYPE: ${{ github.ref_type }}
@@ -112,8 +100,6 @@ jobs:
           EVENT_REF_NAME: ${{ github.ref_name }}
           EVENT_REF_TYPE: ${{ github.ref_type }}
           EVENT_SHA: ${{ github.sha }}
-          RELEASE_TAG: ${{ inputs.release_tag }}
-          REVIEWED_VERSION: ${{ inputs.reviewed_version }}
         run: |
           set -euo pipefail
           export HEAD_SHA="$(git rev-parse HEAD)"

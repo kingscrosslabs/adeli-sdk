@@ -1,6 +1,6 @@
 # Releasing `@adeli/sdk`
 
-Releases are published to npm by the manual [`release.yml`](../.github/workflows/release.yml) workflow, using npm trusted publishing (OIDC) with provenance.
+The [`release.yml`](../.github/workflows/release.yml) workflow publishes to npm using trusted publishing (OIDC) with provenance. You start it by picking a tag. There's nothing to type: the version comes from the tag.
 
 > **Never run `npm publish` locally or with a token.** Every release after `0.1.0` goes through the workflow's `publish` job.
 
@@ -28,7 +28,7 @@ npm run release:check
 
 Open a PR, get it reviewed, and merge it.
 
-### 3. Tag the merge commit
+### 3. Tag the merge commit and push the tag
 
 ```sh
 git fetch origin
@@ -36,13 +36,17 @@ git tag -a vX.Y.Z origin/main -m vX.Y.Z
 git push origin vX.Y.Z
 ```
 
-### 4. Run the release workflow on the tag
+The tag must match the `version` in `package.json`, or the workflow stops before building anything.
+
+### 4. Run the release workflow
+
+In GitHub, go to **Actions → Release SDK → Run workflow**. Under **Use workflow from**, open the **Tags** tab, pick `vX.Y.Z`, and click **Run workflow**. The run shows up as **Release vX.Y.Z**.
+
+Or from a terminal:
 
 ```sh
-gh workflow run release.yml --ref vX.Y.Z -f reviewed_version=X.Y.Z -f release_tag=vX.Y.Z
+gh workflow run release.yml --ref vX.Y.Z
 ```
-
-`--ref` must be the tag, not a branch.
 
 ### 5. Approve the publish
 
@@ -58,7 +62,9 @@ The registry can take a few minutes to show a new version.
 
 ## If validation fails
 
-Fix the problem on `main` with a normal PR. Then, **only if nothing was published**, move the tag and run the workflow again:
+If the failure was a flaky runner, use **Re-run all jobs** on the run in GitHub Actions.
+
+If the code needs a fix, merge it to `main` with a normal PR. Then, **only if nothing was published**, move the tag and run the workflow again on it (step 4):
 
 ```sh
 git push origin :refs/tags/vX.Y.Z   # delete the remote tag
@@ -66,14 +72,13 @@ git tag -d vX.Y.Z
 git fetch origin
 git tag -a vX.Y.Z origin/main -m vX.Y.Z
 git push origin vX.Y.Z
-gh workflow run release.yml --ref vX.Y.Z -f reviewed_version=X.Y.Z -f release_tag=vX.Y.Z
 ```
 
 **Never move a tag or reuse a version number once it has been published.** Release a new patch version instead.
 
 ## How the workflow protects a release
 
-- **Tag only.** It rejects branch dispatches, mismatched refs, HEAD/SHA mismatches, and package/version/tag mismatches before any package work.
+- **Tag only.** It rejects runs started from a branch, and stops before any package work if the tag doesn't match `package.json` or the checked-out commit doesn't match the tag.
 - **Validate, then publish the same bytes.** `validate` runs the full gate (generation drift, contract, lint, typecheck, tests, audit, build, package checks) and packs the tarball with its SHA-256 and identity. `publish` re-checks that identity and publishes only that tarball. It never rebuilds.
 - **Human approval.** The `npm-release` environment requires a reviewer before `publish` runs.
 - **Pinned toolchain.** Both jobs run Node 24.22.1, whose bundled npm 11.19.1 meets the trusted-publishing minimum. The workflow checks that exact npm version instead of upgrading npm.
@@ -82,4 +87,4 @@ External prerequisites (configured outside this repo): the `npm-release` environ
 
 ## History: the `0.1.0` bootstrap
 
-npm trusted publishing only works for a package that already exists on the registry. So `0.1.0` was published once by hand: the workflow ran on `v0.1.0`, its `publish` job was rejected at the environment gate, and the validated CI tarball was downloaded, checked against `artifact.sha256`, and published byte for byte with `npm publish --access public` from an interactive 2FA login. This was a one-time step and is not repeatable.
+npm trusted publishing only works for a package that already exists on the registry. So `0.1.0` was published once by hand: the workflow (then started manually with version inputs) ran on `v0.1.0`, its `publish` job was rejected at the environment gate, and the validated CI tarball was downloaded, checked against `artifact.sha256`, and published byte for byte with `npm publish --access public` from an interactive 2FA login. This was a one-time step and is not repeatable.
