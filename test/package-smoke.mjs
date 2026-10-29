@@ -34,6 +34,20 @@ try {
     fail('declared package entrypoints are missing');
   }
 
+  // Workers (nodejs_compat) and edge bundlers resolve `node:` specifiers reliably; bare
+  // builtins can resolve to polyfills. The root entry must load no Node builtin at import.
+  const builtin = /(?:\bfrom\s*|\bimport\s*\(\s*|\brequire\s*\(\s*)['"]((?:node:)?(?:assert|buffer|child_process|crypto|events|fs|fs\/promises|http|https|net|os|path|stream|url|util|zlib))['"]/g;
+  for (const path of requiredEntries.filter(entry => /\.c?js$/.test(entry))) {
+    const source = readFileSync(join(packageDir, path), 'utf8');
+    for (const [, specifier] of source.matchAll(builtin)) {
+      if (!specifier.startsWith('node:')) fail(`${path} imports bare builtin '${specifier}'; keep the node: prefix`);
+    }
+  }
+  for (const path of ['dist/index.js', 'dist/index.cjs']) {
+    const source = readFileSync(join(packageDir, path), 'utf8');
+    if (/^import\s[^;]*['"]node:|^(?:const|var|let)\s[^;]*require\(['"]node:/m.test(source)) fail(`${path} statically loads a Node builtin; the root entry must stay runtime-neutral`);
+  }
+
   const bin = name => join(toolingRoot, 'node_modules', '.bin', process.platform === 'win32' ? `${name}.cmd` : name);
   execFileSync(bin('publint'), ['run', packageDir, '--strict'], { cwd: toolingRoot, stdio: 'inherit' });
   // attw accepts an existing .tgz directly; --pack is for a package directory.

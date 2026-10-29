@@ -1,6 +1,6 @@
 # Client and request semantics
 
-`@adeli/sdk` is a server-only SDK for Node.js 24+. It is not supported in browsers, Bun, Deno, or edge runtimes. Construct `Adeli` only in a caller-invoked server function; module import does not read environment variables or make requests.
+`@adeli/sdk` supports Node.js 22+ and the server runtimes listed in the [README](../README.md); it throws in browsers. Construct `Adeli` only in a caller-invoked server function; module import does not read environment variables or make requests.
 
 ```ts
 import { Adeli } from '@adeli/sdk';
@@ -8,6 +8,13 @@ const client = new Adeli({ apiKey: process.env.ADELI_API_KEY });
 ```
 
 `apiKey` wins over `ADELI_API_KEY`. `baseURL` is an origin (not an origin plus `/api/v1`); production origins must use HTTPS, while HTTP is reserved for explicit local development. `timeoutMs` is a total local deadline and `maxRetries` is opt-in. Timer values must be positive, finite, and no greater than `2_147_483_647` milliseconds (about 24.8 days); larger values are rejected before a request rather than being clamped by Node. The default retry count is zero. With opt-in retries, audited safe reads and profile creation with a stable idempotency key qualify. Daily quota exhaustion, permission/billing/semantic conflicts, and other known non-transient failures are never retried. `listPosts` is conservatively excluded because an X read can be billed; `getXUsage` is a safe read of Adeli's stored usage ledger and does not call X itself, so it is eligible for the ordinary transient-read policy.
+
+## Runtimes
+
+The root entry needs only `fetch` and loads no Node builtin at import, so it runs on Node.js 22+, Vercel functions, and Cloudflare Workers. In a Worker without `nodejs_compat`, pass `apiKey` explicitly. The subpaths have narrower requirements:
+
+- `@adeli/sdk/helpers`: `verifyWebhookSignature` uses `node:crypto`, available on Node.js and on Workers with `nodejs_compat`. On Vercel, serve webhook routes from the default Node.js runtime, not `runtime = 'edge'`.
+- `@adeli/sdk/uploads`: `fileFromPath` and `blobFromPath` read a local file and work on Node.js only; they load `node:fs` when called, not at import. Passing any other `Blob` or `File` as post media works everywhere.
 
 ## Requests and responses
 

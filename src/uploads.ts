@@ -1,5 +1,3 @@
-import { basename } from 'node:path';
-import { openAsBlob } from 'node:fs';
 import type { RequestOptions } from './core/types.js';
 import type { Transport } from './core/transport.js';
 
@@ -9,8 +7,12 @@ export interface FileUploadOptions {
   readonly name?: string;
 }
 
-/** Open a local file as a native Blob without reading the media into memory. */
+// The path helpers load `node:fs` and `node:path` on call, not at import, so the
+// root entry stays importable in runtimes without a filesystem (Workers, edge).
+
+/** Open a local file as a native Blob without reading the media into memory. Node.js only. */
 export async function blobFromPath(path: string, options: Pick<FileUploadOptions, 'contentType'> = {}): Promise<Blob> {
+  const { openAsBlob } = await import('node:fs');
   return openAsBlob(path, options.contentType === undefined ? undefined : { type: options.contentType });
 }
 
@@ -62,8 +64,8 @@ export async function putDirectUploads(
   return result;
 }
 
-/** Open a local file as a native File, retaining its filename and MIME type for direct upload. */
+/** Open a local file as a native File, retaining its filename and MIME type for direct upload. Node.js only. */
 export async function fileFromPath(path: string, options: FileUploadOptions = {}): Promise<File> {
-  const blob = await blobFromPath(path, options);
+  const [{ basename }, blob] = await Promise.all([import('node:path'), blobFromPath(path, options)]);
   return new File([blob], options.name ?? basename(path), options.contentType === undefined ? undefined : { type: options.contentType });
 }
