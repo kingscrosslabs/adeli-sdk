@@ -24,7 +24,7 @@ async function runWorker(mode: 'stream' | 'eager'): Promise<MemoryReport> {
 test('file-backed multipart remains bounded while eager buffering is detectable', { timeout: 45_000 }, async () => {
   const streaming = await runWorker('stream');
   expect(streaming.received).toBeGreaterThanOrEqual(streaming.fixtureSize);
-  // Node 24's undici/fetch RSS includes runtime allocator pages beyond the upload buffers;
+  // undici/fetch RSS includes runtime allocator pages beyond the upload buffers;
   // external/ArrayBuffer deltas remain the bounded payload signal below.
   expect(streaming.rssDelta).toBeLessThan(192 * 1024 * 1024);
   expect(streaming.externalDelta).toBeLessThan(128 * 1024 * 1024);

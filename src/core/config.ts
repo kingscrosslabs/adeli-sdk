@@ -8,7 +8,7 @@ const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]', '::1']);
 
 export function resolveConfig(options: ClientOptions = {}): ResolvedConfig {
   if (typeof window !== 'undefined') throw new ConfigurationError('Adeli is a server-side SDK and cannot run in a browser');
-  const apiKey = options.apiKey ?? process.env.ADELI_API_KEY;
+  const apiKey = options.apiKey ?? globalThis.process?.env?.ADELI_API_KEY;
   if (!apiKey || apiKey.trim() === '') throw new ConfigurationError('An Adeli API key is required (pass apiKey or set ADELI_API_KEY)');
   if (/[\u0000-\u001f\u007f]/.test(apiKey)) throw new ConfigurationError('The Adeli API key must not contain control characters');
   // Native Headers errors can echo invalid credential values (for example NUL).

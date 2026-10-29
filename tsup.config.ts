@@ -15,5 +15,8 @@ export default defineConfig({
   // Helpers/uploads import runtime errors from the package self-reference. Keeping
   // that import external prevents splitting:false from creating duplicate classes.
   external: ['@adeli/sdk'],
-  outDir: 'dist', target: 'node24', treeshake: true
+  // Keep `node:` specifiers. Workers (nodejs_compat) and edge bundlers resolve
+  // `node:crypto` reliably; a bare `crypto` can resolve to a polyfill or fail.
+  removeNodeProtocol: false,
+  outDir: 'dist', target: 'node22', treeshake: true
 });

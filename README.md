@@ -1,6 +1,6 @@
 # @adeli/sdk
 
-Server-only TypeScript SDK for Adeli, for **Node.js 24**.
+TypeScript SDK for Adeli, for **Node.js 22+**. Works in Next.js and Vercel functions, NestJS, Vite SSR, and Cloudflare Workers (with `nodejs_compat`).
 
 ```sh
 npm install @adeli/sdk
@@ -18,7 +18,7 @@ export async function readProfiles() {
 }
 ```
 
-The API key is resolved at construction from `apiKey` or `ADELI_API_KEY`; do not put it in browser, Bun, Deno, edge, or client-side application code. The quickstart above performs a safe read only. Writes, publishing, account connection, and deletion happen only when a caller explicitly invokes the corresponding method.
+The API key is resolved at construction from `apiKey` or `ADELI_API_KEY`. It is a secret: construct the client only in server code, never import it from client components or browser bundles, and never expose the key through a `NEXT_PUBLIC_` or `VITE_` env var. The quickstart above performs a safe read only. Writes, publishing, account connection, and deletion happen only when a caller explicitly invokes the corresponding method.
 
 ## Entry points
 

@@ -8,7 +8,7 @@ function writeExampleFixture(root: string, valid: boolean): void {
   mkdirSync(join(root, 'dist'), { recursive: true });
   mkdirSync(join(root, 'examples'));
   writeFileSync(join(root, 'package.json'), JSON.stringify({
-    name: '@adeli/sdk', version: '0.0.0-example-fixture', type: 'module', engines: { node: '>=24' },
+    name: '@adeli/sdk', version: '0.0.0-example-fixture', type: 'module', engines: { node: '>=22' },
     files: ['dist'], exports: { '.': { import: { types: './dist/index.d.ts', default: './dist/index.js' }, require: { types: './dist/index.d.cts', default: './dist/index.cjs' } } },
   }, null, 2));
   writeFileSync(join(root, 'dist/index.js'), 'export class Adeli {}\n');
