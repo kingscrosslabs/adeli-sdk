@@ -974,6 +974,7 @@
                   "authMethod": {
                     "type": "string",
                     "enum": [
+                      "unified_login",
                       "instagram_login",
                       "facebook_login"
                     ]
@@ -1082,6 +1083,7 @@
                     "authMethod": {
                       "type": "string",
                       "enum": [
+                        "unified_login",
                         "instagram_login",
                         "facebook_login"
                       ]
@@ -1297,6 +1299,7 @@
                     "authMethod": {
                       "type": "string",
                       "enum": [
+                        "unified_login",
                         "instagram_login",
                         "facebook_login"
                       ]
@@ -1476,6 +1479,7 @@
                           "authMethod": {
                             "type": "string",
                             "enum": [
+                              "unified_login",
                               "instagram_login",
                               "facebook_login"
                             ]
@@ -1802,6 +1806,7 @@
                           "authMethod": {
                             "type": "string",
                             "enum": [
+                              "unified_login",
                               "instagram_login",
                               "facebook_login"
                             ]
@@ -2211,6 +2216,7 @@
                           "authMethod": {
                             "type": "string",
                             "enum": [
+                              "unified_login",
                               "instagram_login",
                               "facebook_login"
                             ]
@@ -2537,6 +2543,7 @@
                           "authMethod": {
                             "type": "string",
                             "enum": [
+                              "unified_login",
                               "instagram_login",
                               "facebook_login"
                             ]
@@ -2944,6 +2951,7 @@
                     "authMethod": {
                       "type": "string",
                       "enum": [
+                        "unified_login",
                         "instagram_login",
                         "facebook_login"
                       ]
@@ -3140,6 +3148,7 @@
                     "authMethod": {
                       "type": "string",
                       "enum": [
+                        "unified_login",
                         "instagram_login",
                         "facebook_login"
                       ]
@@ -3409,9 +3418,16 @@
                             "const": true
                           },
                           "expiresAt": {
-                            "type": "string",
-                            "format": "date-time",
-                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           }
                         },
                         "required": [
@@ -3517,9 +3533,16 @@
                             "const": true
                           },
                           "expiresAt": {
-                            "type": "string",
-                            "format": "date-time",
-                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           }
                         },
                         "required": [
@@ -18976,7 +18999,7 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer",
-        "description": "An API key from Settings → API keys, sent as `Authorization: Bearer <key>`."
+        "description": "An API key from Settings \u2192 API keys, sent as `Authorization: Bearer <key>`."
       }
     },
     "schemas": {
@@ -19342,6 +19365,7 @@
           "authMethod": {
             "type": "string",
             "enum": [
+              "unified_login",
               "instagram_login",
               "facebook_login"
             ]
@@ -19412,6 +19436,7 @@
           "authMethod": {
             "type": "string",
             "enum": [
+              "unified_login",
               "instagram_login",
               "facebook_login"
             ]
@@ -19906,6 +19931,7 @@
                 "authMethod": {
                   "type": "string",
                   "enum": [
+                    "unified_login",
                     "instagram_login",
                     "facebook_login"
                   ]

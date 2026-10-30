@@ -1,4 +1,6 @@
 import { Adeli } from '../src/index.js';
+import type { RefreshAccountsResponse } from '../src/resources/accounts.js';
+import type { operations } from '../src/generated/api.js';
 
 function response(status: number, body: unknown): Response {
   return new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
@@ -11,15 +13,16 @@ const profile = {
 const session = {
   id: 'session-1', profileId: 'profile-1', platform: 'instagram', status: 'pending_authorization',
   accountId: null, expiresAt: '2026-10-19T00:10:00.000Z', completedAt: null, error: null,
-  authMethod: 'instagram_login', authUrl: 'https://app.tryadeli.com/api/instagram/connect?state=opaque',
+  authMethod: 'unified_login', authUrl: 'https://app.tryadeli.com/api/instagram/connect?state=opaque',
 };
 const account = {
   id: 'account-1', accountId: 'account-1', profileId: 'profile-1', platform: 'instagram',
   providerId: 'provider-1', displayName: '@acme', displayIdentifier: 'acme',
-  authMethod: 'instagram_login', connectionStatus: 'connected',
+  authMethod: 'unified_login', connectionStatus: 'connected',
 };
 const aggregate = { status: 'complete', accounts: [account], errors: [] };
-const refreshed = { id: 'account-1', accountId: 'account-1', profileId: 'profile-1', platform: 'instagram', refreshed: true, expiresAt: '2026-11-19T00:00:00.000Z' };
+// An Instagram Unified Login token does not expire, so its refresh reports no expiry.
+const refreshed = { id: 'account-1', accountId: 'account-1', profileId: 'profile-1', platform: 'instagram', refreshed: true, expiresAt: null };
 const identity = {
   message: 'Hello from Adeli 👋 Your API key works.',
   you: { name: null, organization: 'Acme Inc.', profile: { id: 'profile-1', name: 'Acme' } },
@@ -93,4 +96,12 @@ test('covers every foundation operation with real handler paths and response env
   expect(requests[2]!.headers.get('idempotency-key')).toBe('profile-v1');
   await expect(requests[2]!.clone().json()).resolves.toEqual({ name: 'Acme', externalId: 'customer-1', metadata: { tier: 'pro' } });
   await expect(requests[11]!.clone().json()).resolves.toEqual({ xCapabilities: { inbox: true } });
+});
+
+test('types Instagram Unified Login: the new authMethod and a refresh with no expiry', () => {
+  type StartBody = NonNullable<operations['startConnection']['requestBody']>['content']['application/json'];
+  expectTypeOf<'unified_login'>().toMatchTypeOf<NonNullable<StartBody['authMethod']>>();
+  // The deprecated values stay accepted on the wire.
+  expectTypeOf<'instagram_login' | 'facebook_login'>().toMatchTypeOf<NonNullable<StartBody['authMethod']>>();
+  expectTypeOf<RefreshAccountsResponse['accounts'][number]['expiresAt']>().toEqualTypeOf<string | null>();
 });

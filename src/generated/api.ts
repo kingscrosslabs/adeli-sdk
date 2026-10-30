@@ -943,7 +943,7 @@ export interface components {
                 code: string;
             } | null;
             /** @enum {string} */
-            authMethod?: "instagram_login" | "facebook_login";
+            authMethod?: "unified_login" | "instagram_login" | "facebook_login";
             /** Format: uri */
             authUrl?: string;
         };
@@ -960,7 +960,7 @@ export interface components {
             displayName: string | null;
             displayIdentifier: string | null;
             /** @enum {string} */
-            authMethod?: "instagram_login" | "facebook_login";
+            authMethod?: "unified_login" | "instagram_login" | "facebook_login";
             /** @enum {string} */
             connectionStatus: "connected" | "expired" | "reconnect_required" | "pending_page_selection" | "setup_incomplete";
             grantedPermissions: string[];
@@ -1068,7 +1068,7 @@ export interface components {
                 displayName: string | null;
                 displayIdentifier: string | null;
                 /** @enum {string} */
-                authMethod?: "instagram_login" | "facebook_login";
+                authMethod?: "unified_login" | "instagram_login" | "facebook_login";
                 /** @enum {string} */
                 connectionStatus: "connected" | "expired" | "reconnect_required" | "pending_page_selection" | "setup_incomplete";
                 grantedPermissions: string[];
@@ -1674,7 +1674,7 @@ export interface operations {
                     /** Format: uri */
                     redirectUrl?: string;
                     /** @enum {string} */
-                    authMethod?: "instagram_login" | "facebook_login";
+                    authMethod?: "unified_login" | "instagram_login" | "facebook_login";
                     handle?: string;
                 };
             };
@@ -1703,7 +1703,7 @@ export interface operations {
                             code: string;
                         } | null;
                         /** @enum {string} */
-                        authMethod?: "instagram_login" | "facebook_login";
+                        authMethod?: "unified_login" | "instagram_login" | "facebook_login";
                         /** Format: uri */
                         authUrl?: string;
                     };
@@ -1811,7 +1811,7 @@ export interface operations {
                             code: string;
                         } | null;
                         /** @enum {string} */
-                        authMethod?: "instagram_login" | "facebook_login";
+                        authMethod?: "unified_login" | "instagram_login" | "facebook_login";
                         /** Format: uri */
                         authUrl?: string;
                     };
@@ -1890,7 +1890,7 @@ export interface operations {
                             displayName: string | null;
                             displayIdentifier: string | null;
                             /** @enum {string} */
-                            authMethod?: "instagram_login" | "facebook_login";
+                            authMethod?: "unified_login" | "instagram_login" | "facebook_login";
                             /** @enum {string} */
                             connectionStatus: "connected" | "expired" | "reconnect_required" | "pending_page_selection" | "setup_incomplete";
                             grantedPermissions: string[];
@@ -1968,7 +1968,7 @@ export interface operations {
                             displayName: string | null;
                             displayIdentifier: string | null;
                             /** @enum {string} */
-                            authMethod?: "instagram_login" | "facebook_login";
+                            authMethod?: "unified_login" | "instagram_login" | "facebook_login";
                             /** @enum {string} */
                             connectionStatus: "connected" | "expired" | "reconnect_required" | "pending_page_selection" | "setup_incomplete";
                             grantedPermissions: string[];
@@ -2114,7 +2114,7 @@ export interface operations {
                             displayName: string | null;
                             displayIdentifier: string | null;
                             /** @enum {string} */
-                            authMethod?: "instagram_login" | "facebook_login";
+                            authMethod?: "unified_login" | "instagram_login" | "facebook_login";
                             /** @enum {string} */
                             connectionStatus: "connected" | "expired" | "reconnect_required" | "pending_page_selection" | "setup_incomplete";
                             grantedPermissions: string[];
@@ -2192,7 +2192,7 @@ export interface operations {
                             displayName: string | null;
                             displayIdentifier: string | null;
                             /** @enum {string} */
-                            authMethod?: "instagram_login" | "facebook_login";
+                            authMethod?: "unified_login" | "instagram_login" | "facebook_login";
                             /** @enum {string} */
                             connectionStatus: "connected" | "expired" | "reconnect_required" | "pending_page_selection" | "setup_incomplete";
                             grantedPermissions: string[];
@@ -2337,7 +2337,7 @@ export interface operations {
                         displayName: string | null;
                         displayIdentifier: string | null;
                         /** @enum {string} */
-                        authMethod?: "instagram_login" | "facebook_login";
+                        authMethod?: "unified_login" | "instagram_login" | "facebook_login";
                         /** @enum {string} */
                         connectionStatus: "connected" | "expired" | "reconnect_required" | "pending_page_selection" | "setup_incomplete";
                         xCapabilities?: {
@@ -2502,7 +2502,7 @@ export interface operations {
                         displayName: string | null;
                         displayIdentifier: string | null;
                         /** @enum {string} */
-                        authMethod?: "instagram_login" | "facebook_login";
+                        authMethod?: "unified_login" | "instagram_login" | "facebook_login";
                         /** @enum {string} */
                         connectionStatus: "connected" | "expired" | "reconnect_required" | "pending_page_selection" | "setup_incomplete";
                         xCapabilities?: {
@@ -2591,8 +2591,7 @@ export interface operations {
                             platform: "instagram" | "tiktok" | "facebook" | "youtube";
                             /** @constant */
                             refreshed: true;
-                            /** Format: date-time */
-                            expiresAt: string;
+                            expiresAt: string | null;
                         }[];
                         errors: {
                             /** @enum {string} */
@@ -2625,8 +2624,7 @@ export interface operations {
                             platform: "instagram" | "tiktok" | "facebook" | "youtube";
                             /** @constant */
                             refreshed: true;
-                            /** Format: date-time */
-                            expiresAt: string;
+                            expiresAt: string | null;
                         }[];
                         errors: {
                             /** @enum {string} */
