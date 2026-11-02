@@ -4250,7 +4250,7 @@
       "post": {
         "operationId": "createPost",
         "summary": "Publish a post",
-        "description": "Publish to Instagram, Facebook, TikTok, YouTube, X, or Bluesky. Instagram requests using only staged upload references are durably accepted with 202 and a status URL; legacy base64 or URL inputs remain synchronous during the compatibility window. Send `multipart/form-data` only for TikTok uploads on this shared endpoint.",
+        "description": "Publish to Instagram, Facebook, TikTok, YouTube, X, Bluesky, or LinkedIn. A LinkedIn post takes at most one of `image`, `images` (2\u201320 staged images), `video` (one staged MP4), or `document` (one staged PDF with a title), plus optional `mentions`. Instagram requests using only staged upload references are durably accepted with 202 and a status URL; legacy base64 or URL inputs remain synchronous during the compatibility window. Send `multipart/form-data` only for TikTok uploads on this shared endpoint.",
         "tags": [
           "Posts"
         ],
@@ -6248,21 +6248,114 @@
                       "commentary": {
                         "type": "string"
                       },
+                      "mentions": {
+                        "maxItems": 20,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "urn": {
+                              "type": "string",
+                              "pattern": "^urn:li:(organization|person):\\d+$"
+                            },
+                            "name": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 200
+                            },
+                            "offset": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "urn",
+                            "name",
+                            "offset"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
                       "image": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "content_type": {
+                                "type": "string",
+                                "enum": [
+                                  "image/jpeg",
+                                  "image/png",
+                                  "image/gif"
+                                ]
+                              },
+                              "base64": {
+                                "type": "string",
+                                "minLength": 4,
+                                "maxLength": 27962028
+                              },
+                              "title": {
+                                "type": "string",
+                                "maxLength": 400
+                              }
+                            },
+                            "required": [
+                              "content_type",
+                              "base64"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "upload_id": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 300
+                              },
+                              "title": {
+                                "type": "string",
+                                "maxLength": 400
+                              }
+                            },
+                            "required": [
+                              "upload_id"
+                            ],
+                            "additionalProperties": false
+                          }
+                        ]
+                      },
+                      "images": {
+                        "minItems": 2,
+                        "maxItems": 20,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "upload_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 300
+                            },
+                            "alt_text": {
+                              "type": "string",
+                              "maxLength": 4086
+                            }
+                          },
+                          "required": [
+                            "upload_id"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "video": {
                         "type": "object",
                         "properties": {
-                          "content_type": {
+                          "upload_id": {
                             "type": "string",
-                            "enum": [
-                              "image/jpeg",
-                              "image/png",
-                              "image/gif"
-                            ]
-                          },
-                          "base64": {
-                            "type": "string",
-                            "minLength": 4,
-                            "maxLength": 27962028
+                            "minLength": 1,
+                            "maxLength": 300
                           },
                           "title": {
                             "type": "string",
@@ -6270,8 +6363,27 @@
                           }
                         },
                         "required": [
-                          "content_type",
-                          "base64"
+                          "upload_id"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "document": {
+                        "type": "object",
+                        "properties": {
+                          "upload_id": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 300
+                          },
+                          "title": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 400
+                          }
+                        },
+                        "required": [
+                          "upload_id",
+                          "title"
                         ],
                         "additionalProperties": false
                       }
@@ -7242,7 +7354,8 @@
                       "tiktok",
                       "youtube",
                       "x",
-                      "bluesky"
+                      "bluesky",
+                      "linkedin"
                     ]
                   },
                   "files": {
