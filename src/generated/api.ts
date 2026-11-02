@@ -186,7 +186,7 @@ export interface paths {
         put?: never;
         /**
          * Publish a post
-         * @description Publish to Instagram, Facebook, TikTok, YouTube, X, or Bluesky. Instagram requests using only staged upload references are durably accepted with 202 and a status URL; legacy base64 or URL inputs remain synchronous during the compatibility window. Send `multipart/form-data` only for TikTok uploads on this shared endpoint.
+         * @description Publish to Instagram, Facebook, TikTok, YouTube, X, Bluesky, or LinkedIn. A LinkedIn post takes at most one of `image`, `images` (2–20 staged images), `video` (one staged MP4), or `document` (one staged PDF with a title), plus optional `mentions`. Instagram requests using only staged upload references are durably accepted with 202 and a status URL; legacy base64 or URL inputs remain synchronous during the compatibility window. Send `multipart/form-data` only for TikTok uploads on this shared endpoint.
          */
         post: operations["createPost"];
         delete?: never;
@@ -3372,11 +3372,31 @@ export interface operations {
                     /** Format: uuid */
                     profileId?: string;
                     commentary: string;
+                    mentions?: {
+                        urn: string;
+                        name: string;
+                        offset: number;
+                    }[];
                     image?: {
                         /** @enum {string} */
                         content_type: "image/jpeg" | "image/png" | "image/gif";
                         base64: string;
                         title?: string;
+                    } | {
+                        upload_id: string;
+                        title?: string;
+                    };
+                    images?: {
+                        upload_id: string;
+                        alt_text?: string;
+                    }[];
+                    video?: {
+                        upload_id: string;
+                        title?: string;
+                    };
+                    document?: {
+                        upload_id: string;
+                        title: string;
                     };
                 };
                 "multipart/form-data": {
@@ -3723,7 +3743,7 @@ export interface operations {
                     /** Format: uuid */
                     profileId: string;
                     /** @enum {string} */
-                    platform: "instagram" | "facebook" | "tiktok" | "youtube" | "x" | "bluesky";
+                    platform: "instagram" | "facebook" | "tiktok" | "youtube" | "x" | "bluesky" | "linkedin";
                     files: {
                         clientId: string;
                         /** @enum {string} */

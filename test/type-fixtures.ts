@@ -9,6 +9,10 @@ const image = { contentType: 'image/jpeg' as const, base64: 'aGVsbG8=' };
 
 const instagramImage: CreatePostBody = { platform: 'instagram', accountId: id, image };
 const linkedinPost: CreatePostBody = { platform: 'linkedin', accountId: id, commentary: 'A new update', image: { content_type: 'image/png', base64: 'aGVsbG8=', title: 'Launch' } };
+const linkedinStagedImage: CreatePostBody = { platform: 'linkedin', accountId: id, commentary: 'Thanks @Acme', image: { upload_id: 'staged-image', title: 'Launch' }, mentions: [{ urn: 'urn:li:organization:9', name: 'Acme', offset: 7 }] };
+const linkedinImages: CreatePostBody = { platform: 'linkedin', accountId: id, commentary: 'Launch day', images: [{ upload_id: 'a', alt_text: 'The stage' }, { upload_id: 'b' }] };
+const linkedinVideo: CreatePostBody = { platform: 'linkedin', accountId: id, commentary: 'Watch', video: { upload_id: 'staged-video', title: 'Demo' } };
+const linkedinDocument: CreatePostBody = { platform: 'linkedin', accountId: id, commentary: 'Our Q3 results', document: { upload_id: 'staged-pdf', title: 'Q3 deck' } };
 const youtubeVideo: CreatePostBody = { platform: 'youtube', accountId: id, title: 'video', privacy_status: 'private', made_for_kids: false, video: { url: 'https://media.example/video.mp4' } };
 const tiktokFiles: TikTokMultipartBody = { platform: 'tiktok', accountId: id, music_usage_confirmed: true, video: new Blob(['video'], { type: 'video/mp4' }), disable_comment: false, photo_cover_index: 0 };
 const file = new File(['media'], 'media.jpg', { type: 'image/jpeg' });
@@ -34,6 +38,10 @@ void completeAccount;
 void supportedConnection;
 void linkedinConnection;
 void linkedinPost;
+void linkedinStagedImage;
+void linkedinImages;
+void linkedinVideo;
+void linkedinDocument;
 void instagramImage;
 void youtubeVideo;
 void tiktokFiles;
@@ -76,6 +84,7 @@ async function knownResponseFields(client: Adeli): Promise<void> {
 async function requiredArguments(client: Adeli): Promise<void> {
   await client.comments.listComments({ query: { platform: 'youtube', accountId: id } });
   await client.posts.createMediaUploads({ body: { profileId: id, platform: 'youtube', files: [{ clientId: 'video', purpose: 'post_media', contentType: 'video/mp4', size: 10 }] } });
+  await client.posts.createMediaUploads({ body: { profileId: id, platform: 'linkedin', files: [{ clientId: 'deck', purpose: 'post_media', contentType: 'application/pdf', size: 10 }] } });
   await client.posts.getInstagramPostStatus({ query: { jobId: id, profileId: id } });
   await client.posts.deleteXPost({ path: { postId: id }, query: { accountId: id } });
   await client.ads.createAdAccount({ body: adAccount }, { idempotencyKey: 'stable' });
