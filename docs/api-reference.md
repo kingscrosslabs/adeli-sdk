@@ -1,5 +1,7 @@
 # API reference
 
+> For full documentation, see [https://www.tryadeli.com/docs/api](https://www.tryadeli.com/docs/api).
+
 Generated from `src/operations.ts` metadata, AST-extracted resource method declarations, and the checked-in verified public docs mapping `openapi/docs-links.json`; this file is not hand-maintained.
 
 - Contract status: **candidate-unreleased**
