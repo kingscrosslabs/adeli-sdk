@@ -126,7 +126,7 @@ type WireCase = { id: string; call: (options: RequestOptions) => Promise<ApiResp
 function jsonBody(body: Record<string, unknown>): ExpectedBody { return body; }
 function requireRequest(value: Request | undefined, id: string): Request { if (value === undefined) throw new Error(`${id}: fetch was not called`); return value; }
 // Request expectations are deliberately written independently of operations metadata; the registry is only a coverage allow-list.
-test('all 60 registered operations preserve exact wire requests and response envelopes', async () => {
+test('all 61 registered operations preserve exact wire requests and response envelopes', async () => {
   let currentFixture: WireCase | undefined;
   let returnUnauthorized = false;
   const unauthorizedDetails = { reason: 'wire-contract', nested: { preserved: true } };
@@ -204,7 +204,7 @@ test('all 60 registered operations preserve exact wire requests and response env
   const { operations } = await import('../src/operations.js');
   expect(new Set(cases.map((item) => item.id))).toEqual(new Set(Object.keys(operations)));
   expect(cases).toHaveLength(Object.keys(operations).length);
-  expect(declaredSuccessPairs()).toHaveLength(69);
+  expect(declaredSuccessPairs()).toHaveLength(70);
   for (const fixture of cases) {
     for (const status of successStatuses(fixture.id)) {
       delete state.request;

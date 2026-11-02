@@ -4250,7 +4250,7 @@
       "post": {
         "operationId": "createPost",
         "summary": "Publish a post",
-        "description": "Publish to Instagram, Facebook, TikTok, YouTube, X, Bluesky, or LinkedIn. A LinkedIn post takes at most one of `image`, `images` (2\u201320 staged images), `video` (one staged MP4), or `document` (one staged PDF with a title), plus optional `mentions`. Instagram requests using only staged upload references are durably accepted with 202 and a status URL; legacy base64 or URL inputs remain synchronous during the compatibility window. Send `multipart/form-data` only for TikTok uploads on this shared endpoint.",
+        "description": "Publish to Instagram, Facebook, TikTok, YouTube, X, Bluesky, or LinkedIn. A LinkedIn post takes at most one of `image`, `images` (2–20 staged images), `video` (one staged MP4), or `document` (one staged PDF with a title), plus optional `mentions`. Instagram requests using only staged upload references are durably accepted with 202 and a status URL; legacy base64 or URL inputs remain synchronous during the compatibility window. Send `multipart/form-data` only for TikTok uploads on this shared endpoint.",
         "tags": [
           "Posts"
         ],
@@ -11615,6 +11615,16 @@
               }
             }
           },
+          "422": {
+            "description": "The connected account cannot perform this operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "502": {
             "description": "Invalid request or provider failure",
             "content": {
@@ -11673,6 +11683,161 @@
           },
           "404": {
             "description": "Profile, account, or object not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/webhooks/{webhookId}/test": {
+      "post": {
+        "operationId": "testWebhook",
+        "summary": "Send a test event",
+        "description": "Sends one signed sample event (`test: true`) to the webhook now and returns the receiver's status code. One attempt, no retries; at most one test per webhook every few seconds. Defaults to a TikTok `comment.created`.",
+        "tags": [
+          "Webhooks"
+        ],
+        "parameters": [
+          {
+            "name": "webhookId",
+            "in": "path",
+            "required": true,
+            "description": "The webhook's id.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "default": "comment.created",
+                    "type": "string",
+                    "enum": [
+                      "comment.created",
+                      "message.postback"
+                    ]
+                  },
+                  "platform": {
+                    "default": "tiktok",
+                    "type": "string",
+                    "enum": [
+                      "tiktok",
+                      "instagram"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "eventId": {
+                      "type": "string"
+                    },
+                    "delivered": {
+                      "type": "boolean"
+                    },
+                    "statusCode": {
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "eventId",
+                    "delivered",
+                    "statusCode",
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Profile, account, or object not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The connected account cannot perform this operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Provider quota or rate limit exhausted",
             "content": {
               "application/json": {
                 "schema": {
@@ -13893,6 +14058,506 @@
           },
           "502": {
             "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/linkedin/account-insights": {
+      "get": {
+        "operationId": "getLinkedInAccountInsights",
+        "summary": "LinkedIn account insights",
+        "description": "Followers and a daily series of impressions, reactions, comments, shares and follower gain for a LinkedIn Page or personal profile; clicks and Page views are reported for Pages only. Served from a snapshot refreshed at most every six hours; `stale` is true when LinkedIn rate-limited the refresh.",
+        "tags": [
+          "Analytics"
+        ],
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "profileId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "platform": {
+                      "type": "string",
+                      "const": "linkedin"
+                    },
+                    "accountId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "profileId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "targetType": {
+                      "type": "string",
+                      "enum": [
+                        "organization",
+                        "member"
+                      ]
+                    },
+                    "followers": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "startDate": {
+                      "type": "string",
+                      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                    },
+                    "endDate": {
+                      "type": "string",
+                      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                    },
+                    "daily": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "date": {
+                            "type": "string",
+                            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                          },
+                          "impressions": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "clicks": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "reactions": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "comments": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "shares": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "followerGain": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "pageViews": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "date",
+                          "impressions",
+                          "clicks",
+                          "reactions",
+                          "comments",
+                          "shares",
+                          "followerGain",
+                          "pageViews"
+                        ]
+                      }
+                    },
+                    "unavailable": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "fetchedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    },
+                    "stale": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "platform",
+                    "accountId",
+                    "profileId",
+                    "targetType",
+                    "followers",
+                    "startDate",
+                    "endDate",
+                    "daily",
+                    "unavailable",
+                    "fetchedAt",
+                    "stale"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The connection lacks a permission or provider-confirmed resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionRequiredError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Profile, account, or object not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The connected account cannot perform this operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Provider quota or rate limit exhausted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The platform is temporarily unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/linkedin/post-insights": {
+      "get": {
+        "operationId": "getLinkedInPostInsights",
+        "summary": "LinkedIn post insights",
+        "description": "Lifetime counters for up to five LinkedIn posts, or the account's recent posts when postUrns is omitted. A personal profile's posts must have been published through Adeli.",
+        "tags": [
+          "Analytics"
+        ],
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "profileId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "postUrns",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "platform": {
+                      "type": "string",
+                      "const": "linkedin"
+                    },
+                    "accountId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "profileId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "targetType": {
+                      "type": "string",
+                      "enum": [
+                        "organization",
+                        "member"
+                      ]
+                    },
+                    "posts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "postUrn": {
+                            "type": "string"
+                          },
+                          "permalink": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "title": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "publishedAt": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "hasImage": {
+                            "type": "boolean"
+                          },
+                          "impressions": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "clicks": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "reactions": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "comments": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "shares": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "postUrn",
+                          "permalink",
+                          "title",
+                          "publishedAt",
+                          "hasImage",
+                          "impressions",
+                          "clicks",
+                          "reactions",
+                          "comments",
+                          "shares"
+                        ]
+                      }
+                    },
+                    "fetchedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    }
+                  },
+                  "required": [
+                    "platform",
+                    "accountId",
+                    "profileId",
+                    "targetType",
+                    "posts",
+                    "fetchedAt"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The connection lacks a permission or provider-confirmed resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionRequiredError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Profile, account, or object not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The connected account cannot perform this operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Provider quota or rate limit exhausted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The platform is temporarily unavailable",
             "content": {
               "application/json": {
                 "schema": {
@@ -19189,506 +19854,6 @@
           }
         }
       }
-    },
-    "/api/v1/analytics/linkedin/account-insights": {
-      "get": {
-        "operationId": "getLinkedInAccountInsights",
-        "summary": "LinkedIn account insights",
-        "description": "Followers and a daily series of impressions, reactions, comments, shares and follower gain for a LinkedIn Page or personal profile; clicks and Page views are reported for Pages only. Served from a snapshot refreshed at most every six hours; `stale` is true when LinkedIn rate-limited the refresh.",
-        "tags": [
-          "Analytics"
-        ],
-        "parameters": [
-          {
-            "name": "accountId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "profileId",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "days",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 30
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "platform": {
-                      "type": "string",
-                      "const": "linkedin"
-                    },
-                    "accountId": {
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "profileId": {
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "targetType": {
-                      "type": "string",
-                      "enum": [
-                        "organization",
-                        "member"
-                      ]
-                    },
-                    "followers": {
-                      "type": [
-                        "number",
-                        "null"
-                      ]
-                    },
-                    "startDate": {
-                      "type": "string",
-                      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
-                    },
-                    "endDate": {
-                      "type": "string",
-                      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
-                    },
-                    "daily": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "date": {
-                            "type": "string",
-                            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
-                          },
-                          "impressions": {
-                            "type": [
-                              "number",
-                              "null"
-                            ]
-                          },
-                          "clicks": {
-                            "type": [
-                              "number",
-                              "null"
-                            ]
-                          },
-                          "reactions": {
-                            "type": [
-                              "number",
-                              "null"
-                            ]
-                          },
-                          "comments": {
-                            "type": [
-                              "number",
-                              "null"
-                            ]
-                          },
-                          "shares": {
-                            "type": [
-                              "number",
-                              "null"
-                            ]
-                          },
-                          "followerGain": {
-                            "type": [
-                              "number",
-                              "null"
-                            ]
-                          },
-                          "pageViews": {
-                            "type": [
-                              "number",
-                              "null"
-                            ]
-                          }
-                        },
-                        "required": [
-                          "date",
-                          "impressions",
-                          "clicks",
-                          "reactions",
-                          "comments",
-                          "shares",
-                          "followerGain",
-                          "pageViews"
-                        ]
-                      }
-                    },
-                    "unavailable": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "fetchedAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
-                    },
-                    "stale": {
-                      "type": "boolean"
-                    }
-                  },
-                  "required": [
-                    "platform",
-                    "accountId",
-                    "profileId",
-                    "targetType",
-                    "followers",
-                    "startDate",
-                    "endDate",
-                    "daily",
-                    "unavailable",
-                    "fetchedAt",
-                    "stale"
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request or provider failure",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Missing or invalid API key",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "The connection lacks a permission or provider-confirmed resource",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PermissionRequiredError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Profile, account, or object not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "The connected account cannot perform this operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Provider quota or rate limit exhausted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "502": {
-            "description": "Invalid request or provider failure",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "The platform is temporarily unavailable",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/analytics/linkedin/post-insights": {
-      "get": {
-        "operationId": "getLinkedInPostInsights",
-        "summary": "LinkedIn post insights",
-        "description": "Lifetime counters for up to five LinkedIn posts, or the account's recent posts when postUrns is omitted. A personal profile's posts must have been published through Adeli.",
-        "tags": [
-          "Analytics"
-        ],
-        "parameters": [
-          {
-            "name": "accountId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "profileId",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "postUrns",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "platform": {
-                      "type": "string",
-                      "const": "linkedin"
-                    },
-                    "accountId": {
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "profileId": {
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "targetType": {
-                      "type": "string",
-                      "enum": [
-                        "organization",
-                        "member"
-                      ]
-                    },
-                    "posts": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "postUrn": {
-                            "type": "string"
-                          },
-                          "permalink": {
-                            "type": "string",
-                            "format": "uri"
-                          },
-                          "title": {
-                            "type": [
-                              "string",
-                              "null"
-                            ]
-                          },
-                          "publishedAt": {
-                            "anyOf": [
-                              {
-                                "type": "string",
-                                "format": "date-time",
-                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "hasImage": {
-                            "type": "boolean"
-                          },
-                          "impressions": {
-                            "type": [
-                              "number",
-                              "null"
-                            ]
-                          },
-                          "clicks": {
-                            "type": [
-                              "number",
-                              "null"
-                            ]
-                          },
-                          "reactions": {
-                            "type": [
-                              "number",
-                              "null"
-                            ]
-                          },
-                          "comments": {
-                            "type": [
-                              "number",
-                              "null"
-                            ]
-                          },
-                          "shares": {
-                            "type": [
-                              "number",
-                              "null"
-                            ]
-                          }
-                        },
-                        "required": [
-                          "postUrn",
-                          "permalink",
-                          "title",
-                          "publishedAt",
-                          "hasImage",
-                          "impressions",
-                          "clicks",
-                          "reactions",
-                          "comments",
-                          "shares"
-                        ]
-                      }
-                    },
-                    "fetchedAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
-                    }
-                  },
-                  "required": [
-                    "platform",
-                    "accountId",
-                    "profileId",
-                    "targetType",
-                    "posts",
-                    "fetchedAt"
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request or provider failure",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Missing or invalid API key",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "The connection lacks a permission or provider-confirmed resource",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PermissionRequiredError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Profile, account, or object not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "The connected account cannot perform this operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Provider quota or rate limit exhausted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "502": {
-            "description": "Invalid request or provider failure",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "The platform is temporarily unavailable",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {
@@ -19696,7 +19861,7 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer",
-        "description": "An API key from Settings \u2192 API keys, sent as `Authorization: Bearer <key>`."
+        "description": "An API key from Settings → API keys, sent as `Authorization: Bearer <key>`."
       }
     },
     "schemas": {

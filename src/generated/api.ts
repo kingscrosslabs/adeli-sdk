@@ -469,6 +469,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/webhooks/{webhookId}/test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send a test event
+         * @description Sends one signed sample event (`test: true`) to the webhook now and returns the receiver's status code. One attempt, no retries; at most one test per webhook every few seconds. Defaults to a TikTok `comment.created`.
+         */
+        post: operations["testWebhook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/analytics/instagram/account-insights": {
         parameters: {
             query?: never;
@@ -583,6 +603,46 @@ export interface paths {
         };
         /** YouTube video insights */
         get: operations["getYouTubeVideoInsights"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/analytics/linkedin/account-insights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * LinkedIn account insights
+         * @description Followers and a daily series of impressions, reactions, comments, shares and follower gain for a LinkedIn Page or personal profile; clicks and Page views are reported for Pages only. Served from a snapshot refreshed at most every six hours; `stale` is true when LinkedIn rate-limited the refresh.
+         */
+        get: operations["getLinkedInAccountInsights"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/analytics/linkedin/post-insights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * LinkedIn post insights
+         * @description Lifetime counters for up to five LinkedIn posts, or the account's recent posts when postUrns is omitted. A personal profile's posts must have been published through Adeli.
+         */
+        get: operations["getLinkedInPostInsights"];
         put?: never;
         post?: never;
         delete?: never;
@@ -843,46 +903,6 @@ export interface paths {
          * @description X API fees are passed through at X's published rates; this totals the organization's usage.
          */
         get: operations["getXUsage"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/analytics/linkedin/account-insights": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * LinkedIn account insights
-         * @description Followers and a daily series of impressions, reactions, comments, shares and follower gain for a LinkedIn Page or personal profile; clicks and Page views are reported for Pages only. Served from a snapshot refreshed at most every six hours; `stale` is true when LinkedIn rate-limited the refresh.
-         */
-        get: operations["getLinkedInAccountInsights"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/analytics/linkedin/post-insights": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * LinkedIn post insights
-         * @description Lifetime counters for up to five LinkedIn posts, or the account's recent posts when postUrns is omitted. A personal profile's posts must have been published through Adeli.
-         */
-        get: operations["getLinkedInPostInsights"];
         put?: never;
         post?: never;
         delete?: never;
@@ -5805,6 +5825,15 @@ export interface operations {
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
+            /** @description The connected account cannot perform this operation */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
             /** @description Invalid request or provider failure */
             502: {
                 headers: {
@@ -5855,6 +5884,103 @@ export interface operations {
             };
             /** @description Profile, account, or object not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    testWebhook: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The webhook's id. */
+                webhookId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * @default comment.created
+                     * @enum {string}
+                     */
+                    type?: "comment.created" | "message.postback";
+                    /**
+                     * @default tiktok
+                     * @enum {string}
+                     */
+                    platform?: "tiktok" | "instagram";
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        eventId: string;
+                        delivered: boolean;
+                        statusCode: number | null;
+                        error: string | null;
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connected account cannot perform this operation */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Provider quota or rate limit exhausted */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6741,6 +6867,248 @@ export interface operations {
             };
             /** @description Invalid request or provider failure */
             502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getLinkedInAccountInsights: {
+        parameters: {
+            query: {
+                accountId: string;
+                profileId?: string;
+                days?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        platform: "linkedin";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        /** @enum {string} */
+                        targetType: "organization" | "member";
+                        followers: number | null;
+                        startDate: string;
+                        endDate: string;
+                        daily: {
+                            date: string;
+                            impressions: number | null;
+                            clicks: number | null;
+                            reactions: number | null;
+                            comments: number | null;
+                            shares: number | null;
+                            followerGain: number | null;
+                            pageViews: number | null;
+                        }[];
+                        unavailable: string[];
+                        /** Format: date-time */
+                        fetchedAt: string;
+                        stale: boolean;
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connection lacks a permission or provider-confirmed resource */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PermissionRequiredError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connected account cannot perform this operation */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Provider quota or rate limit exhausted */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The platform is temporarily unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getLinkedInPostInsights: {
+        parameters: {
+            query: {
+                accountId: string;
+                profileId?: string;
+                postUrns?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        platform: "linkedin";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        /** @enum {string} */
+                        targetType: "organization" | "member";
+                        posts: {
+                            postUrn: string;
+                            /** Format: uri */
+                            permalink: string;
+                            title: string | null;
+                            publishedAt: string | null;
+                            hasImage: boolean;
+                            impressions: number | null;
+                            clicks: number | null;
+                            reactions: number | null;
+                            comments: number | null;
+                            shares: number | null;
+                        }[];
+                        /** Format: date-time */
+                        fetchedAt: string;
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connection lacks a permission or provider-confirmed resource */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PermissionRequiredError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connected account cannot perform this operation */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Provider quota or rate limit exhausted */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The platform is temporarily unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -8965,248 +9333,6 @@ export interface operations {
             };
             /** @description Invalid request or provider failure */
             502: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    getLinkedInAccountInsights: {
-        parameters: {
-            query: {
-                accountId: string;
-                profileId?: string;
-                days?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @constant */
-                        platform: "linkedin";
-                        /** Format: uuid */
-                        accountId: string;
-                        /** Format: uuid */
-                        profileId: string;
-                        /** @enum {string} */
-                        targetType: "organization" | "member";
-                        followers: number | null;
-                        startDate: string;
-                        endDate: string;
-                        daily: {
-                            date: string;
-                            impressions: number | null;
-                            clicks: number | null;
-                            reactions: number | null;
-                            comments: number | null;
-                            shares: number | null;
-                            followerGain: number | null;
-                            pageViews: number | null;
-                        }[];
-                        unavailable: string[];
-                        /** Format: date-time */
-                        fetchedAt: string;
-                        stale: boolean;
-                    };
-                };
-            };
-            /** @description Invalid request or provider failure */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Missing or invalid API key */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description The connection lacks a permission or provider-confirmed resource */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PermissionRequiredError"];
-                };
-            };
-            /** @description Profile, account, or object not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description The connected account cannot perform this operation */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Provider quota or rate limit exhausted */
-            429: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Invalid request or provider failure */
-            502: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description The platform is temporarily unavailable */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    getLinkedInPostInsights: {
-        parameters: {
-            query: {
-                accountId: string;
-                profileId?: string;
-                postUrns?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @constant */
-                        platform: "linkedin";
-                        /** Format: uuid */
-                        accountId: string;
-                        /** Format: uuid */
-                        profileId: string;
-                        /** @enum {string} */
-                        targetType: "organization" | "member";
-                        posts: {
-                            postUrn: string;
-                            /** Format: uri */
-                            permalink: string;
-                            title: string | null;
-                            publishedAt: string | null;
-                            hasImage: boolean;
-                            impressions: number | null;
-                            clicks: number | null;
-                            reactions: number | null;
-                            comments: number | null;
-                            shares: number | null;
-                        }[];
-                        /** Format: date-time */
-                        fetchedAt: string;
-                    };
-                };
-            };
-            /** @description Invalid request or provider failure */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Missing or invalid API key */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description The connection lacks a permission or provider-confirmed resource */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PermissionRequiredError"];
-                };
-            };
-            /** @description Profile, account, or object not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description The connected account cannot perform this operation */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Provider quota or rate limit exhausted */
-            429: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Invalid request or provider failure */
-            502: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description The platform is temporarily unavailable */
-            503: {
                 headers: {
                     [name: string]: unknown;
                 };
