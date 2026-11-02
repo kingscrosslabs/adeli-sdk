@@ -438,12 +438,15 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List webhooks */
+        /**
+         * List webhooks
+         * @description Lists the profile's webhooks. `platform` is the platform a webhook receives events from, or null for every supported platform. `status` says whether delivery is enabled, not whether the receiver is reachable.
+         */
         get: operations["listWebhooks"];
         put?: never;
         /**
          * Create a webhook
-         * @description Registers a URL for comment.created and message.postback events on one profile. The signing secret is returned only in this response.
+         * @description Registers a URL for comment.created and message.postback events on one profile. Pass `platform` to receive one platform's events only; omit it to receive every supported platform. `message.postback` is sent only for Instagram, so it cannot be combined with `platform: "tiktok"` (422 unsupported_for_platform). The signing secret is returned only in this response.
          */
         post: operations["createWebhook"];
         delete?: never;
@@ -5711,6 +5714,8 @@ export interface operations {
                             profileId: string;
                             url: string;
                             events: ("comment.created" | "message.postback")[];
+                            /** @description The one platform this webhook receives events from, or null for every supported platform. Always present in responses; optional so clients built before it existed still type-check. */
+                            platform?: ("instagram" | "tiktok") | null;
                             /** @enum {string} */
                             status: "active" | "disabled";
                             /** Format: date-time */
@@ -5771,6 +5776,11 @@ export interface operations {
                     profileId: string;
                     url: string;
                     events: ("comment.created" | "message.postback")[];
+                    /**
+                     * @description Receive events from this platform only. Omit to receive every supported platform. `message.postback` requires `instagram` or no platform.
+                     * @enum {string}
+                     */
+                    platform?: "instagram" | "tiktok";
                 };
             };
         };
@@ -5789,6 +5799,8 @@ export interface operations {
                             profileId: string;
                             url: string;
                             events: ("comment.created" | "message.postback")[];
+                            /** @description The one platform this webhook receives events from, or null for every supported platform. Always present in responses; optional so clients built before it existed still type-check. */
+                            platform?: ("instagram" | "tiktok") | null;
                             /** @enum {string} */
                             status: "active" | "disabled";
                             /** Format: date-time */
