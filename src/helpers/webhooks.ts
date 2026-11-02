@@ -60,9 +60,11 @@ interface WebhookEventEnvelope {
   readonly createdAt: string;
   readonly profileId: string;
   readonly accountId: string;
+  /** True only for a sample sent by `webhooks.testWebhook`; its ids are prefixed `test_`. */
+  readonly test: boolean;
 }
 
-export interface CommentCreatedEvent extends WebhookEventEnvelope {
+export interface InstagramCommentCreatedEvent extends WebhookEventEnvelope {
   readonly type: 'comment.created';
   readonly platform: 'instagram';
   readonly data: {
@@ -75,6 +77,24 @@ export interface CommentCreatedEvent extends WebhookEventEnvelope {
     readonly isSelf: boolean;
   };
 }
+
+export interface TikTokCommentCreatedEvent extends WebhookEventEnvelope {
+  readonly type: 'comment.created';
+  readonly platform: 'tiktok';
+  readonly data: {
+    readonly commentId: string;
+    /** The TikTok video id. */
+    readonly mediaId: string;
+    readonly parentId: string | null;
+    readonly text: string;
+    /** `id` is TikTok's commenter id; `username` and `displayName` are null when TikTok did not return them. */
+    readonly from: { readonly id: string | null; readonly username: string | null; readonly displayName: string | null };
+    /** True when the connected account wrote the comment itself. */
+    readonly isSelf: boolean;
+  };
+}
+
+export type CommentCreatedEvent = InstagramCommentCreatedEvent | TikTokCommentCreatedEvent;
 
 export interface MessagePostbackEvent extends WebhookEventEnvelope {
   readonly type: 'message.postback';
@@ -138,10 +158,29 @@ export function parseWebhookEvent(payload: WebhookPayload): WebhookEvent {
     createdAt: requireString(value, 'createdAt', 'event'),
     profileId: requireString(value, 'profileId', 'event'),
     accountId: requireString(value, 'accountId', 'event'),
+    test: value.test === true,
   };
   const type = requireString(value, 'type', 'event');
   const platform = requireString(value, 'platform', 'event');
   const data = value.data;
+  if (platform === 'tiktok' && type === 'comment.created') {
+    if (!isRecord(data)) malformed('data must be an object');
+    const from = data.from;
+    if (!isRecord(from)) malformed('data.from must be an object');
+    if (typeof data.isSelf !== 'boolean') malformed('data.isSelf must be a boolean');
+    return { ...envelope, type, platform, data: {
+      commentId: requireString(data, 'commentId', 'data'),
+      mediaId: requireString(data, 'mediaId', 'data'),
+      parentId: requireNullableString(data, 'parentId', 'data'),
+      text: requireString(data, 'text', 'data'),
+      from: {
+        id: requireNullableString(from, 'id', 'data.from'),
+        username: requireNullableString(from, 'username', 'data.from'),
+        displayName: requireNullableString(from, 'displayName', 'data.from'),
+      },
+      isSelf: data.isSelf,
+    } };
+  }
   if (platform === 'instagram' && type === 'comment.created') {
     if (!isRecord(data)) malformed('data must be an object');
     const from = data.from;

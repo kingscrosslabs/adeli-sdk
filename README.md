@@ -141,12 +141,30 @@ export async function POST(request: Request) {
   if (!valid) return new Response('Invalid signature', { status: 401 });
 
   const event = parseWebhookEvent(payload);
-  if (event.type === 'comment.created') {
-    // ...
+  if (event.type === 'comment.created' && event.platform === 'tiktok') {
+    // event.data.text, event.data.from.username, event.data.mediaId (the video id)
   }
   return new Response(null, { status: 204 });
 }
 ```
+
+#### Try it locally
+
+A receiver can be one line of Node.js. Run it in a folder where `@adeli/sdk` is installed, with the secret `createWebhook` returned:
+
+```sh
+ADELI_WEBHOOK_SECRET=whsec_... node --input-type=module -e 'import{createServer}from"node:http";import{verifyWebhookSignature,parseWebhookEvent}from"@adeli/sdk/helpers";createServer(async(q,s)=>{let b="";for await(const d of q)b+=d;const ok=verifyWebhookSignature({payload:b,header:q.headers["adeli-signature"],secret:process.env.ADELI_WEBHOOK_SECRET});console.log(ok?parseWebhookEvent(b):"bad signature");s.writeHead(ok?204:401).end()}).listen(4242)'
+```
+
+Register it, then fire a signed sample event at it. `http://localhost` URLs work against an Adeli running on the same machine; for `app.tryadeli.com`, expose the receiver through an HTTPS tunnel and register that URL instead.
+
+```ts
+const { data: created } = await adeli.webhooks.createWebhook({ body: { profileId, url: 'http://localhost:4242', events: ['comment.created'] } });
+const { data: result } = await adeli.webhooks.testWebhook({ path: { webhookId: created.webhook.id } });
+console.log(result.delivered, result.statusCode); // true 204
+```
+
+See `examples/webhook-receiver.ts` for a fuller receiver.
 
 ### Handle errors
 

@@ -9,6 +9,9 @@ export type WebhooksResponse = SuccessBody<'listWebhooks'>;
 export type Webhook = WebhooksResponse['webhooks'][number];
 /** The created webhook and its signing secret. The secret is returned only here. */
 export type CreatedWebhook = SuccessBody<'createWebhook'>;
+export type TestWebhookBody = JsonBody<'testWebhook'>;
+/** What the receiver answered to a test event: `delivered` is true for any 2xx. */
+export type TestWebhookResult = SuccessBody<'testWebhook'>;
 
 export class WebhooksResource {
   constructor(private readonly transport: Transport) {}
@@ -20,5 +23,12 @@ export class WebhooksResource {
   }
   deleteWebhook(args: { readonly path: Path<'deleteWebhook'> }, options: RequestOptions = {}): Promise<ApiResponse<undefined>> {
     return this.transport.request({ operation: operations.deleteWebhook, path: args.path, signal: options.signal, timeoutMs: options.timeoutMs });
+  }
+  /**
+   * Send one signed sample event (`test: true`) to the webhook now and return
+   * what the receiver answered. Defaults to a TikTok `comment.created`. Never retried.
+   */
+  testWebhook(args: { readonly path: Path<'testWebhook'>; readonly body?: TestWebhookBody }, options: RequestOptions = {}): Promise<ApiResponse<TestWebhookResult>> {
+    return this.transport.request({ operation: operations.testWebhook, path: args.path, body: args.body ?? {}, signal: options.signal, timeoutMs: options.timeoutMs });
   }
 }

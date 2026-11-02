@@ -62,5 +62,6 @@ export const operations = {
   listWebhooks: { operationId: 'listWebhooks', method: 'GET', path: '/webhooks', retry: 'safe-read' },
   createWebhook: { operationId: 'createWebhook', method: 'POST', path: '/webhooks', retry: 'never' },
   deleteWebhook: { operationId: 'deleteWebhook', method: 'DELETE', path: '/webhooks/{webhookId}', retry: 'never' },
+  testWebhook: { operationId: 'testWebhook', method: 'POST', path: '/webhooks/{webhookId}/test', retry: 'never' },
 } as const satisfies Record<string, OperationMetadata>;
 export type OperationId = keyof typeof operations;

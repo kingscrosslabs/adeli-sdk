@@ -10,4 +10,4 @@ export type { ConnectionPollingClient, FacebookPollingClient, InstagramPollingCl
 export { iterateCommentPages, iterateComments } from './comments.js';
 export type { CommentIteratorOptions, CommentIteratorQuery, CommentsClient } from './comments.js';
 export { DEFAULT_WEBHOOK_TOLERANCE_SECONDS, parseWebhookEvent, verifyWebhookSignature } from './webhooks.js';
-export type { CommentCreatedEvent, MessagePostbackEvent, UnknownWebhookEvent, VerifyWebhookSignatureInput, WebhookEvent, WebhookEventType, WebhookPayload } from './webhooks.js';
+export type { CommentCreatedEvent, InstagramCommentCreatedEvent, MessagePostbackEvent, TikTokCommentCreatedEvent, UnknownWebhookEvent, VerifyWebhookSignatureInput, WebhookEvent, WebhookEventType, WebhookPayload } from './webhooks.js';

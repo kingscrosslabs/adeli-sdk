@@ -114,6 +114,7 @@ function wireResponse(operationId: string, _status?: string): unknown {
     case 'createAdIdentity': return { platform: 'tiktok_ads', accountId: id, adAccountId: '7000000001', identity: { id: 'identity-1', type: 'CUSTOMIZED_USER', displayName: 'Brand', avatarUrl: null } };
     case 'listWebhooks': return { webhooks: [webhook] };
     case 'createWebhook': return { webhook, secret: 'whsec_created' };
+    case 'testWebhook': return { eventId: 'evt_test_1', delivered: true, statusCode: 204, error: null };
     case 'getXUsage': return { from: '2025-01-01T00:00:00.000Z', to: '2025-02-01T00:00:00.000Z', ratesAsOf: '2025-01-01', totalCostMicros: 0, operations: [{ operation: 'list_posts', resourceType: 'post', resourceCount: 1, costMicros: 0 }] };
     default: throw new Error(`fixture missing for ${operationId}`);
   }
@@ -197,6 +198,7 @@ test('all 60 registered operations preserve exact wire requests and response env
     { id: 'listWebhooks', call: (o) => client.webhooks.listWebhooks({ query: { profileId: id } }, o), method: 'GET', path: '/api/v1/webhooks', query: `profileId=${id}`, status: 200, response: wireResponse('listWebhooks') },
     { id: 'createWebhook', call: (o) => client.webhooks.createWebhook({ body: { profileId: id, url: 'https://hooks.example/adeli', events: ['comment.created', 'message.postback'] } }, o), method: 'POST', path: '/api/v1/webhooks', body: jsonBody({ profileId: id, url: 'https://hooks.example/adeli', events: ['comment.created', 'message.postback'] }), status: 201, response: wireResponse('createWebhook') },
     { id: 'deleteWebhook', call: (o) => client.webhooks.deleteWebhook({ path: { webhookId: 'webhook/a' } }, o), method: 'DELETE', path: '/api/v1/webhooks/webhook%2Fa', status: 204, response: undefined },
+    { id: 'testWebhook', call: (o) => client.webhooks.testWebhook({ path: { webhookId: 'webhook/a' }, body: { platform: 'tiktok' } }, o), method: 'POST', path: '/api/v1/webhooks/webhook%2Fa/test', body: jsonBody({ platform: 'tiktok' }), status: 200, response: wireResponse('testWebhook') },
   ];
 
   const { operations } = await import('../src/operations.js');
