@@ -95,6 +95,8 @@ function wireResponse(operationId: string, _status?: string): unknown {
     case 'getTikTokAccountInsights': return { platform: 'tiktok', accountId: id, profileId: id, isBusinessAccount: null, startDate: '2025-01-01', endDate: '2025-01-02', daily: [], audience: { ages: [], genders: [], countries: [], cities: [] }, fetchedAt: profile.updatedAt };
     case 'getTikTokVideoInsights': return { platform: 'tiktok', accountId: id, profileId: id, videos: [], fetchedAt: profile.updatedAt };
     case 'getYouTubeChannelInsights': return { platform: 'youtube', accountId: id, profileId: id, channel: { channelId: 'channel', title: 'Channel', handle: null, avatarUrl: null, subscribers: null, views: null, videos: null }, insights: { startDate: '2025-01-01', endDate: '2025-01-02', daily: [], topVideos: [], audience: { ageGender: [], countries: [] } }, fetchedAt: profile.updatedAt };
+    case 'getLinkedInAccountInsights': return { platform: 'linkedin', accountId: id, profileId: id, targetType: 'organization', followers: 10, startDate: '2025-01-01', endDate: '2025-01-02', daily: [], unavailable: [], fetchedAt: profile.updatedAt, stale: false };
+    case 'getLinkedInPostInsights': return { platform: 'linkedin', accountId: id, profileId: id, targetType: 'member', posts: [], fetchedAt: profile.updatedAt };
     case 'getYouTubeVideoInsights': return { platform: 'youtube', accountId: id, profileId: id, insights: { startDate: '2025-01-01', endDate: '2025-01-02', videos: [] }, fetchedAt: profile.updatedAt };
     case 'listAdBusinesses': return { platform: 'meta_ads', accountId: id, profileId: id, businesses: [{ id: 'business-1', name: 'Business' }] };
     case 'listAdAccounts': return { platform: 'meta_ads', accountId: id, profileId: id, adAccounts: [], fetchedAt: profile.updatedAt };
@@ -123,7 +125,7 @@ type WireCase = { id: string; call: (options: RequestOptions) => Promise<ApiResp
 function jsonBody(body: Record<string, unknown>): ExpectedBody { return body; }
 function requireRequest(value: Request | undefined, id: string): Request { if (value === undefined) throw new Error(`${id}: fetch was not called`); return value; }
 // Request expectations are deliberately written independently of operations metadata; the registry is only a coverage allow-list.
-test('all 58 registered operations preserve exact wire requests and response envelopes', async () => {
+test('all 60 registered operations preserve exact wire requests and response envelopes', async () => {
   let currentFixture: WireCase | undefined;
   let returnUnauthorized = false;
   const unauthorizedDetails = { reason: 'wire-contract', nested: { preserved: true } };
@@ -174,6 +176,8 @@ test('all 58 registered operations preserve exact wire requests and response env
     { id: 'getTikTokVideoInsights', call: (o) => client.analytics.getTikTokVideoInsights({ query: { accountId: id, profileId: id, videoIds: 'v1' } }, o), method: 'GET', path: '/api/v1/analytics/tiktok/video-insights', query: `accountId=${id}&profileId=${id}&videoIds=v1`, status: 200, response: wireResponse('getTikTokVideoInsights') },
     { id: 'getYouTubeChannelInsights', call: (o) => client.analytics.getYouTubeChannelInsights({ query: { accountId: id, profileId: id, startDate: '2025-01-01', endDate: '2025-01-02' } }, o), method: 'GET', path: '/api/v1/analytics/youtube/channel-insights', query: `accountId=${id}&profileId=${id}&startDate=2025-01-01&endDate=2025-01-02`, status: 200, response: wireResponse('getYouTubeChannelInsights') },
     { id: 'getYouTubeVideoInsights', call: (o) => client.analytics.getYouTubeVideoInsights({ query: { accountId: id, profileId: id, videoIds: 'v1' } }, o), method: 'GET', path: '/api/v1/analytics/youtube/video-insights', query: `accountId=${id}&profileId=${id}&videoIds=v1`, status: 200, response: wireResponse('getYouTubeVideoInsights') },
+    { id: 'getLinkedInAccountInsights', call: (o) => client.analytics.getLinkedInAccountInsights({ query: { accountId: id, profileId: id, days: 7 } }, o), method: 'GET', path: '/api/v1/analytics/linkedin/account-insights', query: `accountId=${id}&profileId=${id}&days=7`, status: 200, response: wireResponse('getLinkedInAccountInsights') },
+    { id: 'getLinkedInPostInsights', call: (o) => client.analytics.getLinkedInPostInsights({ query: { accountId: id, profileId: id, postUrns: 'urn:li:share:1' } }, o), method: 'GET', path: '/api/v1/analytics/linkedin/post-insights', query: `accountId=${id}&profileId=${id}&postUrns=urn%3Ali%3Ashare%3A1`, status: 200, response: wireResponse('getLinkedInPostInsights') },
     { id: 'listAdBusinesses', call: (o) => client.ads.listAdBusinesses({ query: { accountId: id, profileId: id } }, o), method: 'GET', path: '/api/v1/ads/businesses', query: `accountId=${id}&profileId=${id}`, status: 200, response: wireResponse('listAdBusinesses') },
     { id: 'listAdAccounts', call: (o) => client.ads.listAdAccounts({ query: { accountId: id, profileId: id, refresh: 'true' } }, o), method: 'GET', path: '/api/v1/ads/accounts', query: `accountId=${id}&profileId=${id}&refresh=true`, status: 200, response: wireResponse('listAdAccounts') },
     { id: 'createAdAccount', call: (o) => client.ads.createAdAccount({ query: { accountId: id, profileId: id }, body: { businessId: 'business', name: 'Ads', timezone: 'UTC' } }, { ...o, idempotencyKey: 'ad-key' }), method: 'POST', path: '/api/v1/ads/accounts', query: `accountId=${id}&profileId=${id}`, body: jsonBody({ businessId: 'business', name: 'Ads', timezone: 'UTC' }), status: 201, response: wireResponse('createAdAccount'), idempotencyKey: 'ad-key' },
@@ -198,7 +202,7 @@ test('all 58 registered operations preserve exact wire requests and response env
   const { operations } = await import('../src/operations.js');
   expect(new Set(cases.map((item) => item.id))).toEqual(new Set(Object.keys(operations)));
   expect(cases).toHaveLength(Object.keys(operations).length);
-  expect(declaredSuccessPairs()).toHaveLength(67);
+  expect(declaredSuccessPairs()).toHaveLength(69);
   for (const fixture of cases) {
     for (const status of successStatuses(fixture.id)) {
       delete state.request;
