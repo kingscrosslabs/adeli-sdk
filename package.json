@@ -1,7 +1,27 @@
 {
   "name": "@adeli/sdk",
   "version": "0.1.1",
-  "description": "Server-side TypeScript SDK for Adeli",
+  "description": "Official TypeScript SDK for Adeli, the unified social media and ads API",
+  "keywords": [
+    "adeli",
+    "sdk",
+    "social-media",
+    "instagram",
+    "tiktok",
+    "youtube",
+    "facebook",
+    "x",
+    "twitter",
+    "bluesky",
+    "meta-ads",
+    "tiktok-ads",
+    "publishing",
+    "typescript"
+  ],
+  "homepage": "https://github.com/kingscrosslabs/adeli-sdk#readme",
+  "bugs": {
+    "url": "https://github.com/kingscrosslabs/adeli-sdk/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/kingscrosslabs/adeli-sdk.git"
