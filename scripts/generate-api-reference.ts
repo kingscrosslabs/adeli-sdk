@@ -53,7 +53,7 @@ function endpointLinks(operationId: string): string {
   return linkOperations[operationId]!.map((entry) => `[${entry.href.replace('/docs/', '')}](${docsLinks.baseUrl}${entry.href})`).join('<br>');
 }
 
-let output = `# API reference\n\nGenerated from ${tick}src/operations.ts${tick} metadata, AST-extracted resource method declarations, and the checked-in verified public docs mapping ${tick}openapi/docs-links.json${tick}; this file is not hand-maintained.\n\n- Contract status: **${provenance.status ?? 'unknown'}**\n- Candidate OpenAPI SHA-256: ${tick}${provenance.sha256 ?? 'unknown'}${tick}\n- Public endpoint documentation: ${docsLinks.baseUrl}/docs/\n\n| Resource | Method signature | HTTP | Path | Endpoint docs |\n| --- | --- | --- | --- | --- |\n`;
+let output = `# API reference\n\n> For full documentation, see [${docsLinks.baseUrl}/docs/api](${docsLinks.baseUrl}/docs/api).\n\nGenerated from ${tick}src/operations.ts${tick} metadata, AST-extracted resource method declarations, and the checked-in verified public docs mapping ${tick}openapi/docs-links.json${tick}; this file is not hand-maintained.\n\n- Contract status: **${provenance.status ?? 'unknown'}**\n- Candidate OpenAPI SHA-256: ${tick}${provenance.sha256 ?? 'unknown'}${tick}\n- Public endpoint documentation: ${docsLinks.baseUrl}/docs/\n\n| Resource | Method signature | HTTP | Path | Endpoint docs |\n| --- | --- | --- | --- | --- |\n`;
 for (const [operationId, operation] of Object.entries(operations)) {
   const signature = methodSources.get(operationId)!.signature;
   output += `| ${escapeCell(resourceName(operationId))} | ${escapeCell(signature)} | ${operation.method} | ${escapeCell(`${tick}${operation.path}${tick}`)} | ${endpointLinks(operationId)} |\n`;

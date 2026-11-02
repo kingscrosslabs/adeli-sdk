@@ -17,7 +17,7 @@
 <p align="center">
   <a href="https://github.com/kingscrosslabs/adeli-sdk/blob/main/docs/client.md">Docs</a>
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
-  <a href="https://github.com/kingscrosslabs/adeli-sdk/blob/main/docs/api-reference.md">API reference</a>
+  <a href="https://www.tryadeli.com/docs/api">API reference</a>
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
   <a href="https://github.com/kingscrosslabs/adeli-sdk/blob/main/docs/publishing.md">Publishing guide</a>
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
@@ -199,7 +199,7 @@ The SDK throws in browsers.
 
 - [Client and request semantics](https://github.com/kingscrosslabs/adeli-sdk/blob/main/docs/client.md): retries, timeouts, errors, and runtimes
 - [Publishing and uploads](https://github.com/kingscrosslabs/adeli-sdk/blob/main/docs/publishing.md): payloads for each platform, and partial outcomes
-- [API reference](https://github.com/kingscrosslabs/adeli-sdk/blob/main/docs/api-reference.md): every operation
+- [API reference](https://www.tryadeli.com/docs/api): every operation
 - [Feature availability](https://github.com/kingscrosslabs/adeli-sdk/blob/main/docs/availability.md): production compared with beta
 
 ## License
