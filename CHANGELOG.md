@@ -1,5 +1,11 @@
 # @adeli/sdk
 
+## 0.2.1
+
+### Patch Changes
+
+- 666b95f: small readme.md update for SEO backlinking improvements
+
 ## 0.2.0
 
 ### Minor Changes
