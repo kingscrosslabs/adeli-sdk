@@ -30,7 +30,7 @@
 
 ## Introduction
 
-One typed client for Instagram, Facebook, TikTok, YouTube, X, Bluesky, Meta Ads, and TikTok Ads.
+The Adeli SDK is a TypeScript client for the [Adeli API](https://www.tryadeli.com). Create the `adeli` object to post on social media, read or reply to comments and messages, analyze account insights, or manage ads.
 
 ```ts
 import { Adeli } from '@adeli/sdk';
