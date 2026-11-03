@@ -39,7 +39,8 @@ export interface ClientOptions {
   fetch?: Fetch | undefined;
 }
 
-export type RetryClass = 'never' | 'safe-read' | 'profile-create';
+/** `profile-create` and `idempotent-write` retry only when the caller supplies a stable idempotency key. */
+export type RetryClass = 'never' | 'safe-read' | 'profile-create' | 'idempotent-write';
 export interface OperationMetadata {
   readonly operationId: string;
   readonly method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';

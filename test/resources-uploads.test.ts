@@ -16,7 +16,7 @@ function uploadAwareFetch(requests: Request[]) {
     if (url.hostname === 's3.example') return new Response('', { status: 200 });
     if (url.pathname === '/api/v1/media/uploads') {
       const body = await request.clone().json() as { files: Array<{ clientId: string; contentType: string }> };
-      return ok(JSON.stringify({ uploads: body.files.map((file, index) => ({ clientId: file.clientId, uploadId: `staged-${index}`, method: 'PUT', url: `https://s3.example/${index}`, headers: { 'content-type': file.contentType, 'x-amz-meta-profile': id }, expiresAt: '2026-10-26T12:00:00Z' })) }), 201);
+      return ok(JSON.stringify({ uploads: body.files.map((file) => ({ clientId: file.clientId, uploadId: `staged-${file.clientId}`, method: 'PUT', url: `https://s3.example/${file.clientId}`, headers: { 'content-type': file.contentType, 'x-amz-meta-profile': id }, expiresAt: '2026-10-26T12:00:00Z' })) }), 201);
     }
     return ok();
   };
@@ -45,9 +45,10 @@ test('invokes every operation through the public resource surface', async () => 
     client.ads.createCampaign({ body: { adAccountId: 'act_1', pagePostId: '1', dailyBudget: 0, startDate: '2025-01-01', endDate: '2025-01-02', campaignName: 'c' } }, { idempotencyKey: 'c' }),
     client.ads.deleteCampaign({ path: { campaignId: id }, query: { adAccountId: 'act_1' } }), client.ads.setAdStatus({ body: { adAccountId: id, objectId: '1', status: 'PAUSED' } }), client.usage.getXUsage({}),
     client.webhooks.listWebhooks({ query: { profileId: id } }), client.webhooks.createWebhook({ body: { profileId: id, url: 'https://hooks.example/a', events: ['comment.created'] } }), client.webhooks.deleteWebhook({ path: { webhookId: id } }),
+    client.publications.createPublication({ body: { content: 'hi', platforms: [{ platform: 'x', accountId: id }] } }), client.publications.getPublication({ path: { publicationId: id } }), client.publications.retryPublication({ path: { publicationId: id } }),
   ]);
   const apiRequests = requests.filter((request) => new URL(request.url).hostname === 'localhost');
-  expect(new Set(apiRequests.map((request) => `${request.method} ${new URL(request.url).pathname}`)).size).toBe(56);
+  expect(new Set(apiRequests.map((request) => `${request.method} ${new URL(request.url).pathname}`)).size).toBe(59);
   expect(requests.some((request) => new URL(request.url).hostname === 's3.example')).toBe(true);
 });
 
@@ -71,6 +72,79 @@ test('stages typed TikTok files with exact signed headers and sends only ordered
   const final = await requests.at(-1)!.clone().json();
   expect(final).toMatchObject({ platform: 'tiktok', photos: [{ upload_id: 'staged-0' }, { upload_id: 'staged-1' }], disable_comment: false, photo_cover_index: 0 });
   expect(JSON.stringify(final)).not.toContain('first');
+});
+
+test('createMediaUploads accepts several platforms for one upload', async () => {
+  const requests: Request[] = [];
+  const client = new Adeli({ apiKey: 'key', baseURL: 'http://localhost', fetch: uploadAwareFetch(requests) });
+  await client.posts.createMediaUploads({ body: { profileId: id, platforms: ['instagram', 'tiktok'], files: [{ clientId: '0', purpose: 'post_media', contentType: 'video/mp4', size: 1 }] } });
+  expect(await requests[0]!.clone().json()).toEqual({ profileId: id, platforms: ['instagram', 'tiktok'], files: [{ clientId: '0', purpose: 'post_media', contentType: 'video/mp4', size: 1 }] });
+});
+
+test('stages a shared publication file once for every platform that uses it and a target file for its own platform', async () => {
+  const requests: Request[] = [];
+  const client = new Adeli({ apiKey: 'key', baseURL: 'http://localhost', fetch: uploadAwareFetch(requests) });
+  const shared = new File(['video'], 'launch.mp4', { type: 'video/mp4' });
+  const own = new File(['image'], 'x.jpg', { type: 'image/jpeg' });
+  const thumbnail = new Blob(['thumb'], { type: 'image/png' });
+  const progress: Array<{ completedFiles: number; totalFiles: number }> = [];
+  await client.publications.createPublication({ body: {
+    profileId: id,
+    content: 'Launch day',
+    media: [shared],
+    platforms: [
+      { platform: 'instagram', accountId: id, kind: 'reel' },
+      { platform: 'tiktok', accountId: id, options: { music_usage_confirmed: true } },
+      { platform: 'youtube', accountId: id, options: { privacy_status: 'private', made_for_kids: false, thumbnail } },
+      { platform: 'x', accountId: id, media: [{ file: own, altText: 'launch' }] },
+    ],
+  } }, { idempotencyKey: 'launch-1', onProgress: (value) => progress.push(value) });
+  const declarations = await Promise.all(requests.filter((request) => new URL(request.url).pathname === '/api/v1/media/uploads').map((request) => request.clone().json()));
+  expect(declarations).toEqual([
+    { profileId: id, platform: 'youtube', files: [{ clientId: '0', purpose: 'youtube_thumbnail', contentType: 'image/png', size: 5 }] },
+    { profileId: id, platform: 'x', files: [{ clientId: '1', purpose: 'post_media', contentType: 'image/jpeg', size: 5, filename: 'x.jpg' }] },
+    { profileId: id, platforms: ['instagram', 'tiktok', 'youtube'], files: [{ clientId: '2', purpose: 'post_media', contentType: 'video/mp4', size: 5, filename: 'launch.mp4' }] },
+  ]);
+  expect(requests.filter((request) => new URL(request.url).hostname === 's3.example')).toHaveLength(3);
+  expect(progress.at(-1)).toMatchObject({ completedFiles: 3, totalFiles: 3 });
+  const final = requests.at(-1)!;
+  expect(new URL(final.url).pathname).toBe('/api/v1/publications');
+  expect(final.headers.get('idempotency-key')).toBe('launch-1');
+  expect(await final.clone().json()).toEqual({
+    profileId: id,
+    content: 'Launch day',
+    media: [{ upload_id: 'staged-2' }],
+    platforms: [
+      { platform: 'instagram', accountId: id, kind: 'reel' },
+      { platform: 'tiktok', accountId: id, options: { music_usage_confirmed: true } },
+      { platform: 'youtube', accountId: id, options: { privacy_status: 'private', made_for_kids: false, thumbnail: { upload_id: 'staged-0' } } },
+      { platform: 'x', accountId: id, media: [{ upload_id: 'staged-1', altText: 'launch' }] },
+    ],
+  });
+});
+
+test('publication file staging resolves the profile from the first account when profileId is omitted', async () => {
+  const requests: Request[] = [];
+  const upload = uploadAwareFetch(requests);
+  const client = new Adeli({ apiKey: 'key', baseURL: 'http://localhost', fetch: async (input, init) => {
+    const request = new Request(input, init);
+    if (new URL(request.url).pathname === '/api/v1/accounts') { requests.push(request); return ok(JSON.stringify({ status: 'complete', accounts: [{ accountId: id, profileId: 'profile-from-account' }], errors: [] })); }
+    return upload(input, init);
+  } });
+  await client.publications.createPublication({ body: { media: [new Blob(['v'], { type: 'video/mp4' })], platforms: [{ platform: 'tiktok', accountId: id, options: { music_usage_confirmed: true } }, { platform: 'youtube', accountId: id, options: { privacy_status: 'private', made_for_kids: false } }] } });
+  expect(new URL(requests[0]!.url).search).toBe(`?accountId=${id}`);
+  expect(await requests[1]!.clone().json()).toMatchObject({ profileId: 'profile-from-account', platforms: ['tiktok', 'youtube'] });
+  expect(await requests.at(-1)!.clone().json()).not.toHaveProperty('profileId');
+});
+
+test('a publication without files is sent unchanged with no upload calls', async () => {
+  const requests: Request[] = [];
+  const client = new Adeli({ apiKey: 'key', baseURL: 'http://localhost', fetch: uploadAwareFetch(requests) });
+  const body = { content: 'hi', media: [{ url: 'https://media.example/a.mp4' }], platforms: [{ platform: 'youtube' as const, accountId: id, options: { privacy_status: 'private', made_for_kids: false } }] };
+  await client.publications.createPublication({ body });
+  expect(requests).toHaveLength(1);
+  expect(await requests[0]!.clone().json()).toEqual(body);
+  expect(requests[0]!.headers.get('idempotency-key')).toBeNull();
 });
 
 test('file-backed adapter starts large sparse files with bounded chunks', async () => {

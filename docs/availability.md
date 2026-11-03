@@ -16,6 +16,8 @@ The SDK types the whole public contract, but not every operation is live on ever
 | `meta_ads` | — | Connect and every `client.ads` operation |
 | `tiktok_ads` | — | Connect and every `client.ads` operation |
 
+A publication (`client.publications`) posts to each target with that platform's publishing availability above.
+
 `whatsapp` appears in the account and connect platform enums, but `startConnection` does not support it yet and answers `422 provider_not_supported`.
 
 ## Runtime signals

@@ -26,6 +26,9 @@
       {"method":"POST","path":"/api/v1/posts","href":"/docs/api/posts/publish-x"},
       {"method":"POST","path":"/api/v1/posts","href":"/docs/api/posts/publish-bluesky"}
     ],
+    "createPublication": [{"method":"POST","path":"/api/v1/publications","href":"/docs/api/posts/create-publication"}],
+    "getPublication": [{"method":"GET","path":"/api/v1/publications/{publicationId}","href":"/docs/api/posts/get-publication"}],
+    "retryPublication": [{"method":"POST","path":"/api/v1/publications/{publicationId}/retry","href":"/docs/api/posts/retry-publication"}],
     "uploadYouTubeVideo": [{"method":"POST","path":"/api/v1/posts/youtube","href":"/docs/api/posts/upload-youtube-video-file"}],
     "deleteXPost": [{"method":"DELETE","path":"/api/v1/posts/x/{postId}","href":"/docs/api/posts/delete-x-post"}],
     "deleteBlueskyPost": [{"method":"DELETE","path":"/api/v1/posts/bluesky/{postId}","href":"/docs/api/posts/delete-bluesky-post"}],

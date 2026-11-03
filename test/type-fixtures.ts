@@ -14,7 +14,7 @@ const linkedinImages: CreatePostBody = { platform: 'linkedin', accountId: id, co
 const linkedinVideo: CreatePostBody = { platform: 'linkedin', accountId: id, commentary: 'Watch', video: { upload_id: 'staged-video', title: 'Demo' } };
 const linkedinDocument: CreatePostBody = { platform: 'linkedin', accountId: id, commentary: 'Our Q3 results', document: { upload_id: 'staged-pdf', title: 'Q3 deck' } };
 const youtubeVideo: CreatePostBody = { platform: 'youtube', accountId: id, title: 'video', privacy_status: 'private', made_for_kids: false, video: { url: 'https://media.example/video.mp4' } };
-const tiktokFiles: TikTokMultipartBody = { platform: 'tiktok', accountId: id, music_usage_confirmed: true, video: new Blob(['video'], { type: 'video/mp4' }), disable_comment: false, photo_cover_index: 0 };
+const tiktokFiles: TikTokMultipartBody = { platform: 'tiktok', accountId: id, music_usage_confirmed: true, remove_editor_attribution: false, video: new Blob(['video'], { type: 'video/mp4' }), disable_comment: false, photo_cover_index: 0 };
 const file = new File(['media'], 'media.jpg', { type: 'image/jpeg' });
 const instagramFile: CreatePostWithFiles = { platform: 'instagram', accountId: id, image: { file, altText: 'Bird' } };
 const facebookFile: CreatePostWithFiles = { platform: 'facebook', accountId: id, image: file };
@@ -86,6 +86,22 @@ async function requiredArguments(client: Adeli): Promise<void> {
   await client.posts.createMediaUploads({ body: { profileId: id, platform: 'youtube', files: [{ clientId: 'video', purpose: 'post_media', contentType: 'video/mp4', size: 10 }] } });
   await client.posts.createMediaUploads({ body: { profileId: id, platform: 'linkedin', files: [{ clientId: 'deck', purpose: 'post_media', contentType: 'application/pdf', size: 10 }] } });
   await client.posts.getInstagramPostStatus({ query: { jobId: id, profileId: id } });
+  await client.posts.createMediaUploads({ body: { profileId: id, platforms: ['instagram', 'tiktok', 'youtube'], files: [{ clientId: 'video', purpose: 'post_media', contentType: 'video/mp4', size: 10 }] } });
+  const created = await client.publications.createPublication({ body: {
+    content: 'Launch', media: [new Blob(['v'], { type: 'video/mp4' })],
+    platforms: [{ platform: 'instagram', accountId: id, kind: 'reel' }, { platform: 'x', accountId: id, media: [{ file: new Blob(['i'], { type: 'image/jpeg' }), altText: 'alt' }] }],
+  } }, { idempotencyKey: 'launch' });
+  const publicationStatus: 'queued' | 'processing' | 'published' | 'partial' | 'failed' = created.data.status;
+  const targetStatus: 'queued' | 'submitting' | 'processing' | 'published' | 'failed' | 'outcome_unknown' | undefined = created.data.targets[0]?.status;
+  void publicationStatus;
+  void targetStatus;
+  await client.publications.retryPublication({ path: { publicationId: created.data.id } });
+  // @ts-expect-error a publication needs its platforms targets.
+  await client.publications.createPublication({ body: { content: 'Launch' } });
+  // @ts-expect-error a publication target names a supported platform.
+  await client.publications.createPublication({ body: { platforms: [{ platform: 'myspace', accountId: id }] } });
+  // @ts-expect-error getPublication requires its publicationId path.
+  await client.publications.getPublication({ path: {} });
   await client.posts.deleteXPost({ path: { postId: id }, query: { accountId: id } });
   await client.ads.createAdAccount({ body: adAccount }, { idempotencyKey: 'stable' });
   const deleted = await client.ads.deleteCampaign({ path: { campaignId: id }, query: { adAccountId: 'act_1' } });

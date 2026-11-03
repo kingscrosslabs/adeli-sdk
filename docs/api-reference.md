@@ -5,7 +5,7 @@
 Generated from `src/operations.ts` metadata, AST-extracted resource method declarations, and the checked-in verified public docs mapping `openapi/docs-links.json`; this file is not hand-maintained.
 
 - Contract status: **candidate-unreleased**
-- Candidate OpenAPI SHA-256: `23731d705eb63f769b4a4d19050b8c98b8802b35a8a28a1ed83857cd0a3a94ce`
+- Candidate OpenAPI SHA-256: `5082bb8448b3cb3b86fdb4e61abfe31029fe4f1ac175447c567fd81b0b813f51`
 - Public endpoint documentation: https://www.tryadeli.com/docs/
 
 | Resource | Method signature | HTTP | Path | Endpoint docs |
@@ -35,6 +35,9 @@ Generated from `src/operations.ts` metadata, AST-extracted resource method decla
 | posts | `getTikTokPostStatus(args: { readonly query: JsonQuery<'getTikTokPostStatus'> }, options: RequestOptions = {}): Promise<ApiResponse<TikTokPostStatusResponse>>` | GET | `/posts/tiktok/status` | [api/posts/get-tiktok-publish-status](https://www.tryadeli.com/docs/api/posts/get-tiktok-publish-status) |
 | posts | `getTikTokCreatorInfo(args: { readonly query: JsonQuery<'getTikTokCreatorInfo'> }, options: RequestOptions = {}): Promise<ApiResponse<TikTokCreatorInfoResponse>>` | GET | `/posts/tiktok/creator-info` | [api/posts/get-tiktok-creator-info](https://www.tryadeli.com/docs/api/posts/get-tiktok-creator-info) |
 | posts | `getYouTubeVideoStatus(args: { readonly query: JsonQuery<'getYouTubeVideoStatus'> }, options: RequestOptions = {}): Promise<ApiResponse<YouTubeVideoStatusResponse>>` | GET | `/posts/youtube/status` | [api/posts/get-youtube-upload-status](https://www.tryadeli.com/docs/api/posts/get-youtube-upload-status) |
+| publications | `createPublication(args: { readonly body: CreatePublicationWithFiles \| CreatePublicationBody }, options: CreatePublicationOptions = {}): Promise<ApiResponse<Publication>>` | POST | `/publications` | [api/posts/create-publication](https://www.tryadeli.com/docs/api/posts/create-publication) |
+| publications | `getPublication(args: { readonly path: PublicationPath }, options: RequestOptions = {}): Promise<ApiResponse<Publication>>` | GET | `/publications/{publicationId}` | [api/posts/get-publication](https://www.tryadeli.com/docs/api/posts/get-publication) |
+| publications | `retryPublication(args: { readonly path: PublicationPath }, options: RequestOptions = {}): Promise<ApiResponse<Publication>>` | POST | `/publications/{publicationId}/retry` | [api/posts/retry-publication](https://www.tryadeli.com/docs/api/posts/retry-publication) |
 | comments | `listComments(args: { readonly query: CommentsQuery }, options: RequestOptions = {}): Promise<ApiResponse<CommentsResponse>>` | GET | `/comments` | [api/comments/list-comments](https://www.tryadeli.com/docs/api/comments/list-comments) |
 | comments | `createComment(args: { readonly body: CreateCommentBody }, options: RequestOptions = {}): Promise<ApiResponse<CommentMutationResponse>>` | POST | `/comments` | [api/comments/create-comment](https://www.tryadeli.com/docs/api/comments/create-comment) |
 | comments | `updateComment(args: { readonly path: Path<'updateComment'>; readonly body: UpdateCommentBody }, options: RequestOptions = {}): Promise<ApiResponse<UpdatedCommentResponse>>` | PATCH | `/comments/{commentId}` | [api/comments/update-comment](https://www.tryadeli.com/docs/api/comments/update-comment) |

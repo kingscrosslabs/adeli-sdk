@@ -7,7 +7,7 @@ import { Adeli } from '@adeli/sdk';
 const client = new Adeli({ apiKey: process.env.ADELI_API_KEY });
 ```
 
-`apiKey` wins over `ADELI_API_KEY`. `baseURL` is an origin (not an origin plus `/api/v1`); production origins must use HTTPS, while HTTP is reserved for explicit local development. `timeoutMs` is a total local deadline and `maxRetries` is opt-in. Timer values must be positive, finite, and no greater than `2_147_483_647` milliseconds (about 24.8 days); larger values are rejected before a request rather than being clamped by Node. The default retry count is zero. With opt-in retries, audited safe reads and profile creation with a stable idempotency key qualify. Daily quota exhaustion, permission/billing/semantic conflicts, and other known non-transient failures are never retried. `listPosts` is conservatively excluded because an X read can be billed; `getXUsage` is a safe read of Adeli's stored usage ledger and does not call X itself, so it is eligible for the ordinary transient-read policy.
+`apiKey` wins over `ADELI_API_KEY`. `baseURL` is an origin (not an origin plus `/api/v1`); production origins must use HTTPS, while HTTP is reserved for explicit local development. `timeoutMs` is a total local deadline and `maxRetries` is opt-in. Timer values must be positive, finite, and no greater than `2_147_483_647` milliseconds (about 24.8 days); larger values are rejected before a request rather than being clamped by Node. The default retry count is zero. With opt-in retries, audited safe reads, and profile and publication creation with a stable idempotency key, qualify. Daily quota exhaustion, permission/billing/semantic conflicts, and other known non-transient failures are never retried. `listPosts` is conservatively excluded because an X read can be billed; `getXUsage` is a safe read of Adeli's stored usage ledger and does not call X itself, so it is eligible for the ordinary transient-read policy.
 
 ## Runtimes
 
@@ -24,7 +24,7 @@ Most operations require a profile or connected account scope. Organization-wide 
 
 ## Polling and comment iteration
 
-Polling helpers are explicit bounded workflows: pass both a positive `intervalMs` and positive total `timeoutMs` (each no greater than `2_147_483_647` milliseconds), and optionally an `AbortSignal`. `waitForConnection`, `waitForInstagramPost`, `waitForTikTokPost`, `waitForFacebookPost`, and `waitForYouTubeVideo` return the terminal API response, including provider failure states; they throw only for local timeout, cancellation, or an unfamiliar provider status. Facebook video `READY`/`ERROR` is separate from a connection's `pending_page_selection` dashboard handoff.
+Polling helpers are explicit bounded workflows: pass both a positive `intervalMs` and positive total `timeoutMs` (each no greater than `2_147_483_647` milliseconds), and optionally an `AbortSignal`. `waitForConnection`, `waitForInstagramPost`, `waitForTikTokPost`, `waitForFacebookPost`, `waitForYouTubeVideo`, and `waitForPublication` return the terminal API response, including provider failure states; they throw only for local timeout, cancellation, or an unfamiliar provider status. Facebook video `READY`/`ERROR` is separate from a connection's `pending_page_selection` dashboard handoff.
 
 ```ts
 import { waitForYouTubeVideo } from '@adeli/sdk/helpers';
@@ -64,11 +64,41 @@ Error `details` remain `unknown`: validation arrays and provider-specific object
 
 ## Scope and safety
 
-Profile creation accepts an optional idempotency key. Ad-account and campaign creation require keys and do not auto-retry. Publishing has no generic idempotency guarantee. The X usage response is a stored Adeli ledger: `totalCostMicros` and each `operations[].costMicros` are millionths of a US dollar. Preserve these integer values precisely; the SDK does not implicitly convert or round them to dollars. Actual X post/analytics provider calls can incur charges; Ads and destructive calls require separate approval and cleanup planning. The SDK does not claim to enforce every evolving provider-side semantic rule; the API remains authoritative.
+Profile and publication creation accept an optional idempotency key. Ad-account and campaign creation require keys and do not auto-retry. `createPost` has no idempotency guarantee; use `createPublication` with a key when a publish must be safe to repeat. The X usage response is a stored Adeli ledger: `totalCostMicros` and each `operations[].costMicros` are millionths of a US dollar. Preserve these integer values precisely; the SDK does not implicitly convert or round them to dollars. Actual X post/analytics provider calls can incur charges; Ads and destructive calls require separate approval and cleanup planning. The SDK does not claim to enforce every evolving provider-side semantic rule; the API remains authoritative.
 
 ## Ads on Meta and TikTok
 
 `client.ads` serves both networks. Pass the ads connection's `accountId` (a Meta Ads or a `tiktok_ads` account); with only `profileId`, a profile holding both networks answers `400 ambiguous_account` unless the query also names `platform`. Each response reports its `platform`. TikTok advertiser ids are digits only, and TikTok ad groups arrive under the tree's `adSets`. `createCampaign` takes the Meta body (a Page post) or the TikTok body (video creative, targeting, identity); TikTok objects are created disabled, and `setAdStatus` needs `level` for TikTok. `updateAdGroup`, `listAdTargeting`, `listAdIdentities`, and `createAdIdentity` are TikTok-only; Meta-only operations on a TikTok account, and the reverse, answer `400 unsupported_for_platform`.
+
+## Publish to several accounts
+
+`client.publications.createPublication` publishes one post to up to 20 connected accounts. Shared `content` and `media` go to every target in `platforms`. A target's own `content`, `media`, and `options` (that platform's `createPost` fields, such as TikTok's `music_usage_confirmed` or YouTube's `privacy_status`) override them. Adeli validates every target as `createPost` would before anything is written, so one invalid target rejects the whole request with `400`. The `202` response is the publication, which then publishes in the background.
+
+```ts
+import { waitForPublication } from '@adeli/sdk/helpers';
+import { fileFromPath } from '@adeli/sdk/uploads';
+
+const created = await client.publications.createPublication({ body: {
+  content: 'Launch day',
+  media: [await fileFromPath('./launch.mp4', { contentType: 'video/mp4' })],
+  platforms: [
+    { platform: 'instagram', accountId: instagramId, kind: 'reel' },
+    { platform: 'tiktok', accountId: tiktokId, options: { music_usage_confirmed: true } },
+    { platform: 'youtube', accountId: youtubeId, options: { privacy_status: 'private', made_for_kids: false } },
+  ],
+} }, { idempotencyKey: launchId });
+
+const done = await waitForPublication(
+  client,
+  { path: { publicationId: created.data.id } },
+  { intervalMs: 3_000, timeoutMs: 600_000, onProgress: (p) => console.log(p.progress) },
+);
+if (done.data.status !== 'published') await client.publications.retryPublication({ path: { publicationId: done.data.id } });
+```
+
+A publication is `queued` or `processing` until it is `published` (every target succeeded), `partial`, or `failed`. `waitForPublication` returns that terminal response rather than throwing, and calls `onProgress` with every snapshot. Each target reports its own `status`, `attempts`, `result` (that platform's `createPost` response), and `error`. A target in `outcome_unknown` may already be live, so `retryPublication` never re-runs it. `retryPublication` re-runs only `failed` targets and answers `409` while the publication is running or when nothing failed. Stopping a wait does not stop the publication.
+
+A shared `Blob`/`File` is uploaded once, with `createMediaUploads({ platforms })` naming every platform that uses it. A file in a target's own `media` or `options` is uploaded for that platform only. With an `idempotencyKey`, the same key and body return the original publication with `200`, and a different body answers `409 idempotency_conflict`. Files are uploaded again on every call, so a repeated file-backed create produces a different body. To repeat one safely, stage the files yourself with `createMediaUploads` and pass their `upload_id`s. Scheduling is not supported yet.
 
 ## Direct media uploads
 
@@ -76,4 +106,4 @@ Pass `Blob`/`File` values in media fields (including Instagram/Facebook media, T
 
 A file-backed Instagram `createPost` returns a `202` job response. Call `client.posts.getInstagramPostStatus(...)` directly or use bounded `waitForInstagramPost(...)`. Its terminal states are `published`, `failed`, and `outcome_unknown`; the last state is intentionally not retried because Meta may already have accepted the final publish write.
 
-Use `client.posts.createMediaUploads(...)` directly when another process manages the PUTs. API keys are sent only to Adeli and never to signed S3 URLs.
+Use `client.posts.createMediaUploads(...)` directly when another process manages the PUTs. Name one `platform`, or several `platforms` to upload a file once for a publication to all of them; each file must fit every listed platform's limits. API keys are sent only to Adeli and never to signed S3 URLs.

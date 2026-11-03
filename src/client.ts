@@ -5,6 +5,7 @@ import { AccountsResource } from './resources/accounts.js';
 import { ProfilesResource, type PublicPlatform } from './resources/profiles.js';
 import { operations } from './operations.js';
 import { PostsResource } from './resources/posts.js';
+import { PublicationsResource } from './resources/publications.js';
 import { CommentsResource } from './resources/comments.js';
 import { MessagesResource } from './resources/messages.js';
 import { AnalyticsResource } from './resources/analytics.js';
@@ -30,6 +31,7 @@ export class Adeli {
   readonly profiles: ProfilesResource;
   readonly accounts: AccountsResource;
   readonly posts: PostsResource;
+  readonly publications: PublicationsResource;
   readonly comments: CommentsResource;
   readonly messages: MessagesResource;
   readonly analytics: AnalyticsResource;
@@ -42,6 +44,7 @@ export class Adeli {
     this.profiles = new ProfilesResource(this.transport);
     this.accounts = new AccountsResource(this.transport);
     this.posts = new PostsResource(this.transport);
+    this.publications = new PublicationsResource(this.transport);
     this.comments = new CommentsResource(this.transport);
     this.messages = new MessagesResource(this.transport);
     this.analytics = new AnalyticsResource(this.transport);

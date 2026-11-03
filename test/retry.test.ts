@@ -32,3 +32,20 @@ test('profile create requires idempotency before retrying', async () => {
   await expect(client.profiles.createProfile({ body: { name: 'a' } }, { idempotencyKey: 'x' })).rejects.toMatchObject({ status: 503 });
   expect(calls).toBe(2);
 });
+
+test('publication create retries only with an idempotency key; status reads retry and retryPublication never does', async () => {
+  let calls = 0;
+  const client = new Adeli({ apiKey: 'k', maxRetries: 1, fetch: async () => { calls++; return new Response('{}', { status: 503 }); } });
+  const body = { content: 'hi', platforms: [{ platform: 'x' as const, accountId: '00000000-0000-0000-0000-000000000001' }] };
+  await expect(client.publications.createPublication({ body })).rejects.toMatchObject({ status: 503 });
+  expect(calls).toBe(1);
+  calls = 0;
+  await expect(client.publications.createPublication({ body }, { idempotencyKey: 'publication-key' })).rejects.toMatchObject({ status: 503 });
+  expect(calls).toBe(2);
+  calls = 0;
+  await expect(client.publications.getPublication({ path: { publicationId: 'p' } })).rejects.toMatchObject({ status: 503 });
+  expect(calls).toBe(2);
+  calls = 0;
+  await expect(client.publications.retryPublication({ path: { publicationId: 'p' } })).rejects.toMatchObject({ status: 503 });
+  expect(calls).toBe(1);
+});
