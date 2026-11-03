@@ -6,6 +6,7 @@ import { operations } from '../operations.js';
 export type ListWebhooksQuery = JsonQuery<'listWebhooks'>;
 export type CreateWebhookBody = JsonBody<'createWebhook'>;
 export type WebhooksResponse = SuccessBody<'listWebhooks'>;
+/** A registered webhook. `platform` is the one platform it receives events from, or `null` for every supported platform. */
 export type Webhook = WebhooksResponse['webhooks'][number];
 /** The created webhook and its signing secret. The secret is returned only here. */
 export type CreatedWebhook = SuccessBody<'createWebhook'>;
