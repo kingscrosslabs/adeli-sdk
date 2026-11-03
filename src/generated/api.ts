@@ -206,9 +206,69 @@ export interface paths {
         put?: never;
         /**
          * Prepare direct media uploads
-         * @description Create short-lived, object-scoped S3 PUT descriptors. Upload each file with the returned headers unchanged, then pass its uploadId as upload_id when publishing.
+         * @description Create short-lived, object-scoped S3 PUT descriptors. Upload each file with the returned headers unchanged, then pass its uploadId as upload_id when publishing. Name one `platform`, or several `platforms` to upload a file once and use it in a publication to all of them; each file must fit every listed platform's limits.
          */
         post: operations["createMediaUploads"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/publications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish one post to several accounts
+         * @description Shared `content` and `media` go to every target in `platforms`; a target's own `content`, `media`, and `options` (that platform's `createPost` fields) override them. Every target is validated as `createPost` would validate it, then the publication is accepted durably with 202 and a `statusUrl`. Poll `getPublication` until `status` is `published`, `partial`, or `failed`. Scheduling is not supported yet.
+         */
+        post: operations["createPublication"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/publications/{publicationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Check a publication's progress
+         * @description The publication's status, its overall `progress` from 0 to 1, and each target's status, result, and error.
+         */
+        get: operations["getPublication"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/publications/{publicationId}/retry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Retry a publication's failed targets
+         * @description Re-runs only `failed` targets with their original inputs. A target that may already be live (`outcome_unknown`) is never retried. Answers 409 while the publication is running or when nothing failed.
+         */
+        post: operations["retryPublication"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1114,6 +1174,39 @@ export interface components {
             occurredAt: string;
             /** Format: date-time */
             createdAt: string;
+        };
+        Publication: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            profileId: string;
+            /** @enum {string} */
+            status: "queued" | "processing" | "published" | "partial" | "failed";
+            progress: number;
+            statusUrl: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            completedAt: string | null;
+            targets: {
+                /** Format: uuid */
+                id: string;
+                /** @enum {string} */
+                platform: "instagram" | "facebook" | "tiktok" | "youtube" | "x" | "bluesky" | "linkedin";
+                /** Format: uuid */
+                accountId: string;
+                /** @enum {string} */
+                status: "queued" | "submitting" | "processing" | "published" | "failed" | "outcome_unknown";
+                attempts: number;
+                result: {
+                    [key: string]: unknown;
+                } | null;
+                error: {
+                    code: string;
+                    message: string;
+                } | null;
+            }[];
         };
         AccountsAggregate: {
             /** @enum {string} */
@@ -3249,6 +3342,7 @@ export interface operations {
                     brand_organic_toggle?: boolean;
                     /** @constant */
                     music_usage_confirmed: true;
+                    remove_editor_attribution?: boolean;
                     video?: {
                         /** @constant */
                         content_type: "video/mp4";
@@ -3766,7 +3860,8 @@ export interface operations {
                     /** Format: uuid */
                     profileId: string;
                     /** @enum {string} */
-                    platform: "instagram" | "facebook" | "tiktok" | "youtube" | "x" | "bluesky" | "linkedin";
+                    platform?: "instagram" | "facebook" | "tiktok" | "youtube" | "x" | "bluesky" | "linkedin";
+                    platforms?: ("instagram" | "facebook" | "tiktok" | "youtube" | "x" | "bluesky" | "linkedin")[];
                     files: {
                         clientId: string;
                         /** @enum {string} */
@@ -3798,6 +3893,322 @@ export interface operations {
                             };
                             /** Format: date-time */
                             expiresAt: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    createPublication: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Optional stable key; a retry with the same key and body returns the original publication with 200, and a different body returns 409. */
+                "Idempotency-Key"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Format: uuid */
+                    profileId?: string;
+                    content?: string;
+                    media?: ({
+                        upload_id: string;
+                    } | {
+                        /** Format: uri */
+                        url: string;
+                    })[];
+                    platforms: {
+                        /** @enum {string} */
+                        platform: "instagram" | "facebook" | "tiktok" | "youtube" | "x" | "bluesky" | "linkedin";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** @enum {string} */
+                        kind?: "image" | "carousel" | "video" | "reel" | "story";
+                        content?: string;
+                        media?: {
+                            [key: string]: unknown;
+                        }[];
+                        options?: {
+                            [key: string]: unknown;
+                        };
+                    }[];
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        /** @enum {string} */
+                        status: "queued" | "processing" | "published" | "partial" | "failed";
+                        progress: number;
+                        statusUrl: string;
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        completedAt: string | null;
+                        targets: {
+                            /** Format: uuid */
+                            id: string;
+                            /** @enum {string} */
+                            platform: "instagram" | "facebook" | "tiktok" | "youtube" | "x" | "bluesky" | "linkedin";
+                            /** Format: uuid */
+                            accountId: string;
+                            /** @enum {string} */
+                            status: "queued" | "submitting" | "processing" | "published" | "failed" | "outcome_unknown";
+                            attempts: number;
+                            result: {
+                                [key: string]: unknown;
+                            } | null;
+                            error: {
+                                code: string;
+                                message: string;
+                            } | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Success */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        /** @enum {string} */
+                        status: "queued" | "processing" | "published" | "partial" | "failed";
+                        progress: number;
+                        statusUrl: string;
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        completedAt: string | null;
+                        targets: {
+                            /** Format: uuid */
+                            id: string;
+                            /** @enum {string} */
+                            platform: "instagram" | "facebook" | "tiktok" | "youtube" | "x" | "bluesky" | "linkedin";
+                            /** Format: uuid */
+                            accountId: string;
+                            /** @enum {string} */
+                            status: "queued" | "submitting" | "processing" | "published" | "failed" | "outcome_unknown";
+                            attempts: number;
+                            result: {
+                                [key: string]: unknown;
+                            } | null;
+                            error: {
+                                code: string;
+                                message: string;
+                            } | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getPublication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The publication's id. */
+                publicationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        /** @enum {string} */
+                        status: "queued" | "processing" | "published" | "partial" | "failed";
+                        progress: number;
+                        statusUrl: string;
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        completedAt: string | null;
+                        targets: {
+                            /** Format: uuid */
+                            id: string;
+                            /** @enum {string} */
+                            platform: "instagram" | "facebook" | "tiktok" | "youtube" | "x" | "bluesky" | "linkedin";
+                            /** Format: uuid */
+                            accountId: string;
+                            /** @enum {string} */
+                            status: "queued" | "submitting" | "processing" | "published" | "failed" | "outcome_unknown";
+                            attempts: number;
+                            result: {
+                                [key: string]: unknown;
+                            } | null;
+                            error: {
+                                code: string;
+                                message: string;
+                            } | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    retryPublication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The publication's id. */
+                publicationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        /** @enum {string} */
+                        status: "queued" | "processing" | "published" | "partial" | "failed";
+                        progress: number;
+                        statusUrl: string;
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        completedAt: string | null;
+                        targets: {
+                            /** Format: uuid */
+                            id: string;
+                            /** @enum {string} */
+                            platform: "instagram" | "facebook" | "tiktok" | "youtube" | "x" | "bluesky" | "linkedin";
+                            /** Format: uuid */
+                            accountId: string;
+                            /** @enum {string} */
+                            status: "queued" | "submitting" | "processing" | "published" | "failed" | "outcome_unknown";
+                            attempts: number;
+                            result: {
+                                [key: string]: unknown;
+                            } | null;
+                            error: {
+                                code: string;
+                                message: string;
+                            } | null;
                         }[];
                     };
                 };

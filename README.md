@@ -75,7 +75,7 @@ const { data } = await adeli.profiles.listProfiles();
 //      ^? { profiles: Profile[] }
 ```
 
-The client is grouped by resource: `profiles`, `accounts`, `posts`, `comments`, `messages`, `analytics`, `ads`, `webhooks`, and `usage`.
+The client is grouped by resource: `profiles`, `accounts`, `posts`, `publications`, `comments`, `messages`, `analytics`, `ads`, `webhooks`, and `usage`.
 
 ### Connect an account
 
@@ -111,6 +111,32 @@ await adeli.posts.createPost({
 ```
 
 `fileFromPath` is for Node.js. You can pass any `Blob` or `File` as media in any runtime.
+
+### Publish to several accounts
+
+```ts
+import { waitForPublication } from '@adeli/sdk/helpers';
+
+const publication = await adeli.publications.createPublication({
+  body: {
+    content: 'Launch day',
+    media: [await fileFromPath('./launch.mp4', { contentType: 'video/mp4' })],
+    platforms: [
+      { platform: 'tiktok', accountId: tiktokId, options: { music_usage_confirmed: true } },
+      { platform: 'youtube', accountId: youtubeId, options: { privacy_status: 'private', made_for_kids: false } },
+    ],
+  },
+});
+
+const done = await waitForPublication(
+  adeli,
+  { path: { publicationId: publication.data.id } },
+  { intervalMs: 3_000, timeoutMs: 600_000 },
+);
+// done.data.status is 'published', 'partial', or 'failed'; each target has its own status and error.
+```
+
+The video is uploaded once for both platforms.
 
 ### Iterate comments
 

@@ -8,6 +8,7 @@ import type {
   TikTokPostStatusResponse,
   YouTubeVideoStatusResponse,
 } from '../resources/posts.js';
+import type { Publication, PublicationPath } from '../resources/publications.js';
 
 type PublishStatusQuery = { readonly accountId: string; readonly profileId?: string; readonly publishId: string };
 type InstagramStatusQuery = { readonly jobId: string; readonly profileId?: string };
@@ -33,6 +34,12 @@ export type InstagramPollingClient = { readonly posts: { readonly getInstagramPo
 export type TikTokPollingClient = { readonly posts: { readonly getTikTokPostStatus: TikTokMethod } } | { readonly getTikTokPostStatus: TikTokMethod };
 export type FacebookPollingClient = { readonly posts: { readonly getFacebookPostStatus: FacebookMethod } } | { readonly getFacebookPostStatus: FacebookMethod };
 export type YouTubePollingClient = { readonly posts: { readonly getYouTubeVideoStatus: YouTubeMethod } } | { readonly getYouTubeVideoStatus: YouTubeMethod };
+type PublicationMethod = (args: { readonly path: PublicationPath }, options?: RequestOptions) => Promise<ApiResponse<Publication>>;
+export type PublicationPollingClient = { readonly publications: { readonly getPublication: PublicationMethod } } | { readonly getPublication: PublicationMethod };
+/** Polling bounds plus an optional callback that receives every publication snapshot, including the terminal one. */
+export interface PublicationPollingOptions extends PollingOptions {
+  readonly onProgress?: (publication: Publication) => void;
+}
 /** A convenience structural type for clients that expose all post status methods under resources. */
 export type PostPollingClient = { readonly posts: { readonly getInstagramPostStatus: InstagramMethod; readonly getTikTokPostStatus: TikTokMethod; readonly getFacebookPostStatus: FacebookMethod; readonly getYouTubeVideoStatus: YouTubeMethod } };
 
@@ -228,10 +235,26 @@ function tiktokStatus(response: ApiResponse<TikTokPostStatusResponse>): 'pending
   }
 }
 
+function publicationStatus(response: ApiResponse<Publication>): 'pending' | 'terminal' | 'invalid' {
+  switch (response.data?.status) {
+    case 'queued':
+    case 'processing': return 'pending';
+    case 'published':
+    case 'partial':
+    case 'failed': return 'terminal';
+    default: return 'invalid';
+  }
+}
+
 function connectionMethod(client: ConnectionPollingClient): ConnectionMethod {
   return 'profiles' in client
     ? (args, options) => client.profiles.getConnection(args, options)
     : (args, options) => client.getConnection(args, options);
+}
+function publicationMethod(client: PublicationPollingClient): PublicationMethod {
+  return 'publications' in client
+    ? (args, options) => client.publications.getPublication(args, options)
+    : (args, options) => client.getPublication(args, options);
 }
 function instagramMethod(client: InstagramPollingClient): InstagramMethod {
   return 'posts' in client
@@ -307,4 +330,25 @@ export function waitForYouTubeVideo(
   const getStatus = youtubeMethod(client);
   const snapshot = { query: { ...args.query } };
   return poll(signal => getStatus(snapshot, { signal }), youtubeStatus, options);
+}
+
+/**
+ * Poll a publication until it is `published`, `partial`, or `failed`, and return
+ * that response. A terminal publication is returned, not thrown: read each
+ * target's `status` and `error`, and call `retryPublication` for `failed` targets.
+ * Stopping early (timeout or cancellation) does not stop the publication.
+ */
+export function waitForPublication(
+  client: PublicationPollingClient,
+  args: { readonly path: PublicationPath },
+  options: PublicationPollingOptions,
+): Promise<ApiResponse<Publication>> {
+  const getPublication = publicationMethod(client);
+  const snapshot = { path: { ...args.path } };
+  const { onProgress } = options;
+  return poll(signal => getPublication(snapshot, { signal }), (response) => {
+    const state = publicationStatus(response);
+    if (state !== 'invalid') onProgress?.(response.data);
+    return state;
+  }, options);
 }

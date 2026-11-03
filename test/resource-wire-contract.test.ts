@@ -18,6 +18,10 @@ const profile = { id, name: 'Default', externalId: null, metadata: {}, isDefault
 const comment = { id: 'comment-1', mediaId: 'media-1', parentId: null, authorName: 'Author', authorFullName: null, authorHandle: '@author', avatarUrl: null, profileUrl: null, body: 'hello', likeCount: 0, isCreator: false, isHidden: false, createdAt: '2025-01-01T00:00:00.000Z', authorId: 'author-1', liked: false, replyCount: 0, deletable: true };
 const message = { id: 'message-1', providerId: null, platform: 'facebook', accountId: id, profileId: id, direction: 'outbound', type: 'text', recipient: 'recipient', sender: null, body: 'hello', status: 'sent', occurredAt: '2025-01-01T00:00:00.000Z', createdAt: '2025-01-01T00:00:00.000Z' };
 const webhook = { id: 'webhook-1', profileId: id, url: 'https://hooks.example/adeli', events: ['comment.created', 'message.postback'], platform: 'instagram', status: 'active', createdAt: '2025-01-01T00:00:00.000Z' };
+const publication = { id, profileId: id, status: 'partial', progress: 1, statusUrl: `/api/v1/publications/${id}`, createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:01:00.000Z', completedAt: '2025-01-01T00:01:00.000Z', targets: [
+  { id: '00000000-0000-0000-0000-000000000002', platform: 'x', accountId: id, status: 'published', attempts: 1, result: post, error: null },
+  { id: '00000000-0000-0000-0000-000000000003', platform: 'tiktok', accountId: id, status: 'failed', attempts: 1, result: null, error: { code: 'provider_error', message: 'TikTok rejected the video' } },
+] };
 const errorRecord = { platform: 'x', accountId: id, code: 'permission_required', message: 'permission required', details: { missing: ['read'] } };
 
 type ContractDocument = { paths: Record<string, Record<string, { operationId?: string; responses?: Record<string, { content?: Record<string, { schema?: unknown }> }> }>> };
@@ -75,6 +79,9 @@ function wireResponse(operationId: string, _status?: string): unknown {
       if (_status === '201') return post;
       if (_status === '202') return { id: 'upload-1', platform: 'youtube', accountId: id, profileId: id, publishId: 'publish-1', videoId: 'video-1', permalink: 'https://youtube.example/video-1', status: 'ACCEPTED', requestedPrivacy: 'private', appliedPrivacy: 'private', privacyRestricted: false, publishAt: null, thumbnail: null, statusUrl: '/api/v1/posts/youtube/status', warnings: [] };
       return { id: 'thread-1', status: 'partial', platform: 'x', accountId: id, profileId: id, providerId: 'provider-1', permalink: 'https://social.example/post-1', posts: [{ index: 0, status: 'published', providerId: 'provider-1', url: 'https://social.example/post-1' }] };
+    case 'createPublication': return _status === '200' ? publication : { ...publication, status: 'queued', progress: 0, completedAt: null, targets: publication.targets.map((target) => ({ ...target, status: 'queued', attempts: 0, result: null, error: null })) };
+    case 'getPublication': return publication;
+    case 'retryPublication': return { ...publication, status: 'processing', progress: 0.5, completedAt: null, targets: [publication.targets[0], { ...publication.targets[1], status: 'queued', error: null }] };
     case 'uploadYouTubeVideo': return { id: 'upload-1', platform: 'youtube', accountId: id, profileId: id, publishId: 'publish-1', videoId: 'video-1', permalink: 'https://youtube.example/video-1', status: 'ACCEPTED', requestedPrivacy: 'private', appliedPrivacy: 'private', privacyRestricted: false, publishAt: null, thumbnail: null, statusUrl: '/api/v1/posts/youtube/status', warnings: [] };
     case 'deleteXPost': return { id: 'post-1', accountId: id, providerId: 'provider-1', deleted: true, platform: 'x' };
     case 'deleteBlueskyPost': return { id: 'post-1', accountId: id, providerId: 'provider-1', deleted: true, platform: 'bluesky' };
@@ -126,7 +133,7 @@ type WireCase = { id: string; call: (options: RequestOptions) => Promise<ApiResp
 function jsonBody(body: Record<string, unknown>): ExpectedBody { return body; }
 function requireRequest(value: Request | undefined, id: string): Request { if (value === undefined) throw new Error(`${id}: fetch was not called`); return value; }
 // Request expectations are deliberately written independently of operations metadata; the registry is only a coverage allow-list.
-test('all 61 registered operations preserve exact wire requests and response envelopes', async () => {
+test('all 64 registered operations preserve exact wire requests and response envelopes', async () => {
   let currentFixture: WireCase | undefined;
   let returnUnauthorized = false;
   const unauthorizedDetails = { reason: 'wire-contract', nested: { preserved: true } };
@@ -163,6 +170,9 @@ test('all 61 registered operations preserve exact wire requests and response env
     { id: 'getTikTokPostStatus', call: (o) => client.posts.getTikTokPostStatus({ query: { accountId: id, publishId: 'publish' } }, o), method: 'GET', path: '/api/v1/posts/tiktok/status', query: `accountId=${id}&publishId=publish`, status: 200, response: wireResponse('getTikTokPostStatus') },
     { id: 'getTikTokCreatorInfo', call: (o) => client.posts.getTikTokCreatorInfo({ query: { accountId: id } }, o), method: 'GET', path: '/api/v1/posts/tiktok/creator-info', query: `accountId=${id}`, status: 200, response: wireResponse('getTikTokCreatorInfo') },
     { id: 'getYouTubeVideoStatus', call: (o) => client.posts.getYouTubeVideoStatus({ query: { accountId: id, videoId: 'video' } }, o), method: 'GET', path: '/api/v1/posts/youtube/status', query: `accountId=${id}&videoId=video`, status: 200, response: wireResponse('getYouTubeVideoStatus') },
+    { id: 'createPublication', call: (o) => client.publications.createPublication({ body: { profileId: id, content: 'hello', media: [{ upload_id: 'staged' }], platforms: [{ platform: 'x', accountId: id }, { platform: 'tiktok', accountId: id, options: { music_usage_confirmed: true, remove_editor_attribution: false } }] } }, { ...o, idempotencyKey: 'publication-key' }), method: 'POST', path: '/api/v1/publications', body: jsonBody({ profileId: id, content: 'hello', media: [{ upload_id: 'staged' }], platforms: [{ platform: 'x', accountId: id }, { platform: 'tiktok', accountId: id, options: { music_usage_confirmed: true, remove_editor_attribution: false } }] }), status: 202, response: wireResponse('createPublication'), idempotencyKey: 'publication-key' },
+    { id: 'getPublication', call: (o) => client.publications.getPublication({ path: { publicationId: 'publication/a' } }, o), method: 'GET', path: '/api/v1/publications/publication%2Fa', status: 200, response: wireResponse('getPublication') },
+    { id: 'retryPublication', call: (o) => client.publications.retryPublication({ path: { publicationId: id } }, o), method: 'POST', path: `/api/v1/publications/${id}/retry`, status: 202, response: wireResponse('retryPublication') },
     { id: 'listComments', call: (o) => client.comments.listComments({ query: { platform: 'youtube', accountId: id, profileId: id, postId: id, cursor: 'next' } }, o), method: 'GET', path: '/api/v1/comments', query: `platform=youtube&accountId=${id}&profileId=${id}&postId=${id}&cursor=next`, status: 200, response: wireResponse('listComments') },
     { id: 'createComment', call: (o) => client.comments.createComment({ body: { platform: 'youtube', accountId: id, profileId: id, postId: id, message: 'hello' } }, o), method: 'POST', path: '/api/v1/comments', body: jsonBody({ platform: 'youtube', accountId: id, profileId: id, postId: id, message: 'hello' }), status: 201, response: wireResponse('createComment') },
     { id: 'updateComment', call: (o) => client.comments.updateComment({ path: { commentId: 'comment/a' }, body: { platform: 'youtube', accountId: id, profileId: id, liked: false } }, o), method: 'PATCH', path: '/api/v1/comments/comment%2Fa', body: jsonBody({ platform: 'youtube', accountId: id, profileId: id, liked: false }), status: 200, response: wireResponse('updateComment') },
@@ -204,7 +214,7 @@ test('all 61 registered operations preserve exact wire requests and response env
   const { operations } = await import('../src/operations.js');
   expect(new Set(cases.map((item) => item.id))).toEqual(new Set(Object.keys(operations)));
   expect(cases).toHaveLength(Object.keys(operations).length);
-  expect(declaredSuccessPairs()).toHaveLength(70);
+  expect(declaredSuccessPairs()).toHaveLength(74);
   for (const fixture of cases) {
     for (const status of successStatuses(fixture.id)) {
       delete state.request;

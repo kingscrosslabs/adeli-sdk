@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CancellationError, MalformedResponseError, TimeoutError, type ApiResponse } from '@adeli/sdk';
-import { iterateCommentPages, iterateComments, waitForConnection, waitForFacebookPost, waitForInstagramPost, waitForTikTokPost, waitForYouTubeVideo } from '@adeli/sdk/helpers';
+import { iterateCommentPages, iterateComments, waitForConnection, waitForFacebookPost, waitForInstagramPost, waitForPublication, waitForTikTokPost, waitForYouTubeVideo } from '@adeli/sdk/helpers';
 
 const response = <T>(data: T): ApiResponse<T> => ({ data, status: 200, headers: new Headers({ 'x-test': 'yes' }) });
 const connection = (status: string): ApiResponse<any> => response({ id: 'session', profileId: 'profile', platform: 'facebook', status });
@@ -8,6 +8,7 @@ const tiktok = (status: string): ApiResponse<any> => response({ platform: 'tikto
 const instagram = (status: string): ApiResponse<any> => response({ jobId: 'job', platform: 'instagram', accountId: 'account', profileId: 'profile', status, statusUrl: '/api/v1/posts/instagram/status?jobId=job' });
 const facebook = (status: string): ApiResponse<any> => response({ platform: 'facebook', accountId: 'account', profileId: 'profile', publishId: 'publish', status, phase: null, permalink: null, failureReason: null });
 const youtube = (status: string): ApiResponse<any> => response({ platform: 'youtube', accountId: 'account', profileId: 'profile', videoId: 'video', status, uploadStatus: null, processingStatus: null, failureReason: null, privacyStatus: 'private', publishAt: null, permalink: null });
+const publication = (status: string, progress = 0): ApiResponse<any> => response({ id: 'publication', profileId: 'profile', status, progress, statusUrl: '/api/v1/publications/publication', createdAt: '2026-11-03T12:00:00.000Z', updatedAt: '2026-11-03T12:00:00.000Z', completedAt: null, targets: [] });
 const pendingOptions = { timeoutMs: 1000, intervalMs: 1 };
 
 function commentPage(overrides: Record<string, unknown> = {}): Record<string, unknown> {
@@ -168,6 +169,34 @@ describe('bounded polling helpers', () => {
     } } };
     await waitForTikTokPost(client, { query }, pendingOptions);
     expect(seen).toEqual(['original', 'original']);
+  });
+});
+
+describe('waitForPublication', () => {
+  it('polls queued and processing publications, reports every snapshot, and returns the terminal one', async () => {
+    const sequence = [publication('queued'), publication('processing', 0.5), publication('partial', 1)];
+    const paths: unknown[] = [];
+    const client = { publications: { getPublication: async (args: { path: unknown }) => { paths.push(args.path); return sequence[paths.length - 1]!; } } };
+    const seen: Array<[string, number]> = [];
+    const result = await waitForPublication(client, { path: { publicationId: 'publication' } }, { ...pendingOptions, onProgress: (value) => seen.push([value.status, value.progress]) });
+    expect(result.data.status).toBe('partial');
+    expect(result.headers.get('x-test')).toBe('yes');
+    expect(seen).toEqual([['queued', 0], ['processing', 0.5], ['partial', 1]]);
+    expect(paths).toEqual([{ publicationId: 'publication' }, { publicationId: 'publication' }, { publicationId: 'publication' }]);
+  });
+
+  it.each(['published', 'partial', 'failed'])('returns terminal status %s without another request', async status => {
+    let calls = 0;
+    const client = { getPublication: async () => { calls += 1; return publication(status, 1); } };
+    await expect(waitForPublication(client, { path: { publicationId: 'publication' } }, pendingOptions)).resolves.toMatchObject({ data: { status } });
+    expect(calls).toBe(1);
+  });
+
+  it('rejects an unknown publication status and times out a publication that never finishes', async () => {
+    const unknown = { getPublication: async () => publication('scheduled') };
+    await expect(waitForPublication(unknown, { path: { publicationId: 'publication' } }, pendingOptions)).rejects.toBeInstanceOf(MalformedResponseError);
+    const stuck = { getPublication: async () => publication('processing') };
+    await expect(waitForPublication(stuck, { path: { publicationId: 'publication' } }, { timeoutMs: 20, intervalMs: 5 })).rejects.toBeInstanceOf(TimeoutError);
   });
 });
 

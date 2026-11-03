@@ -12,7 +12,7 @@ export function parseRetryAfter(value: string | null, now = Date.now()): number 
 }
 export function canRetry(operation: OperationMetadata, idempotencyKey: string | undefined): boolean {
   return operation.retry === 'safe-read'
-    || (operation.retry === 'profile-create' && idempotencyKey !== undefined && idempotencyKey.trim() !== '');
+    || ((operation.retry === 'profile-create' || operation.retry === 'idempotent-write') && idempotencyKey !== undefined && idempotencyKey.trim() !== '');
 }
 export function backoffMs(attempt: number, retryAfter?: number, random = Math.random()): number {
   if (retryAfter !== undefined) return retryAfter;
