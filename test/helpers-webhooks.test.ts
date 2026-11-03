@@ -62,15 +62,32 @@ const postbackData = { senderId: 'igsid-1', payload: 'send_link', title: 'Send i
 describe('parseWebhookEvent', () => {
   it('types comment.created and message.postback events', () => {
     const comment = parseWebhookEvent(JSON.stringify({ ...envelope, type: 'comment.created', data: commentData }));
-    expect(comment).toEqual({ ...envelope, type: 'comment.created', data: commentData });
+    expect(comment).toEqual({ ...envelope, test: false, type: 'comment.created', data: commentData });
     if (comment.type !== 'comment.created') throw new Error('expected comment.created');
     expect(comment.data.from.id).toBe('igsid-1');
     const postback = parseWebhookEvent(new TextEncoder().encode(JSON.stringify({ ...envelope, type: 'message.postback', data: postbackData })));
-    expect(postback).toEqual({ ...envelope, type: 'message.postback', data: postbackData });
+    expect(postback).toEqual({ ...envelope, test: false, type: 'message.postback', data: postbackData });
+  });
+
+  it('types a TikTok comment.created, with the commenter display name', () => {
+    const tiktokData = { commentId: '7400000000000000001', mediaId: '7400000000000000000', parentId: null, text: 'love this', from: { id: 'tt-user-1', username: 'person', displayName: 'A Person' }, isSelf: false };
+    const event = parseWebhookEvent(JSON.stringify({ ...envelope, platform: 'tiktok', type: 'comment.created', data: tiktokData }));
+    expect(event).toEqual({ ...envelope, test: false, platform: 'tiktok', type: 'comment.created', data: tiktokData });
+    if (event.type !== 'comment.created' || event.platform !== 'tiktok') throw new Error('expected a TikTok comment.created');
+    expect(event.data.from.displayName).toBe('A Person');
+    const unnamed = { ...tiktokData, from: { id: null, username: null, displayName: null } };
+    expect(parseWebhookEvent(JSON.stringify({ ...envelope, platform: 'tiktok', type: 'comment.created', data: unnamed }))).toMatchObject({ data: unnamed });
+    expect(() => parseWebhookEvent(JSON.stringify({ ...envelope, platform: 'tiktok', type: 'comment.created', data: { ...tiktokData, from: { id: 'tt-user-1', username: 'person' } } }))).toThrow(MalformedResponseError);
+  });
+
+  it('keeps the test flag of a sample sent by testWebhook', () => {
+    const sample = { ...envelope, id: 'evt_test_1', platform: 'tiktok', type: 'comment.created', test: true, data: { commentId: 'test_1', mediaId: 'test_0', parentId: null, text: 'Test comment from Adeli', from: { id: 'test_user', username: 'adeli.test', displayName: 'Adeli Test' }, isSelf: false } };
+    expect(parseWebhookEvent(JSON.stringify(sample))).toMatchObject({ test: true, platform: 'tiktok', type: 'comment.created' });
+    expect(parseWebhookEvent(JSON.stringify({ ...envelope, type: 'message.received', test: true, data: {} }))).toMatchObject({ type: 'unknown', test: true });
   });
 
   it('parses an unrecognised type or platform as unknown instead of throwing', () => {
-    expect(parseWebhookEvent(JSON.stringify({ ...envelope, type: 'message.received', data: { anything: true } }))).toEqual({ ...envelope, type: 'unknown', eventType: 'message.received', data: { anything: true } });
+    expect(parseWebhookEvent(JSON.stringify({ ...envelope, type: 'message.received', data: { anything: true } }))).toEqual({ ...envelope, test: false, type: 'unknown', eventType: 'message.received', data: { anything: true } });
     expect(parseWebhookEvent(JSON.stringify({ ...envelope, platform: 'facebook', type: 'comment.created', data: {} }))).toMatchObject({ type: 'unknown', eventType: 'comment.created', platform: 'facebook' });
   });
 

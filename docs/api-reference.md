@@ -5,7 +5,7 @@
 Generated from `src/operations.ts` metadata, AST-extracted resource method declarations, and the checked-in verified public docs mapping `openapi/docs-links.json`; this file is not hand-maintained.
 
 - Contract status: **candidate-unreleased**
-- Candidate OpenAPI SHA-256: `2fe5f152d2fb90f34a60a9573531d7e5e923d8c2010eb225da755952b714ddd4`
+- Candidate OpenAPI SHA-256: `46551a38cd859ddc0a4eba821daefb780652174367419fd41e4a1a9642fa2ccb`
 - Public endpoint documentation: https://www.tryadeli.com/docs/
 
 | Resource | Method signature | HTTP | Path | Endpoint docs |
@@ -70,6 +70,7 @@ Generated from `src/operations.ts` metadata, AST-extracted resource method decla
 | webhooks | `listWebhooks(args: { readonly query: ListWebhooksQuery }, options: RequestOptions = {}): Promise<ApiResponse<WebhooksResponse>>` | GET | `/webhooks` | [api/webhooks/list-webhooks](https://www.tryadeli.com/docs/api/webhooks/list-webhooks) |
 | webhooks | `createWebhook(args: { readonly body: CreateWebhookBody }, options: RequestOptions = {}): Promise<ApiResponse<CreatedWebhook>>` | POST | `/webhooks` | [api/webhooks/create-webhook](https://www.tryadeli.com/docs/api/webhooks/create-webhook) |
 | webhooks | `deleteWebhook(args: { readonly path: Path<'deleteWebhook'> }, options: RequestOptions = {}): Promise<ApiResponse<undefined>>` | DELETE | `/webhooks/{webhookId}` | [api/webhooks/delete-webhook](https://www.tryadeli.com/docs/api/webhooks/delete-webhook) |
+| webhooks | `testWebhook(args: { readonly path: Path<'testWebhook'>; readonly body?: TestWebhookBody }, options: RequestOptions = {}): Promise<ApiResponse<TestWebhookResult>>` | POST | `/webhooks/{webhookId}/test` | [api/webhooks/test-webhook](https://www.tryadeli.com/docs/api/webhooks/test-webhook) |
 
 ## Compatibility note
 

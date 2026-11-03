@@ -44,6 +44,7 @@
     "listWebhooks": [{"method":"GET","path":"/api/v1/webhooks","href":"/docs/api/webhooks/list-webhooks"}],
     "createWebhook": [{"method":"POST","path":"/api/v1/webhooks","href":"/docs/api/webhooks/create-webhook"}],
     "deleteWebhook": [{"method":"DELETE","path":"/api/v1/webhooks/{webhookId}","href":"/docs/api/webhooks/delete-webhook"}],
+    "testWebhook": [{"method":"POST","path":"/api/v1/webhooks/{webhookId}/test","href":"/docs/api/webhooks/test-webhook"}],
     "getInstagramAccountInsights": [{"method":"GET","path":"/api/v1/analytics/instagram/account-insights","href":"/docs/api/analytics/instagram-account-insights"}],
     "getFacebookPageMetrics": [{"method":"GET","path":"/api/v1/analytics/facebook/page-metrics","href":"/docs/api/analytics/facebook-page-metrics"}],
     "getTikTokAccountAnalytics": [{"method":"GET","path":"/api/v1/analytics/tiktok/account-analytics","href":"/docs/api/analytics/tiktok-account-analytics"}],
