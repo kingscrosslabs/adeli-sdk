@@ -72,6 +72,7 @@
     "listAdTargeting": [{"method":"GET","path":"/api/v1/ads/targeting","href":"/docs/api/ads/list-targeting"}],
     "listAdIdentities": [{"method":"GET","path":"/api/v1/ads/identities","href":"/docs/api/ads/list-identities"}],
     "createAdIdentity": [{"method":"POST","path":"/api/v1/ads/identities","href":"/docs/api/ads/create-identity"}],
+    "getUsage": [{"method":"GET","path":"/api/v1/usage","href":"/docs/api/usage/get-usage"}],
     "getXUsage": [{"method":"GET","path":"/api/v1/usage/x","href":"/docs/pricing/x"}]
   }
 }

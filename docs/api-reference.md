@@ -5,7 +5,7 @@
 Generated from `src/operations.ts` metadata, AST-extracted resource method declarations, and the checked-in verified public docs mapping `openapi/docs-links.json`; this file is not hand-maintained.
 
 - Contract status: **candidate-unreleased**
-- Candidate OpenAPI SHA-256: `5082bb8448b3cb3b86fdb4e61abfe31029fe4f1ac175447c567fd81b0b813f51`
+- Candidate OpenAPI SHA-256: `e997e37f7ed62db21bc204f78a06dbf66f2ca633994a55d4eb05087666dd0660`
 - Public endpoint documentation: https://www.tryadeli.com/docs/
 
 | Resource | Method signature | HTTP | Path | Endpoint docs |
@@ -69,6 +69,7 @@ Generated from `src/operations.ts` metadata, AST-extracted resource method decla
 | ads | `listAdTargeting(args: { readonly query: AdTargetingQuery }, options: RequestOptions = {}): Promise<ApiResponse<AdTargetingResponse>>` | GET | `/ads/targeting` | [api/ads/list-targeting](https://www.tryadeli.com/docs/api/ads/list-targeting) |
 | ads | `listAdIdentities(args: { readonly query: AdIdentitiesQuery }, options: RequestOptions = {}): Promise<ApiResponse<AdIdentitiesResponse>>` | GET | `/ads/identities` | [api/ads/list-identities](https://www.tryadeli.com/docs/api/ads/list-identities) |
 | ads | `createAdIdentity(args: { readonly query?: CreateAdIdentityQuery; readonly body: CreateAdIdentityBody }, options: RequestOptions = {}): Promise<ApiResponse<AdIdentityResponse>>` | POST | `/ads/identities` | [api/ads/create-identity](https://www.tryadeli.com/docs/api/ads/create-identity) |
+| usage | `getUsage(args: { readonly query?: UsageQuery } = {}, options: RequestOptions = {}): Promise<ApiResponse<UsageResponse>>` | GET | `/usage` | [api/usage/get-usage](https://www.tryadeli.com/docs/api/usage/get-usage) |
 | usage | `getXUsage(_args: Record<never, never> = {}, options: RequestOptions = {}): Promise<ApiResponse<XUsageResponse>>` | GET | `/usage/x` | [pricing/x](https://www.tryadeli.com/docs/pricing/x) |
 | webhooks | `listWebhooks(args: { readonly query: ListWebhooksQuery }, options: RequestOptions = {}): Promise<ApiResponse<WebhooksResponse>>` | GET | `/webhooks` | [api/webhooks/list-webhooks](https://www.tryadeli.com/docs/api/webhooks/list-webhooks) |
 | webhooks | `createWebhook(args: { readonly body: CreateWebhookBody }, options: RequestOptions = {}): Promise<ApiResponse<CreatedWebhook>>` | POST | `/webhooks` | [api/webhooks/create-webhook](https://www.tryadeli.com/docs/api/webhooks/create-webhook) |
