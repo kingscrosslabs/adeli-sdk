@@ -11,7 +11,7 @@ export type { CommentMutationResponse, CommentsQuery, CommentsResponse, CreateCo
 export type { ListMessagesQuery, MessagesQuery, MessagesResponse, SendInstagramMessageBody, SendMessageBody, SentInstagramMessage, SentMessage } from './resources/messages.js';
 export type { AnalyticsResource } from './resources/analytics.js';
 export type { AdBusinessesQuery, AdAccountsQuery, AdAccountPath, AdAccountResponse, AdInsightsQuery, AdInsightsResponse, AdLeadsQuery, AdTreeQuery, AdTreeResponse, CampaignResponse, CreateAdAccountBody, CreateAdAccountQuery, CreateAdAccountResponse, CreateCampaignBody, CreateCampaignQuery, ListAdAccountsQuery, ListAdBusinessesQuery, ListAdLeadsQuery, AdLeadsResponse, SetAdStatusBody, AdStatusResponse, UpdateAdGroupBody, UpdateAdGroupPath, UpdateAdGroupQuery, AdGroupResponse, AdTargetingQuery, AdTargetingResponse, AdIdentitiesQuery, AdIdentitiesResponse, CreateAdIdentityBody, CreateAdIdentityQuery, AdIdentityResponse } from './resources/ads.js';
-export type { UsageQuery, UsageResponse, XUsageResponse } from './resources/usage.js';
+export type { UsageResponse, XUsageResponse } from './resources/usage.js';
 export type { CreatedWebhook, CreateWebhookBody, ListWebhooksQuery, TestWebhookBody, TestWebhookResult, Webhook, WebhooksResponse } from './resources/webhooks.js';
 export { blobFromPath, fileFromPath } from './uploads.js';
 export type { DirectUploadDescriptor, DirectUploadOptions, DirectUploadProgress, FileUploadOptions } from './uploads.js';

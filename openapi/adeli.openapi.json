@@ -65,7 +65,7 @@
     },
     {
       "name": "Usage",
-      "description": "What a profile has sent this month against the free tier's allowance, and usage that is billed by the platform, such as X API fees."
+      "description": "What the workspace has sent this month against the free tier's allowance, and usage that is billed by the platform, such as X API fees."
     }
   ],
   "paths": {
@@ -1131,7 +1131,7 @@
             }
           },
           "402": {
-            "description": "Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or this profile has used its free monthly allowance (`usage_limit_reached`)",
+            "description": "Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`)",
             "content": {
               "application/json": {
                 "schema": {
@@ -4166,7 +4166,7 @@
             }
           },
           "402": {
-            "description": "Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or this profile has used its free monthly allowance (`usage_limit_reached`)",
+            "description": "Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`)",
             "content": {
               "application/json": {
                 "schema": {
@@ -7238,7 +7238,7 @@
             }
           },
           "402": {
-            "description": "Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or this profile has used its free monthly allowance (`usage_limit_reached`)",
+            "description": "Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`)",
             "content": {
               "application/json": {
                 "schema": {
@@ -8011,7 +8011,7 @@
             }
           },
           "402": {
-            "description": "Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or this profile has used its free monthly allowance (`usage_limit_reached`)",
+            "description": "Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`)",
             "content": {
               "application/json": {
                 "schema": {
@@ -8469,7 +8469,7 @@
             }
           },
           "402": {
-            "description": "Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or this profile has used its free monthly allowance (`usage_limit_reached`)",
+            "description": "Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`)",
             "content": {
               "application/json": {
                 "schema": {
@@ -8873,7 +8873,7 @@
             }
           },
           "402": {
-            "description": "Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or this profile has used its free monthly allowance (`usage_limit_reached`)",
+            "description": "Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`)",
             "content": {
               "application/json": {
                 "schema": {
@@ -9040,7 +9040,7 @@
             }
           },
           "402": {
-            "description": "Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or this profile has used its free monthly allowance (`usage_limit_reached`)",
+            "description": "Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`)",
             "content": {
               "application/json": {
                 "schema": {
@@ -10921,7 +10921,7 @@
             }
           },
           "402": {
-            "description": "Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or this profile has used its free monthly allowance (`usage_limit_reached`)",
+            "description": "Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`)",
             "content": {
               "application/json": {
                 "schema": {
@@ -12034,7 +12034,7 @@
             }
           },
           "402": {
-            "description": "Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or this profile has used its free monthly allowance (`usage_limit_reached`)",
+            "description": "Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`)",
             "content": {
               "application/json": {
                 "schema": {
@@ -12329,7 +12329,7 @@
             }
           },
           "402": {
-            "description": "Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or this profile has used its free monthly allowance (`usage_limit_reached`)",
+            "description": "Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`)",
             "content": {
               "application/json": {
                 "schema": {
@@ -20808,20 +20808,9 @@
       "get": {
         "operationId": "getUsage",
         "summary": "This month's posts, messages and comments",
-        "description": "A profile's sends this UTC month against the free tier's allowance: 1,000 posts, 10,000 messages and 10,000 comments per profile. `limit` is null when the workspace has billing and is never limited. Defaults to the default profile. Past the limit, sends answer `402 usage_limit_reached` until `resetsAt` or until a card is added.",
+        "description": "The workspace's sends this UTC month, across all its profiles, against the free tier's allowance: 1,000 posts, 10,000 messages and 10,000 comments per workspace. `limit` is null when the workspace has billing and is never limited. Past the limit, sends answer `402 usage_limit_reached` until `resetsAt` or until a card is added.",
         "tags": [
           "Usage"
-        ],
-        "parameters": [
-          {
-            "name": "profileId",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
         ],
         "responses": {
           "200": {
@@ -20831,9 +20820,6 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "profileId": {
-                      "type": "string"
-                    },
                     "period": {
                       "type": "string"
                     },
@@ -20925,7 +20911,6 @@
                     }
                   },
                   "required": [
-                    "profileId",
                     "period",
                     "resetsAt",
                     "enforced",
@@ -20949,16 +20934,6 @@
           },
           "401": {
             "description": "Missing or invalid API key",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Profile, account, or object not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -21071,7 +21046,7 @@
             }
           },
           "402": {
-            "description": "Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or this profile has used its free monthly allowance (`usage_limit_reached`)",
+            "description": "Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`)",
             "content": {
               "application/json": {
                 "schema": {
