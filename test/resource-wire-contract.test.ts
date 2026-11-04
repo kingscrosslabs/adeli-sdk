@@ -122,6 +122,7 @@ function wireResponse(operationId: string, _status?: string): unknown {
     case 'listWebhooks': return { webhooks: [webhook] };
     case 'createWebhook': return { webhook, secret: 'whsec_created' };
     case 'testWebhook': return { eventId: 'evt_test_1', delivered: true, statusCode: 204, error: null };
+    case 'getUsage': return { period: '2025-01', resetsAt: '2025-02-01T00:00:00.000Z', enforced: true, posts: { used: 3, limit: 1000 }, messages: { used: 0, limit: 10000 }, comments: { used: 0, limit: null } };
     case 'getXUsage': return { from: '2025-01-01T00:00:00.000Z', to: '2025-02-01T00:00:00.000Z', ratesAsOf: '2025-01-01', totalCostMicros: 0, operations: [{ operation: 'list_posts', resourceType: 'post', resourceCount: 1, costMicros: 0 }] };
     default: throw new Error(`fixture missing for ${operationId}`);
   }
@@ -133,7 +134,7 @@ type WireCase = { id: string; call: (options: RequestOptions) => Promise<ApiResp
 function jsonBody(body: Record<string, unknown>): ExpectedBody { return body; }
 function requireRequest(value: Request | undefined, id: string): Request { if (value === undefined) throw new Error(`${id}: fetch was not called`); return value; }
 // Request expectations are deliberately written independently of operations metadata; the registry is only a coverage allow-list.
-test('all 64 registered operations preserve exact wire requests and response envelopes', async () => {
+test('all 65 registered operations preserve exact wire requests and response envelopes', async () => {
   let currentFixture: WireCase | undefined;
   let returnUnauthorized = false;
   const unauthorizedDetails = { reason: 'wire-contract', nested: { preserved: true } };
@@ -204,6 +205,7 @@ test('all 64 registered operations preserve exact wire requests and response env
     { id: 'listAdTargeting', call: (o) => client.ads.listAdTargeting({ query: { accountId: id, adAccountId: '7000000001', type: 'regions' } }, o), method: 'GET', path: '/api/v1/ads/targeting', query: `accountId=${id}&adAccountId=7000000001&type=regions`, status: 200, response: wireResponse('listAdTargeting') },
     { id: 'listAdIdentities', call: (o) => client.ads.listAdIdentities({ query: { accountId: id, adAccountId: '7000000001' } }, o), method: 'GET', path: '/api/v1/ads/identities', query: `accountId=${id}&adAccountId=7000000001`, status: 200, response: wireResponse('listAdIdentities') },
     { id: 'createAdIdentity', call: (o) => client.ads.createAdIdentity({ query: { accountId: id }, body: { adAccountId: '7000000001', displayName: 'Brand', avatar: { url: 'https://cdn.example/a.png' } } }, o), method: 'POST', path: '/api/v1/ads/identities', query: `accountId=${id}`, body: jsonBody({ adAccountId: '7000000001', displayName: 'Brand', avatar: { url: 'https://cdn.example/a.png' } }), status: 201, response: wireResponse('createAdIdentity') },
+    { id: 'getUsage', call: (o) => client.usage.getUsage({}, o), method: 'GET', path: '/api/v1/usage', status: 200, response: wireResponse('getUsage') },
     { id: 'getXUsage', call: (o) => client.usage.getXUsage({}, o), method: 'GET', path: '/api/v1/usage/x', status: 200, response: wireResponse('getXUsage') },
     { id: 'listWebhooks', call: (o) => client.webhooks.listWebhooks({ query: { profileId: id } }, o), method: 'GET', path: '/api/v1/webhooks', query: `profileId=${id}`, status: 200, response: wireResponse('listWebhooks') },
     { id: 'createWebhook', call: (o) => client.webhooks.createWebhook({ body: { profileId: id, url: 'https://hooks.example/adeli', events: ['comment.created', 'message.postback'], platform: 'instagram' } }, o), method: 'POST', path: '/api/v1/webhooks', body: jsonBody({ profileId: id, url: 'https://hooks.example/adeli', events: ['comment.created', 'message.postback'], platform: 'instagram' }), status: 201, response: wireResponse('createWebhook') },
@@ -214,7 +216,7 @@ test('all 64 registered operations preserve exact wire requests and response env
   const { operations } = await import('../src/operations.js');
   expect(new Set(cases.map((item) => item.id))).toEqual(new Set(Object.keys(operations)));
   expect(cases).toHaveLength(Object.keys(operations).length);
-  expect(declaredSuccessPairs()).toHaveLength(74);
+  expect(declaredSuccessPairs()).toHaveLength(75);
   for (const fixture of cases) {
     for (const status of successStatuses(fixture.id)) {
       delete state.request;

@@ -954,6 +954,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * This month's posts, messages and comments
+         * @description The workspace's sends this UTC month, across all its profiles, against the free tier's allowance: 1,000 posts, 10,000 messages and 10,000 comments per workspace. `limit` is null when the workspace has billing and is never limited. Past the limit, sends answer `402 usage_limit_reached` until `resetsAt` or until a card is added.
+         */
+        get: operations["getUsage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/usage/x": {
         parameters: {
             query?: never;
@@ -1883,7 +1903,7 @@ export interface operations {
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
-            /** @description Billing is required before this provider operation can run */
+            /** @description Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`) */
             402: {
                 headers: {
                     [name: string]: unknown;
@@ -2979,7 +2999,7 @@ export interface operations {
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
-            /** @description Billing is required before this provider operation can run */
+            /** @description Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`) */
             402: {
                 headers: {
                     [name: string]: unknown;
@@ -3764,7 +3784,7 @@ export interface operations {
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
-            /** @description Billing is required before this provider operation can run */
+            /** @description Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`) */
             402: {
                 headers: {
                     [name: string]: unknown;
@@ -4067,6 +4087,33 @@ export interface operations {
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
+            /** @description Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`) */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The request conflicts with existing state */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
             /** @description Invalid request or provider failure */
             502: {
                 headers: {
@@ -4231,6 +4278,33 @@ export interface operations {
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
+            /** @description Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`) */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The request conflicts with existing state */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
             /** @description Invalid request or provider failure */
             502: {
                 headers: {
@@ -4367,6 +4441,15 @@ export interface operations {
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
+            /** @description Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`) */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
             /** @description The connection lacks a permission or provider-confirmed resource */
             403: {
                 headers: {
@@ -4474,7 +4557,7 @@ export interface operations {
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
-            /** @description Billing is required before this provider operation can run */
+            /** @description Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`) */
             402: {
                 headers: {
                     [name: string]: unknown;
@@ -5391,6 +5474,15 @@ export interface operations {
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
+            /** @description Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`) */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
             /** @description The connection lacks a permission or provider-confirmed resource */
             403: {
                 headers: {
@@ -5921,6 +6013,15 @@ export interface operations {
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
+            /** @description Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`) */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
             /** @description The connection lacks a permission or provider-confirmed resource */
             403: {
                 headers: {
@@ -6046,6 +6147,15 @@ export interface operations {
             };
             /** @description Missing or invalid API key */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`) */
+            402: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -9678,6 +9788,70 @@ export interface operations {
             };
         };
     };
+    getUsage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        period: string;
+                        /** Format: date-time */
+                        resetsAt: string;
+                        enforced: boolean;
+                        posts: {
+                            used: number;
+                            limit: number | null;
+                        };
+                        messages: {
+                            used: number;
+                            limit: number | null;
+                        };
+                        comments: {
+                            used: number;
+                            limit: number | null;
+                        };
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
     getXUsage: {
         parameters: {
             query?: never;
@@ -9727,7 +9901,7 @@ export interface operations {
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
-            /** @description Billing is required before this provider operation can run */
+            /** @description Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`) */
             402: {
                 headers: {
                     [name: string]: unknown;
