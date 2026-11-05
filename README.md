@@ -226,6 +226,7 @@ See [`examples/`](https://github.com/kingscrosslabs/adeli-sdk/tree/main/examples
 | Bluesky    |   ✅    |   ✅    |           |          |          |     |
 | Meta Ads   |   🧪    |         |           |          |          | 🧪  |
 | TikTok Ads |   🧪    |         |           |          |          | 🧪  |
+| LinkedIn Ads |   ✅    |         |           |          |          | ✅  |
 
 ✅ production&nbsp;&nbsp;🧪 beta, pending provider review. See [Feature availability](https://github.com/kingscrosslabs/adeli-sdk/blob/main/docs/availability.md).
 

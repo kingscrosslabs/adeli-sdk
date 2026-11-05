@@ -15,6 +15,7 @@ The SDK types the whole public contract, but not every operation is live on ever
 | `linkedin` | Connect (personal profile or Page), profile, publishing, analytics | — |
 | `meta_ads` | — | Connect and every `client.ads` operation |
 | `tiktok_ads` | — | Connect and every `client.ads` operation |
+| `linkedin_ads` | Connect and the `client.ads` operations LinkedIn supports | — |
 
 A publication (`client.publications`) posts to each target with that platform's publishing availability above.
 

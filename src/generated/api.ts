@@ -723,7 +723,7 @@ export interface paths {
         };
         /**
          * List Meta businesses
-         * @description Meta only; a TikTok Ads account returns 400 unsupported_for_platform.
+         * @description Meta only; a TikTok Ads or LinkedIn Ads account returns 400 unsupported_for_platform.
          */
         get: operations["listAdBusinesses"];
         put?: never;
@@ -743,7 +743,7 @@ export interface paths {
         };
         /**
          * List ad accounts
-         * @description Meta ad accounts (`act_<digits>`) or TikTok advertisers (`<digits>`), depending on the account's network.
+         * @description Meta ad accounts (`act_<digits>`), TikTok advertisers (`<digits>`) or LinkedIn ad accounts (`<digits>`, with the member's `role`, `readOnly` and the `organizationUrn` whose posts they sponsor), depending on the account's network.
          */
         get: operations["listAdAccounts"];
         put?: never;
@@ -789,7 +789,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Campaigns, ad sets (or TikTok ad groups), and ads for an ad account */
+        /**
+         * Campaigns, ad sets (TikTok ad groups, LinkedIn campaigns), and ads for an ad account
+         * @description For LinkedIn, `campaigns` are campaign groups, `adSets` are campaigns, and `ads` are creatives.
+         */
         get: operations["getAdTree"];
         put?: never;
         post?: never;
@@ -847,7 +850,7 @@ export interface paths {
         put?: never;
         /**
          * Create a paused campaign
-         * @description Meta boosts a Page post; TikTok creates a campaign, ad group and video ad. Everything is created paused: nothing spends until setAdStatus activates it.
+         * @description Meta boosts a Page post; TikTok creates a campaign, ad group and video ad; LinkedIn sponsors a post by the ad account's Page as a campaign group, campaign and creative, all drafts. Everything is created paused or as a draft: nothing spends until setAdStatus activates it.
          */
         post: operations["createCampaign"];
         delete?: never;
@@ -881,7 +884,10 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Pause or activate a campaign, ad set (ad group), or ad */
+        /**
+         * Pause or activate a campaign, ad set (ad group), or ad
+         * @description LinkedIn: activating a draft campaign group Adeli created activates its creative, campaign and group, in that order.
+         */
         put: operations["setAdStatus"];
         post?: never;
         delete?: never;
@@ -904,8 +910,8 @@ export interface paths {
         options?: never;
         head?: never;
         /**
-         * Change a TikTok ad group's budget, end date or name
-         * @description TikTok only.
+         * Change a TikTok ad group's or LinkedIn campaign's budget, end date or name
+         * @description TikTok and LinkedIn; Meta returns 400 unsupported_for_platform.
          */
         patch: operations["updateAdGroup"];
         trace?: never;
@@ -918,8 +924,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * TikTok targeting options
-         * @description TikTok only.
+         * TikTok and LinkedIn targeting options
+         * @description TikTok: regions, languages, interests. LinkedIn: locations, job_functions, seniorities, industries, company_sizes, each option's `id` being the URN a campaign targets.
          */
         get: operations["listAdTargeting"];
         put?: never;
@@ -1049,7 +1055,7 @@ export interface components {
         };
         ApiErrorRecord: {
             /** @enum {string} */
-            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
             accountId: string;
             code: string;
             message: string;
@@ -1075,7 +1081,7 @@ export interface components {
             /** Format: uuid */
             profileId: string;
             /** @enum {string} */
-            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
             /** @enum {string} */
             status: "pending_authorization" | "processing" | "pending_page_selection" | "connected" | "failed" | "expired";
             accountId: string | null;
@@ -1098,7 +1104,7 @@ export interface components {
             /** Format: uuid */
             profileId: string;
             /** @enum {string} */
-            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
             providerId: string | null;
             displayName: string | null;
             displayIdentifier: string | null;
@@ -1145,7 +1151,7 @@ export interface components {
                 method: "POST";
                 href: string | null;
                 /** @enum {string} */
-                provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
             };
         };
         NormalizedPost: {
@@ -1239,7 +1245,7 @@ export interface components {
                 /** Format: uuid */
                 profileId: string;
                 /** @enum {string} */
-                platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                 providerId: string | null;
                 displayName: string | null;
                 displayIdentifier: string | null;
@@ -1286,12 +1292,12 @@ export interface components {
                     method: "POST";
                     href: string | null;
                     /** @enum {string} */
-                    provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                    provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                 };
             }[];
             errors: {
                 /** @enum {string} */
-                platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                 accountId: string;
                 code: string;
                 message: string;
@@ -1328,7 +1334,7 @@ export interface components {
             }[];
             errors: {
                 /** @enum {string} */
-                platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                 accountId: string;
                 code: string;
                 message: string;
@@ -1362,7 +1368,7 @@ export interface components {
             }[];
             errors: {
                 /** @enum {string} */
-                platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                 accountId: string;
                 code: string;
                 message: string;
@@ -1416,7 +1422,7 @@ export interface operations {
                             /** Format: uuid */
                             accountId: string;
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                             username: string | null;
                         }[];
                         /** Format: uri */
@@ -1846,7 +1852,7 @@ export interface operations {
             content: {
                 "application/json": {
                     /** @enum {string} */
-                    platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                    platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                     /** Format: uri */
                     redirectUrl?: string;
                     /** @enum {string} */
@@ -1868,7 +1874,7 @@ export interface operations {
                         /** Format: uuid */
                         profileId: string;
                         /** @enum {string} */
-                        platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                        platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                         /** @enum {string} */
                         status: "pending_authorization" | "processing" | "pending_page_selection" | "connected" | "failed" | "expired";
                         accountId: string | null;
@@ -1976,7 +1982,7 @@ export interface operations {
                         /** Format: uuid */
                         profileId: string;
                         /** @enum {string} */
-                        platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                        platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                         /** @enum {string} */
                         status: "pending_authorization" | "processing" | "pending_page_selection" | "connected" | "failed" | "expired";
                         accountId: string | null;
@@ -2034,7 +2040,7 @@ export interface operations {
     listAccounts: {
         parameters: {
             query?: {
-                platform?: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                platform?: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                 accountId?: string;
                 profileId?: string;
             };
@@ -2061,7 +2067,7 @@ export interface operations {
                             /** Format: uuid */
                             profileId: string;
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                             providerId: string | null;
                             displayName: string | null;
                             displayIdentifier: string | null;
@@ -2108,12 +2114,12 @@ export interface operations {
                                 method: "POST";
                                 href: string | null;
                                 /** @enum {string} */
-                                provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                                provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                             };
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                             accountId: string;
                             code: string;
                             message: string;
@@ -2139,7 +2145,7 @@ export interface operations {
                             /** Format: uuid */
                             profileId: string;
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                             providerId: string | null;
                             displayName: string | null;
                             displayIdentifier: string | null;
@@ -2186,12 +2192,12 @@ export interface operations {
                                 method: "POST";
                                 href: string | null;
                                 /** @enum {string} */
-                                provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                                provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                             };
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                             accountId: string;
                             code: string;
                             message: string;
@@ -2285,7 +2291,7 @@ export interface operations {
                             /** Format: uuid */
                             profileId: string;
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                             providerId: string | null;
                             displayName: string | null;
                             displayIdentifier: string | null;
@@ -2332,12 +2338,12 @@ export interface operations {
                                 method: "POST";
                                 href: string | null;
                                 /** @enum {string} */
-                                provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                                provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                             };
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                             accountId: string;
                             code: string;
                             message: string;
@@ -2363,7 +2369,7 @@ export interface operations {
                             /** Format: uuid */
                             profileId: string;
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                             providerId: string | null;
                             displayName: string | null;
                             displayIdentifier: string | null;
@@ -2410,12 +2416,12 @@ export interface operations {
                                 method: "POST";
                                 href: string | null;
                                 /** @enum {string} */
-                                provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                                provider: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                             };
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                             accountId: string;
                             code: string;
                             message: string;
@@ -2508,7 +2514,7 @@ export interface operations {
                         /** Format: uuid */
                         profileId: string;
                         /** @enum {string} */
-                        platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                        platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                         providerId: string | null;
                         displayName: string | null;
                         displayIdentifier: string | null;
@@ -2673,7 +2679,7 @@ export interface operations {
                         /** Format: uuid */
                         profileId: string;
                         /** @enum {string} */
-                        platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                        platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                         providerId: string | null;
                         displayName: string | null;
                         displayIdentifier: string | null;
@@ -2771,7 +2777,7 @@ export interface operations {
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                             accountId: string;
                             code: string;
                             message: string;
@@ -2804,7 +2810,7 @@ export interface operations {
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                             accountId: string;
                             code: string;
                             message: string;
@@ -2881,7 +2887,7 @@ export interface operations {
     listPosts: {
         parameters: {
             query?: {
-                platform?: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                platform?: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                 accountId?: string;
                 profileId?: string;
             };
@@ -2927,7 +2933,7 @@ export interface operations {
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                             accountId: string;
                             code: string;
                             message: string;
@@ -2972,7 +2978,7 @@ export interface operations {
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                             accountId: string;
                             code: string;
                             message: string;
@@ -5770,7 +5776,7 @@ export interface operations {
     listMessages: {
         parameters: {
             query?: {
-                platform?: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                platform?: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                 accountId?: string;
                 profileId?: string;
             };
@@ -5813,7 +5819,7 @@ export interface operations {
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                             accountId: string;
                             code: string;
                             message: string;
@@ -5855,7 +5861,7 @@ export interface operations {
                         }[];
                         errors: {
                             /** @enum {string} */
-                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin";
+                            platform: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                             accountId: string;
                             code: string;
                             message: string;
@@ -7654,12 +7660,12 @@ export interface operations {
     listAdBusinesses: {
         parameters: {
             query?: {
-                /** @description The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted. */
+                /** @description The Meta Ads (`meta_ads`), TikTok Ads (`tiktok_ads`) or LinkedIn Ads (`linkedin_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages, organic TikTok or organic LinkedIn account id is not accepted. */
                 accountId?: string;
                 /** @description The profile whose ads account to use, when no `accountId` is given. */
                 profileId?: string;
-                /** @description Needed only when the profile has both ad networks connected and no `accountId` is given. */
-                platform?: "meta_ads" | "tiktok_ads";
+                /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
+                platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
             };
             header?: never;
             path?: never;
@@ -7675,7 +7681,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @enum {string} */
-                        platform: "meta_ads" | "tiktok_ads";
+                        platform: "meta_ads" | "tiktok_ads" | "linkedin_ads";
                         /** Format: uuid */
                         accountId: string;
                         /** Format: uuid */
@@ -7764,12 +7770,12 @@ export interface operations {
     listAdAccounts: {
         parameters: {
             query?: {
-                /** @description The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted. */
+                /** @description The Meta Ads (`meta_ads`), TikTok Ads (`tiktok_ads`) or LinkedIn Ads (`linkedin_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages, organic TikTok or organic LinkedIn account id is not accepted. */
                 accountId?: string;
                 /** @description The profile whose ads account to use, when no `accountId` is given. */
                 profileId?: string;
-                /** @description Needed only when the profile has both ad networks connected and no `accountId` is given. */
-                platform?: "meta_ads" | "tiktok_ads";
+                /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
+                platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
                 /** @description Optional boolean string; `true` bypasses the cached list, while `false` (or omission) uses the cache. */
                 refresh?: "true" | "false";
             };
@@ -7787,7 +7793,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @enum {string} */
-                        platform: "meta_ads" | "tiktok_ads";
+                        platform: "meta_ads" | "tiktok_ads" | "linkedin_ads";
                         /** Format: uuid */
                         accountId: string;
                         /** Format: uuid */
@@ -7802,6 +7808,10 @@ export interface operations {
                             minDailyBudget: number | null;
                             businessId: string | null;
                             businessName: string | null;
+                            role?: string | null;
+                            readOnly?: boolean;
+                            organizationUrn?: string | null;
+                            test?: boolean;
                         }[];
                         /** Format: date-time */
                         fetchedAt: string;
@@ -7885,12 +7895,12 @@ export interface operations {
     createAdAccount: {
         parameters: {
             query?: {
-                /** @description The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted. */
+                /** @description The Meta Ads (`meta_ads`), TikTok Ads (`tiktok_ads`) or LinkedIn Ads (`linkedin_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages, organic TikTok or organic LinkedIn account id is not accepted. */
                 accountId?: string;
                 /** @description The profile whose ads account to use, when no `accountId` is given. */
                 profileId?: string;
-                /** @description Needed only when the profile has both ad networks connected and no `accountId` is given. */
-                platform?: "meta_ads" | "tiktok_ads";
+                /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
+                platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
             };
             header: {
                 /** @description Required stable key; a replay returns 200 and an in-progress or failed creation returns 409. */
@@ -7932,6 +7942,10 @@ export interface operations {
                             minDailyBudget: number | null;
                             businessId: string | null;
                             businessName: string | null;
+                            role?: string | null;
+                            readOnly?: boolean;
+                            organizationUrn?: string | null;
+                            test?: boolean;
                         } | {
                             id: string;
                         };
@@ -7956,6 +7970,10 @@ export interface operations {
                             minDailyBudget: number | null;
                             businessId: string | null;
                             businessName: string | null;
+                            role?: string | null;
+                            readOnly?: boolean;
+                            organizationUrn?: string | null;
+                            test?: boolean;
                         } | {
                             id: string;
                         };
@@ -8040,12 +8058,12 @@ export interface operations {
     getAdAccount: {
         parameters: {
             query?: {
-                /** @description The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted. */
+                /** @description The Meta Ads (`meta_ads`), TikTok Ads (`tiktok_ads`) or LinkedIn Ads (`linkedin_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages, organic TikTok or organic LinkedIn account id is not accepted. */
                 accountId?: string;
                 /** @description The profile whose ads account to use, when no `accountId` is given. */
                 profileId?: string;
-                /** @description Needed only when the profile has both ad networks connected and no `accountId` is given. */
-                platform?: "meta_ads" | "tiktok_ads";
+                /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
+                platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
             };
             header?: never;
             path: {
@@ -8064,7 +8082,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @enum {string} */
-                        platform: "meta_ads" | "tiktok_ads";
+                        platform: "meta_ads" | "tiktok_ads" | "linkedin_ads";
                         /** Format: uuid */
                         accountId: string;
                         /** Format: uuid */
@@ -8079,6 +8097,10 @@ export interface operations {
                             minDailyBudget: number | null;
                             businessId: string | null;
                             businessName: string | null;
+                            role?: string | null;
+                            readOnly?: boolean;
+                            organizationUrn?: string | null;
+                            test?: boolean;
                         };
                         details: {
                             id: string;
@@ -8169,12 +8191,12 @@ export interface operations {
     updateAdAccount: {
         parameters: {
             query?: {
-                /** @description The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted. */
+                /** @description The Meta Ads (`meta_ads`), TikTok Ads (`tiktok_ads`) or LinkedIn Ads (`linkedin_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages, organic TikTok or organic LinkedIn account id is not accepted. */
                 accountId?: string;
                 /** @description The profile whose ads account to use, when no `accountId` is given. */
                 profileId?: string;
-                /** @description Needed only when the profile has both ad networks connected and no `accountId` is given. */
-                platform?: "meta_ads" | "tiktok_ads";
+                /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
+                platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
             };
             header?: never;
             path: {
@@ -8200,7 +8222,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @enum {string} */
-                        platform: "meta_ads" | "tiktok_ads";
+                        platform: "meta_ads" | "tiktok_ads" | "linkedin_ads";
                         /** Format: uuid */
                         accountId: string;
                         /** Format: uuid */
@@ -8215,6 +8237,10 @@ export interface operations {
                             minDailyBudget: number | null;
                             businessId: string | null;
                             businessName: string | null;
+                            role?: string | null;
+                            readOnly?: boolean;
+                            organizationUrn?: string | null;
+                            test?: boolean;
                         };
                         details: {
                             id: string;
@@ -8305,12 +8331,12 @@ export interface operations {
     getAdTree: {
         parameters: {
             query: {
-                /** @description The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted. */
+                /** @description The Meta Ads (`meta_ads`), TikTok Ads (`tiktok_ads`) or LinkedIn Ads (`linkedin_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages, organic TikTok or organic LinkedIn account id is not accepted. */
                 accountId?: string;
                 /** @description The profile whose ads account to use, when no `accountId` is given. */
                 profileId?: string;
-                /** @description Needed only when the profile has both ad networks connected and no `accountId` is given. */
-                platform?: "meta_ads" | "tiktok_ads";
+                /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
+                platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
                 adAccountId: string;
                 since?: string;
                 until?: string;
@@ -8329,7 +8355,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @enum {string} */
-                        platform: "meta_ads" | "tiktok_ads";
+                        platform: "meta_ads" | "tiktok_ads" | "linkedin_ads";
                         /** Format: uuid */
                         accountId: string;
                         /** Format: uuid */
@@ -8344,6 +8370,10 @@ export interface operations {
                             minDailyBudget: number | null;
                             businessId: string | null;
                             businessName: string | null;
+                            role?: string | null;
+                            readOnly?: boolean;
+                            organizationUrn?: string | null;
+                            test?: boolean;
                         };
                         campaigns: {
                             id: string;
@@ -8395,6 +8425,7 @@ export interface operations {
                                         conversions: number | null;
                                         videoViews?: number | null;
                                     };
+                                    postUrn?: string | null;
                                 }[];
                             }[];
                         }[];
@@ -8484,19 +8515,19 @@ export interface operations {
     getAdInsights: {
         parameters: {
             query: {
-                /** @description The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted. */
+                /** @description The Meta Ads (`meta_ads`), TikTok Ads (`tiktok_ads`) or LinkedIn Ads (`linkedin_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages, organic TikTok or organic LinkedIn account id is not accepted. */
                 accountId?: string;
                 /** @description The profile whose ads account to use, when no `accountId` is given. */
                 profileId?: string;
-                /** @description Needed only when the profile has both ad networks connected and no `accountId` is given. */
-                platform?: "meta_ads" | "tiktok_ads";
+                /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
+                platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
                 adAccountId: string;
                 /** @description A campaign, ad set (ad group), or ad id. */
                 objectId?: string;
-                /** @description TikTok: the level of `objectId`. Defaults to campaign. */
+                /** @description TikTok and LinkedIn: the level of `objectId`. Defaults to campaign (a LinkedIn campaign group). */
                 level?: "campaign" | "ad_group" | "ad";
-                /** @description TikTok: return an audience breakdown (`rows`) instead of the daily series (`points`). */
-                breakdown?: "age" | "gender" | "country_code" | "platform";
+                /** @description TikTok (age, gender, country_code, platform) or LinkedIn (job_function, seniority, industry, company_size, country_code): return an audience breakdown (`rows`) instead of the daily series (`points`). LinkedIn rows carry a `label` and the response `delayed: true`. */
+                breakdown?: ("age" | "gender" | "country_code" | "platform") | ("job_function" | "seniority" | "industry" | "company_size" | "country_code");
                 since?: string;
                 until?: string;
             };
@@ -8514,7 +8545,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @enum {string} */
-                        platform: "meta_ads" | "tiktok_ads";
+                        platform: "meta_ads" | "tiktok_ads" | "linkedin_ads";
                         /** Format: uuid */
                         accountId: string;
                         /** Format: uuid */
@@ -8537,7 +8568,7 @@ export interface operations {
                         fetchedAt: string;
                     } | {
                         /** @enum {string} */
-                        platform: "meta_ads" | "tiktok_ads";
+                        platform: "meta_ads" | "tiktok_ads" | "linkedin_ads";
                         /** Format: uuid */
                         accountId: string;
                         /** Format: uuid */
@@ -8553,6 +8584,33 @@ export interface operations {
                             clicks: number;
                             reach: number;
                         }[];
+                        range: {
+                            since: string;
+                            until: string;
+                        };
+                        /** Format: date-time */
+                        fetchedAt: string;
+                    } | {
+                        /** @enum {string} */
+                        platform: "meta_ads" | "tiktok_ads" | "linkedin_ads";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        adAccountId: string;
+                        objectId: string;
+                        /** @enum {string} */
+                        breakdown: "job_function" | "seniority" | "industry" | "company_size" | "country_code";
+                        rows: {
+                            value: string;
+                            label: string;
+                            spend: number;
+                            impressions: number;
+                            clicks: number;
+                            reach: number;
+                        }[];
+                        /** @constant */
+                        delayed: true;
                         range: {
                             since: string;
                             until: string;
@@ -8639,12 +8697,12 @@ export interface operations {
     listAdLeads: {
         parameters: {
             query?: {
-                /** @description The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted. */
+                /** @description The Meta Ads (`meta_ads`), TikTok Ads (`tiktok_ads`) or LinkedIn Ads (`linkedin_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages, organic TikTok or organic LinkedIn account id is not accepted. */
                 accountId?: string;
                 /** @description The profile whose ads account to use, when no `accountId` is given. */
                 profileId?: string;
-                /** @description Needed only when the profile has both ad networks connected and no `accountId` is given. */
-                platform?: "meta_ads" | "tiktok_ads";
+                /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
+                platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
                 /** @description Omit to list forms; pass a form id to list its leads. */
                 formId?: string;
             };
@@ -8662,7 +8720,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @enum {string} */
-                        platform: "meta_ads" | "tiktok_ads";
+                        platform: "meta_ads" | "tiktok_ads" | "linkedin_ads";
                         /** Format: uuid */
                         accountId: string;
                         /** Format: uuid */
@@ -8678,7 +8736,7 @@ export interface operations {
                         fetchedAt: string;
                     } | {
                         /** @enum {string} */
-                        platform: "meta_ads" | "tiktok_ads";
+                        platform: "meta_ads" | "tiktok_ads" | "linkedin_ads";
                         /** Format: uuid */
                         accountId: string;
                         /** Format: uuid */
@@ -8776,12 +8834,12 @@ export interface operations {
     createCampaign: {
         parameters: {
             query?: {
-                /** @description The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted. */
+                /** @description The Meta Ads (`meta_ads`), TikTok Ads (`tiktok_ads`) or LinkedIn Ads (`linkedin_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages, organic TikTok or organic LinkedIn account id is not accepted. */
                 accountId?: string;
                 /** @description The profile whose ads account to use, when no `accountId` is given. */
                 profileId?: string;
-                /** @description Needed only when the profile has both ad networks connected and no `accountId` is given. */
-                platform?: "meta_ads" | "tiktok_ads";
+                /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
+                platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
             };
             header: {
                 /** @description Required stable key for campaign creation. */
@@ -8845,6 +8903,27 @@ export interface operations {
                             url: string;
                         };
                     };
+                } | {
+                    adAccountId: string;
+                    campaignName: string;
+                    /** @enum {string} */
+                    goal: "website_visits" | "engagement" | "brand_awareness" | "video_views";
+                    postUrn: string;
+                    dailyBudget: number;
+                    bid?: number;
+                    startDate: string;
+                    endDate: string;
+                    targeting: {
+                        locations: string[];
+                        jobFunctions?: string[];
+                        seniorities?: string[];
+                        industries?: string[];
+                        companySizes?: string[];
+                        /** @default en_US */
+                        interfaceLocale?: string;
+                    };
+                    /** @constant */
+                    politicalIntent: "NOT_POLITICAL";
                 };
             };
         };
@@ -8895,7 +8974,7 @@ export interface operations {
                         replayed: boolean;
                     } | {
                         /** @enum {string} */
-                        platform: "meta_ads" | "tiktok_ads";
+                        platform: "meta_ads" | "tiktok_ads" | "linkedin_ads";
                         /** Format: uuid */
                         accountId: string;
                         /** Format: uuid */
@@ -8913,6 +8992,39 @@ export interface operations {
                             adId: string | null;
                             /** @enum {string} */
                             status: "pending" | "paused" | "active" | "failed" | "rolled_back" | "deleted";
+                            failureReason: string | null;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        };
+                        objects: {
+                            campaignId: string;
+                            adGroupId: string;
+                            adId: string;
+                        };
+                        replayed: boolean;
+                    } | {
+                        /** @enum {string} */
+                        platform: "meta_ads" | "tiktok_ads" | "linkedin_ads";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        campaign: {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            profileId: string;
+                            linkedinAdsConnectionId: string | null;
+                            adAccountId: string;
+                            idempotencyKey: string;
+                            campaignGroupId: string | null;
+                            campaignId: string | null;
+                            creativeId: string | null;
+                            postUrn: string | null;
+                            /** @enum {string} */
+                            status: "pending" | "draft" | "paused" | "active" | "failed" | "rolled_back" | "deleted";
                             failureReason: string | null;
                             /** Format: date-time */
                             createdAt: string;
@@ -8974,7 +9086,7 @@ export interface operations {
                         replayed: boolean;
                     } | {
                         /** @enum {string} */
-                        platform: "meta_ads" | "tiktok_ads";
+                        platform: "meta_ads" | "tiktok_ads" | "linkedin_ads";
                         /** Format: uuid */
                         accountId: string;
                         /** Format: uuid */
@@ -8992,6 +9104,39 @@ export interface operations {
                             adId: string | null;
                             /** @enum {string} */
                             status: "pending" | "paused" | "active" | "failed" | "rolled_back" | "deleted";
+                            failureReason: string | null;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        };
+                        objects: {
+                            campaignId: string;
+                            adGroupId: string;
+                            adId: string;
+                        };
+                        replayed: boolean;
+                    } | {
+                        /** @enum {string} */
+                        platform: "meta_ads" | "tiktok_ads" | "linkedin_ads";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        campaign: {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            profileId: string;
+                            linkedinAdsConnectionId: string | null;
+                            adAccountId: string;
+                            idempotencyKey: string;
+                            campaignGroupId: string | null;
+                            campaignId: string | null;
+                            creativeId: string | null;
+                            postUrn: string | null;
+                            /** @enum {string} */
+                            status: "pending" | "draft" | "paused" | "active" | "failed" | "rolled_back" | "deleted";
                             failureReason: string | null;
                             /** Format: date-time */
                             createdAt: string;
@@ -9084,17 +9229,17 @@ export interface operations {
     deleteCampaign: {
         parameters: {
             query: {
-                /** @description The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted. */
+                /** @description The Meta Ads (`meta_ads`), TikTok Ads (`tiktok_ads`) or LinkedIn Ads (`linkedin_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages, organic TikTok or organic LinkedIn account id is not accepted. */
                 accountId?: string;
                 /** @description The profile whose ads account to use, when no `accountId` is given. */
                 profileId?: string;
-                /** @description Needed only when the profile has both ad networks connected and no `accountId` is given. */
-                platform?: "meta_ads" | "tiktok_ads";
+                /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
+                platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
                 adAccountId: string;
             };
             header?: never;
             path: {
-                /** @description Meta or TikTok campaign id. */
+                /** @description Meta or TikTok campaign id, or LinkedIn campaign group id. */
                 campaignId: string;
             };
             cookie?: never;
@@ -9185,12 +9330,12 @@ export interface operations {
     setAdStatus: {
         parameters: {
             query?: {
-                /** @description The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted. */
+                /** @description The Meta Ads (`meta_ads`), TikTok Ads (`tiktok_ads`) or LinkedIn Ads (`linkedin_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages, organic TikTok or organic LinkedIn account id is not accepted. */
                 accountId?: string;
                 /** @description The profile whose ads account to use, when no `accountId` is given. */
                 profileId?: string;
-                /** @description Needed only when the profile has both ad networks connected and no `accountId` is given. */
-                platform?: "meta_ads" | "tiktok_ads";
+                /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
+                platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
             };
             header?: never;
             path?: never;
@@ -9216,6 +9361,15 @@ export interface operations {
                     status: "ACTIVE" | "PAUSED";
                     /** Format: uuid */
                     campaignRecordId?: string;
+                } | {
+                    adAccountId: string;
+                    objectId: string;
+                    /** @enum {string} */
+                    level: "campaign" | "ad_group" | "ad";
+                    /** @enum {string} */
+                    status: "ACTIVE" | "PAUSED";
+                    /** Format: uuid */
+                    campaignRecordId?: string;
                 };
             };
         };
@@ -9228,7 +9382,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @enum {string} */
-                        platform: "meta_ads" | "tiktok_ads";
+                        platform: "meta_ads" | "tiktok_ads" | "linkedin_ads";
                         /** Format: uuid */
                         accountId: string;
                         objectId: string;
@@ -9315,16 +9469,16 @@ export interface operations {
     updateAdGroup: {
         parameters: {
             query?: {
-                /** @description The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted. */
+                /** @description The Meta Ads (`meta_ads`), TikTok Ads (`tiktok_ads`) or LinkedIn Ads (`linkedin_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages, organic TikTok or organic LinkedIn account id is not accepted. */
                 accountId?: string;
                 /** @description The profile whose ads account to use, when no `accountId` is given. */
                 profileId?: string;
-                /** @description Needed only when the profile has both ad networks connected and no `accountId` is given. */
-                platform?: "meta_ads" | "tiktok_ads";
+                /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
+                platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
             };
             header?: never;
             path: {
-                /** @description TikTok ad group id. */
+                /** @description TikTok ad group id, or LinkedIn campaign id. */
                 adGroupId: string;
             };
             cookie?: never;
@@ -9332,6 +9486,11 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
+                    adAccountId: string;
+                    name?: string;
+                    dailyBudget?: number;
+                    endDate?: string;
+                } | {
                     adAccountId: string;
                     name?: string;
                     dailyBudget?: number;
@@ -9347,8 +9506,8 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
-                        /** @constant */
-                        platform: "tiktok_ads";
+                        /** @enum {string} */
+                        platform: "tiktok_ads" | "linkedin_ads";
                         /** Format: uuid */
                         accountId: string;
                         adAccountId: string;
@@ -9438,16 +9597,18 @@ export interface operations {
     listAdTargeting: {
         parameters: {
             query: {
-                /** @description The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted. */
+                /** @description The Meta Ads (`meta_ads`), TikTok Ads (`tiktok_ads`) or LinkedIn Ads (`linkedin_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages, organic TikTok or organic LinkedIn account id is not accepted. */
                 accountId?: string;
                 /** @description The profile whose ads account to use, when no `accountId` is given. */
                 profileId?: string;
-                /** @description Needed only when the profile has both ad networks connected and no `accountId` is given. */
-                platform?: "meta_ads" | "tiktok_ads";
+                /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
+                platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
                 adAccountId: string;
-                type: "regions" | "languages" | "interests";
-                /** @description Region availability depends on the campaign goal. Defaults to traffic. */
+                type: ("regions" | "languages" | "interests") | ("locations" | "job_functions" | "seniorities" | "industries" | "company_sizes");
+                /** @description TikTok: region availability depends on the campaign goal. Defaults to traffic. */
                 goal?: "traffic" | "reach" | "video_views";
+                /** @description LinkedIn: search locations or industries by name. */
+                q?: string;
             };
             header?: never;
             path?: never;
@@ -9462,13 +9623,13 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
-                        /** @constant */
-                        platform: "tiktok_ads";
+                        /** @enum {string} */
+                        platform: "tiktok_ads" | "linkedin_ads";
                         /** Format: uuid */
                         accountId: string;
                         adAccountId: string;
                         /** @enum {string} */
-                        type: "regions" | "languages" | "interests";
+                        type: "regions" | "languages" | "interests" | "locations" | "job_functions" | "seniorities" | "industries" | "company_sizes";
                         options: {
                             id: string;
                             name: string;
@@ -9555,12 +9716,12 @@ export interface operations {
     listAdIdentities: {
         parameters: {
             query: {
-                /** @description The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted. */
+                /** @description The Meta Ads (`meta_ads`), TikTok Ads (`tiktok_ads`) or LinkedIn Ads (`linkedin_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages, organic TikTok or organic LinkedIn account id is not accepted. */
                 accountId?: string;
                 /** @description The profile whose ads account to use, when no `accountId` is given. */
                 profileId?: string;
-                /** @description Needed only when the profile has both ad networks connected and no `accountId` is given. */
-                platform?: "meta_ads" | "tiktok_ads";
+                /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
+                platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
                 adAccountId: string;
             };
             header?: never;
@@ -9667,12 +9828,12 @@ export interface operations {
     createAdIdentity: {
         parameters: {
             query?: {
-                /** @description The Meta Ads (`meta_ads`) or TikTok Ads (`tiktok_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages or organic TikTok account id is not accepted. */
+                /** @description The Meta Ads (`meta_ads`), TikTok Ads (`tiktok_ads`) or LinkedIn Ads (`linkedin_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages, organic TikTok or organic LinkedIn account id is not accepted. */
                 accountId?: string;
                 /** @description The profile whose ads account to use, when no `accountId` is given. */
                 profileId?: string;
-                /** @description Needed only when the profile has both ad networks connected and no `accountId` is given. */
-                platform?: "meta_ads" | "tiktok_ads";
+                /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
+                platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
             };
             header?: never;
             path?: never;

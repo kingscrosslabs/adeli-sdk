@@ -31,12 +31,12 @@ export type AdInsightsResponse = SuccessBody<'getAdInsights'>;
 export type AdLeadsResponse = SuccessBody<'listAdLeads'>;
 export type CampaignResponse = SuccessBody<'createCampaign'>;
 export type AdStatusResponse = SuccessBody<'setAdStatus'>;
-/** TikTok Ads only: an ad group's budget, end date or name. */
+/** TikTok Ads and LinkedIn Ads: a TikTok ad group's, or LinkedIn campaign's, budget, end date or name. */
 export type UpdateAdGroupPath = Path<'updateAdGroup'>;
 export type UpdateAdGroupQuery = JsonQuery<'updateAdGroup'>;
 export type UpdateAdGroupBody = JsonBody<'updateAdGroup'>;
 export type AdGroupResponse = SuccessBody<'updateAdGroup'>;
-/** TikTok Ads only: location, language and interest options. */
+/** TikTok Ads and LinkedIn Ads: targeting options (TikTok regions, languages, interests; LinkedIn locations, job functions, seniorities, industries, company sizes). */
 export type AdTargetingQuery = JsonQuery<'listAdTargeting'>;
 export type AdTargetingResponse = SuccessBody<'listAdTargeting'>;
 /** TikTok Ads only: the brand identities an ad runs as. */
