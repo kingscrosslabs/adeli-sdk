@@ -3,7 +3,7 @@
   "info": {
     "title": "Adeli API",
     "version": "1.0.0",
-    "summary": "One REST API to publish, comment, message, and read analytics on Instagram, Facebook, TikTok, YouTube, X, and Bluesky.",
+    "summary": "One REST API to publish, comment, message, and read analytics on Instagram, Facebook, TikTok, YouTube, X, Bluesky, and LinkedIn.",
     "description": "Adeli maintains the developer app on every network, completes each platform's review, and manages OAuth and token refresh, so you hold one API key. Your first 3 connected accounts are free. Guides and examples: https://www.tryadeli.com/docs",
     "contact": {
       "name": "Adeli",
@@ -212,6 +212,35 @@
                     "accountsConnected",
                     "docs"
                   ]
+                },
+                "examples": {
+                  "default": {
+                    "summary": "Example",
+                    "value": {
+                      "message": "Your API key works.",
+                      "you": {
+                        "name": "Sam Rivera",
+                        "organization": "Acme Agency",
+                        "profile": {
+                          "id": "00000000-0000-4000-8000-000000000001",
+                          "name": "Acme Coffee"
+                        }
+                      },
+                      "apiKey": {
+                        "label": "Postman",
+                        "prefix": "rk_live_Ab3d",
+                        "createdAt": "2026-11-01T09:00:00.000Z"
+                      },
+                      "accountsConnected": [
+                        {
+                          "accountId": "00000000-0000-4000-8000-000000000002",
+                          "platform": "instagram",
+                          "username": "acmecoffee"
+                        }
+                      ],
+                      "docs": "https://www.tryadeli.com/docs"
+                    }
+                  }
                 }
               }
             }
@@ -433,6 +462,18 @@
                   "name"
                 ],
                 "additionalProperties": false
+              },
+              "examples": {
+                "default": {
+                  "summary": "A profile for one customer",
+                  "value": {
+                    "name": "Acme Coffee",
+                    "externalId": "cust_8812",
+                    "metadata": {
+                      "plan": "growth"
+                    }
+                  }
+                }
               }
             }
           }
@@ -725,6 +766,18 @@
                   "name"
                 ],
                 "additionalProperties": false
+              },
+              "examples": {
+                "default": {
+                  "summary": "Rename a profile",
+                  "value": {
+                    "name": "Acme Coffee Roasters",
+                    "externalId": "cust_8812",
+                    "metadata": {
+                      "plan": "growth"
+                    }
+                  }
+                }
               }
             }
           }
@@ -993,6 +1046,15 @@
                   "platform"
                 ],
                 "additionalProperties": false
+              },
+              "examples": {
+                "default": {
+                  "summary": "Connect an Instagram account",
+                  "value": {
+                    "platform": "instagram",
+                    "redirectUrl": "https://app.example.com/integrations/adeli/callback"
+                  }
+                }
               }
             }
           }
@@ -1752,6 +1814,44 @@
                     "accounts",
                     "errors"
                   ]
+                },
+                "examples": {
+                  "default": {
+                    "summary": "Example",
+                    "value": {
+                      "status": "complete",
+                      "accounts": [
+                        {
+                          "id": "00000000-0000-4000-8000-000000000002",
+                          "accountId": "00000000-0000-4000-8000-000000000002",
+                          "profileId": "00000000-0000-4000-8000-000000000001",
+                          "platform": "instagram",
+                          "providerId": "17841400000000001",
+                          "displayName": "Acme Coffee",
+                          "displayIdentifier": "@acmecoffee",
+                          "authMethod": "instagram_login",
+                          "connectionStatus": "connected",
+                          "grantedPermissions": [
+                            "instagram_business_basic",
+                            "instagram_business_content_publish"
+                          ],
+                          "recommendedPermissions": [],
+                          "missingRecommendedPermissions": [],
+                          "capabilities": {
+                            "publish": true
+                          },
+                          "capabilityRequirements": {},
+                          "reconnect": {
+                            "action": "restart_oauth",
+                            "method": "POST",
+                            "href": "/api/v1/profiles/00000000-0000-4000-8000-000000000001/connect",
+                            "provider": "instagram"
+                          }
+                        }
+                      ],
+                      "errors": []
+                    }
+                  }
                 }
               }
             }
@@ -3125,6 +3225,17 @@
                 "required": [
                   "xCapabilities"
                 ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Turn on paid X analytics reads",
+                  "value": {
+                    "xCapabilities": {
+                      "analytics": true,
+                      "inbox": false
+                    }
+                  }
+                }
               }
             }
           }
@@ -6423,6 +6534,115 @@
                     "additionalProperties": false
                   }
                 ]
+              },
+              "examples": {
+                "instagramImage": {
+                  "summary": "Instagram image",
+                  "value": {
+                    "platform": "instagram",
+                    "accountId": "00000000-0000-4000-8000-000000000002",
+                    "caption": "Our autumn blend is back. ☕",
+                    "image": {
+                      "upload_id": "instagram/staging/opaque.jpg",
+                      "altText": "A latte with leaf art"
+                    }
+                  }
+                },
+                "instagramReel": {
+                  "summary": "Instagram Reel",
+                  "value": {
+                    "platform": "instagram",
+                    "accountId": "00000000-0000-4000-8000-000000000002",
+                    "caption": "60 seconds of roasting.",
+                    "reel": {
+                      "upload_id": "instagram/staging/opaque.mp4"
+                    },
+                    "shareToFeed": true
+                  }
+                },
+                "facebookImage": {
+                  "summary": "Facebook Page photo",
+                  "value": {
+                    "platform": "facebook",
+                    "accountId": "00000000-0000-4000-8000-000000000002",
+                    "message": "Our autumn blend is back.",
+                    "image": {
+                      "upload_id": "facebook/staging/opaque.jpg"
+                    }
+                  }
+                },
+                "tiktokVideo": {
+                  "summary": "TikTok video",
+                  "value": {
+                    "platform": "tiktok",
+                    "accountId": "00000000-0000-4000-8000-000000000002",
+                    "post_mode": "DIRECT_POST",
+                    "tiktok_title": "How we roast",
+                    "privacy_level": "SELF_ONLY",
+                    "disable_comment": false,
+                    "disable_duet": false,
+                    "disable_stitch": false,
+                    "music_usage_confirmed": true,
+                    "video": {
+                      "upload_id": "tiktok/staging/opaque.mp4"
+                    }
+                  }
+                },
+                "youtubeVideo": {
+                  "summary": "YouTube video",
+                  "value": {
+                    "platform": "youtube",
+                    "accountId": "00000000-0000-4000-8000-000000000002",
+                    "title": "How we roast our autumn blend",
+                    "privacy_status": "private",
+                    "made_for_kids": false,
+                    "video": {
+                      "upload_id": "youtube/staging/opaque.mp4"
+                    }
+                  }
+                },
+                "xText": {
+                  "summary": "X post",
+                  "value": {
+                    "platform": "x",
+                    "accountId": "00000000-0000-4000-8000-000000000002",
+                    "text": "Our autumn blend is back."
+                  }
+                },
+                "blueskyText": {
+                  "summary": "Bluesky post",
+                  "value": {
+                    "platform": "bluesky",
+                    "accountId": "00000000-0000-4000-8000-000000000002",
+                    "text": "Our autumn blend is back.",
+                    "langs": [
+                      "en"
+                    ]
+                  }
+                },
+                "linkedinImage": {
+                  "summary": "LinkedIn image",
+                  "value": {
+                    "platform": "linkedin",
+                    "accountId": "00000000-0000-4000-8000-000000000002",
+                    "commentary": "Our autumn blend is back.",
+                    "image": {
+                      "upload_id": "linkedin/staging/opaque.jpg"
+                    }
+                  }
+                },
+                "linkedinDocument": {
+                  "summary": "LinkedIn document",
+                  "value": {
+                    "platform": "linkedin",
+                    "accountId": "00000000-0000-4000-8000-000000000002",
+                    "commentary": "Our 2026 sourcing report.",
+                    "document": {
+                      "upload_id": "linkedin/staging/opaque.pdf",
+                      "title": "2026 sourcing report"
+                    }
+                  }
+                }
               }
             },
             "multipart/form-data": {
@@ -6509,6 +6729,19 @@
                   "music_usage_confirmed": {
                     "type": "string",
                     "description": "`true`; required by TikTok."
+                  }
+                }
+              },
+              "examples": {
+                "tiktokVideo": {
+                  "summary": "TikTok video (multipart)",
+                  "value": {
+                    "platform": "tiktok",
+                    "accountId": "00000000-0000-4000-8000-000000000002",
+                    "post_mode": "DIRECT_POST",
+                    "tiktok_title": "How we roast",
+                    "privacy_level": "SELF_ONLY",
+                    "music_usage_confirmed": "true"
                   }
                 }
               }
@@ -7091,6 +7324,19 @@
                       ]
                     }
                   ]
+                },
+                "examples": {
+                  "default": {
+                    "summary": "Example",
+                    "value": {
+                      "jobId": "00000000-0000-4000-8000-000000000004",
+                      "platform": "instagram",
+                      "accountId": "00000000-0000-4000-8000-000000000002",
+                      "profileId": "00000000-0000-4000-8000-000000000001",
+                      "status": "queued",
+                      "statusUrl": "/api/v1/posts/instagram/status?jobId=00000000-0000-4000-8000-000000000004&profileId=00000000-0000-4000-8000-000000000001"
+                    }
+                  }
                 }
               }
             }
@@ -7452,6 +7698,24 @@
                   "files"
                 ],
                 "additionalProperties": false
+              },
+              "examples": {
+                "default": {
+                  "summary": "Stage one image for Instagram",
+                  "value": {
+                    "profileId": "00000000-0000-4000-8000-000000000001",
+                    "platform": "instagram",
+                    "files": [
+                      {
+                        "clientId": "photo",
+                        "purpose": "post_media",
+                        "contentType": "image/jpeg",
+                        "size": 482113,
+                        "filename": "latte-art.jpg"
+                      }
+                    ]
+                  }
+                }
               }
             }
           }
@@ -7514,6 +7778,27 @@
                     "uploads"
                   ],
                   "additionalProperties": false
+                },
+                "examples": {
+                  "default": {
+                    "summary": "Example",
+                    "value": {
+                      "uploads": [
+                        {
+                          "clientId": "photo",
+                          "uploadId": "instagram/staging/opaque.jpg",
+                          "method": "PUT",
+                          "url": "https://signed-s3-url.example/instagram/staging/opaque.jpg",
+                          "headers": {
+                            "content-type": "image/jpeg",
+                            "cache-control": "public, max-age=300",
+                            "x-amz-server-side-encryption": "AES256"
+                          },
+                          "expiresAt": "2026-11-06T12:10:00.000Z"
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -7689,6 +7974,32 @@
                   "platforms"
                 ],
                 "additionalProperties": false
+              },
+              "examples": {
+                "default": {
+                  "summary": "One post to Instagram and LinkedIn",
+                  "value": {
+                    "profileId": "00000000-0000-4000-8000-000000000001",
+                    "content": "Our autumn blend is back.",
+                    "media": [
+                      {
+                        "upload_id": "shared/staging/opaque.jpg"
+                      }
+                    ],
+                    "platforms": [
+                      {
+                        "platform": "instagram",
+                        "accountId": "00000000-0000-4000-8000-000000000002",
+                        "kind": "image"
+                      },
+                      {
+                        "platform": "linkedin",
+                        "accountId": "00000000-0000-4000-8000-000000000007",
+                        "content": "Our autumn blend is back, roasted in small batches."
+                      }
+                    ]
+                  }
+                }
               }
             }
           }
@@ -8683,6 +8994,25 @@
                   "video"
                 ],
                 "additionalProperties": false
+              },
+              "examples": {
+                "default": {
+                  "summary": "A private video with a thumbnail",
+                  "value": {
+                    "platform": "youtube",
+                    "accountId": "00000000-0000-4000-8000-000000000002",
+                    "title": "How we roast our autumn blend",
+                    "description": "From green beans to the cup.",
+                    "privacy_status": "private",
+                    "made_for_kids": false,
+                    "video": {
+                      "upload_id": "youtube/staging/opaque.mp4"
+                    },
+                    "thumbnail": {
+                      "upload_id": "youtube/staging/opaque.jpg"
+                    }
+                  }
+                }
               }
             },
             "multipart/form-data": {
@@ -9583,6 +9913,40 @@
                       ]
                     }
                   ]
+                },
+                "examples": {
+                  "default": {
+                    "summary": "Example",
+                    "value": {
+                      "jobId": "00000000-0000-4000-8000-000000000004",
+                      "platform": "instagram",
+                      "accountId": "00000000-0000-4000-8000-000000000002",
+                      "profileId": "00000000-0000-4000-8000-000000000001",
+                      "statusUrl": "/api/v1/posts/instagram/status?jobId=00000000-0000-4000-8000-000000000004&profileId=00000000-0000-4000-8000-000000000001",
+                      "status": "published",
+                      "post": {
+                        "id": "17900000000000003",
+                        "platform": "instagram",
+                        "accountId": "00000000-0000-4000-8000-000000000002",
+                        "profileId": "00000000-0000-4000-8000-000000000001",
+                        "providerId": "17900000000000003",
+                        "caption": "Our autumn blend is back. ☕",
+                        "media": [
+                          {
+                            "type": "IMAGE",
+                            "url": "https://media.example/instagram/17900000000000003.jpg",
+                            "thumbnailUrl": null
+                          }
+                        ],
+                        "permalink": "https://www.instagram.com/p/EXAMPLE/",
+                        "engagement": {
+                          "likes": 0,
+                          "comments": 0
+                        },
+                        "publishedAt": "2026-11-06T12:01:30.000Z"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -10794,6 +11158,17 @@
                   "message"
                 ],
                 "additionalProperties": false
+              },
+              "examples": {
+                "default": {
+                  "summary": "Reply to a comment",
+                  "value": {
+                    "platform": "instagram",
+                    "accountId": "00000000-0000-4000-8000-000000000002",
+                    "parentId": "17900000000000001",
+                    "message": "Thank you! It's back until December."
+                  }
+                }
               }
             }
           }
@@ -11090,6 +11465,16 @@
                   "accountId"
                 ],
                 "additionalProperties": false
+              },
+              "examples": {
+                "default": {
+                  "summary": "Hide a comment",
+                  "value": {
+                    "platform": "instagram",
+                    "accountId": "00000000-0000-4000-8000-000000000002",
+                    "hidden": true
+                  }
+                }
               }
             }
           }
@@ -12036,6 +12421,17 @@
                     "additionalProperties": false
                   }
                 ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Instagram direct message",
+                  "value": {
+                    "platform": "instagram",
+                    "accountId": "00000000-0000-4000-8000-000000000002",
+                    "recipient": "1790000000000002",
+                    "text": "Thanks for reaching out! Your order ships today."
+                  }
+                }
               }
             }
           }
@@ -12351,6 +12747,25 @@
                   "text"
                 ],
                 "additionalProperties": false
+              },
+              "examples": {
+                "default": {
+                  "summary": "Private reply with a button",
+                  "value": {
+                    "accountId": "00000000-0000-4000-8000-000000000002",
+                    "recipient": {
+                      "commentId": "17900000000000001"
+                    },
+                    "text": "Here's your discount code.",
+                    "buttons": [
+                      {
+                        "type": "url",
+                        "title": "Shop now",
+                        "url": "https://shop.example.com/autumn"
+                      }
+                    ]
+                  }
+                }
               }
             }
           }
@@ -12718,6 +13133,20 @@
                   "events"
                 ],
                 "additionalProperties": false
+              },
+              "examples": {
+                "default": {
+                  "summary": "Comments and button taps on one profile",
+                  "value": {
+                    "profileId": "00000000-0000-4000-8000-000000000001",
+                    "url": "https://app.example.com/webhooks/adeli",
+                    "events": [
+                      "comment.created",
+                      "message.postback"
+                    ],
+                    "platform": "instagram"
+                  }
+                }
               }
             }
           }
@@ -12973,6 +13402,15 @@
                   }
                 },
                 "additionalProperties": false
+              },
+              "examples": {
+                "default": {
+                  "summary": "A sample TikTok comment",
+                  "value": {
+                    "type": "comment.created",
+                    "platform": "tiktok"
+                  }
+                }
               }
             }
           }
@@ -16359,6 +16797,17 @@
                   "timezone"
                 ],
                 "additionalProperties": false
+              },
+              "examples": {
+                "default": {
+                  "summary": "A Meta ad account",
+                  "value": {
+                    "businessId": "1234567890",
+                    "name": "Acme Coffee Ads",
+                    "currency": "USD",
+                    "timezone": "America/New_York"
+                  }
+                }
               }
             }
           }
@@ -17059,6 +17508,15 @@
                   }
                 },
                 "additionalProperties": false
+              },
+              "examples": {
+                "default": {
+                  "summary": "Set a spend cap",
+                  "value": {
+                    "name": "Acme Coffee Ads",
+                    "spendCap": 500
+                  }
+                }
               }
             }
           }
@@ -19235,6 +19693,19 @@
                     "additionalProperties": false
                   }
                 ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Boost a Facebook Page post (created paused)",
+                  "value": {
+                    "adAccountId": "act_1234567890",
+                    "pagePostId": "1029384756",
+                    "dailyBudget": 10,
+                    "startDate": "2026-12-01",
+                    "endDate": "2026-12-07",
+                    "campaignName": "Autumn blend boost"
+                  }
+                }
               }
             }
           }
@@ -20639,6 +21110,17 @@
                     "additionalProperties": false
                   }
                 ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Pause a Meta campaign",
+                  "value": {
+                    "adAccountId": "act_1234567890",
+                    "objectId": "120200000000000001",
+                    "status": "PAUSED",
+                    "level": "campaign"
+                  }
+                }
               }
             }
           }
@@ -20888,6 +21370,15 @@
                     "additionalProperties": false
                   }
                 ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Lower a TikTok ad group's budget",
+                  "value": {
+                    "adAccountId": "7000000000000000001",
+                    "dailyBudget": 20
+                  }
+                }
               }
             }
           }
@@ -21586,6 +22077,18 @@
                   "avatar"
                 ],
                 "additionalProperties": false
+              },
+              "examples": {
+                "default": {
+                  "summary": "A TikTok ad identity",
+                  "value": {
+                    "adAccountId": "7000000000000000001",
+                    "displayName": "Acme Coffee",
+                    "avatar": {
+                      "uploadId": "tiktok/staging/opaque.jpg"
+                    }
+                  }
+                }
               }
             }
           }
