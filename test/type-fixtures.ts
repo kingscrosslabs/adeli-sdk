@@ -1,7 +1,7 @@
 import type { Account, ApiResponse, Profile, StartConnectionBody } from '../src/index.js';
 import type { CreatePostBody, CreatePostWithFiles, TikTokMultipartBody } from '../src/resources/posts.js';
 import type { CreateAdAccountBody } from '../src/resources/ads.js';
-import type { SendInstagramMessageBody } from '../src/resources/messages.js';
+import type { ListMessagesQuery, SendInstagramMessageBody, SendMessageBody } from '../src/resources/messages.js';
 import { Adeli } from '../src/index.js';
 
 const id = '00000000-0000-0000-0000-000000000001';
@@ -50,6 +50,15 @@ void adAccount;
 const instagramDirect: SendInstagramMessageBody = { accountId: id, recipient: { id: 'igsid' }, text: 'hello' };
 const instagramPrivateReply: SendInstagramMessageBody = { accountId: id, profileId: id, recipient: { commentId: 'comment-1' }, text: 'Thanks!', buttons: [{ type: 'postback', title: 'Send it', payload: 'send' }, { type: 'url', title: 'Shop', url: 'https://shop.example/' }] };
 void instagramDirect;
+const whatsappText: SendMessageBody = { platform: 'whatsapp', accountId: id, recipient: '+15555550123', text: 'Thanks for your message' };
+const whatsappTemplate: SendMessageBody = { platform: 'whatsapp', accountId: id, recipient: '+15555550123', template: { name: 'order_update', language: 'en_US' } };
+const conversationQuery: ListMessagesQuery = { accountId: id, conversationKey: 'whatsapp:15555550123', cursor: 'opaque', limit: 100 };
+void whatsappText;
+void whatsappTemplate;
+void conversationQuery;
+// @ts-expect-error a WhatsApp send carries text or a template.
+const whatsappEmpty: SendMessageBody = { platform: 'whatsapp', accountId: id, recipient: '+15555550123' };
+void whatsappEmpty;
 void instagramPrivateReply;
 // @ts-expect-error the Instagram recipient is an object, not the plain string sendMessage takes.
 const invalidInstagramRecipient: SendInstagramMessageBody = { accountId: id, recipient: 'igsid', text: 'hello' };

@@ -460,10 +460,16 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List direct-message conversations */
+        /**
+         * List direct-message conversations
+         * @description Without conversationKey, every message for the profile, account or platform, oldest first. With conversationKey (which requires accountId; 400 invalid_request otherwise), one conversation read from the history Adeli stores: the newest `limit` messages (default 50, at most 100) before `cursor`, oldest first within the page, and `nextCursor` toward older messages (null at the start of the conversation). Each message carries its conversationKey.
+         */
         get: operations["listMessages"];
         put?: never;
-        /** Send a direct message */
+        /**
+         * Send a direct message
+         * @description Instagram and Facebook send text. WhatsApp sends an approved `template`, or free `text` (up to 4,096 characters) inside the 24-hour window after the customer's last message, never both. A reply outside a platform's 24-hour window is 409 window_closed.
+         */
         post: operations["sendMessage"];
         delete?: never;
         options?: never;
@@ -506,7 +512,7 @@ export interface paths {
         put?: never;
         /**
          * Create a webhook
-         * @description Registers a URL for comment.created and message.postback events on one profile. Pass `platform` to receive one platform's events only; omit it to receive every supported platform. `message.postback` is sent only for Instagram, so it cannot be combined with `platform: "tiktok"` (422 unsupported_for_platform). The signing secret is returned only in this response.
+         * @description Registers a URL for comment.created, message.postback and message.created events on one profile. Pass `platform` (`instagram`, `tiktok`, `facebook` or `whatsapp`) to receive one platform's events only; omit it to receive every supported platform. Each platform sends only some events: `comment.created` comes from Instagram and TikTok, `message.postback` from Instagram, and `message.created` (inbound direct messages) from Instagram, Facebook and WhatsApp. A platform with an event it does not send is 422 unsupported_for_platform. The signing secret is returned only in this response.
          */
         post: operations["createWebhook"];
         delete?: never;
@@ -543,7 +549,7 @@ export interface paths {
         put?: never;
         /**
          * Send a test event
-         * @description Sends one signed sample event (`test: true`) to the webhook now and returns the receiver's status code. One attempt, no retries; at most one test per webhook every few seconds. Defaults to a TikTok `comment.created`.
+         * @description Sends one signed sample event (`test: true`) to the webhook now and returns the receiver's status code. One attempt, no retries; at most one test per webhook every few seconds. Defaults to a TikTok `comment.created`. A type the platform does not send is 422 unsupported_for_platform.
          */
         post: operations["testWebhook"];
         delete?: never;
@@ -1200,6 +1206,8 @@ export interface components {
             occurredAt: string;
             /** Format: date-time */
             createdAt: string;
+            /** @description `<platform>:<counterparty id>` (an IGSID, a PSID, or a WhatsApp wa_id in digits), scoped to accountId: with accountId it identifies one conversation. Pass it to listMessages to read that conversation. Null when the counterparty is unknown; optional so clients built before it existed still type-check. */
+            conversationKey?: string | null;
         };
         Publication: {
             /** Format: uuid */
@@ -1365,6 +1373,8 @@ export interface components {
                 occurredAt: string;
                 /** Format: date-time */
                 createdAt: string;
+                /** @description `<platform>:<counterparty id>` (an IGSID, a PSID, or a WhatsApp wa_id in digits), scoped to accountId: with accountId it identifies one conversation. Pass it to listMessages to read that conversation. Null when the counterparty is unknown; optional so clients built before it existed still type-check. */
+                conversationKey?: string | null;
             }[];
             errors: {
                 /** @enum {string} */
@@ -1374,6 +1384,8 @@ export interface components {
                 message: string;
                 details?: unknown;
             }[];
+            /** @description Present only when conversationKey is given: pass it as cursor for the next, older page; null when there are no older messages. */
+            nextCursor?: string | null;
         };
     };
     responses: never;
@@ -5779,6 +5791,12 @@ export interface operations {
                 platform?: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                 accountId?: string;
                 profileId?: string;
+                /** @description One conversation's messages: a message's conversationKey. Requires accountId. The response then holds the newest `limit` messages before `cursor`, oldest first, and `nextCursor`. */
+                conversationKey?: string;
+                /** @description nextCursor from the previous page, toward older messages. Requires conversationKey. */
+                cursor?: string;
+                /** @description Messages per page with conversationKey, 1–100. Defaults to 50. */
+                limit?: number;
             };
             header?: never;
             path?: never;
@@ -5816,6 +5834,8 @@ export interface operations {
                             occurredAt: string;
                             /** Format: date-time */
                             createdAt: string;
+                            /** @description `<platform>:<counterparty id>` (an IGSID, a PSID, or a WhatsApp wa_id in digits), scoped to accountId: with accountId it identifies one conversation. Pass it to listMessages to read that conversation. Null when the counterparty is unknown; optional so clients built before it existed still type-check. */
+                            conversationKey?: string | null;
                         }[];
                         errors: {
                             /** @enum {string} */
@@ -5825,6 +5845,8 @@ export interface operations {
                             message: string;
                             details?: unknown;
                         }[];
+                        /** @description Present only when conversationKey is given: pass it as cursor for the next, older page; null when there are no older messages. */
+                        nextCursor?: string | null;
                     };
                 };
             };
@@ -5858,6 +5880,8 @@ export interface operations {
                             occurredAt: string;
                             /** Format: date-time */
                             createdAt: string;
+                            /** @description `<platform>:<counterparty id>` (an IGSID, a PSID, or a WhatsApp wa_id in digits), scoped to accountId: with accountId it identifies one conversation. Pass it to listMessages to read that conversation. Null when the counterparty is unknown; optional so clients built before it existed still type-check. */
+                            conversationKey?: string | null;
                         }[];
                         errors: {
                             /** @enum {string} */
@@ -5867,6 +5891,8 @@ export interface operations {
                             message: string;
                             details?: unknown;
                         }[];
+                        /** @description Present only when conversationKey is given: pass it as cursor for the next, older page; null when there are no older messages. */
+                        nextCursor?: string | null;
                     };
                 };
             };
@@ -5967,6 +5993,16 @@ export interface operations {
                         /** @default [] */
                         bodyParameters?: string[];
                     };
+                } | {
+                    /** @constant */
+                    platform: "whatsapp";
+                    /** Format: uuid */
+                    accountId: string;
+                    /** Format: uuid */
+                    profileId?: string;
+                    recipient: string;
+                    /** @description Free text, sent only inside the 24-hour window after the customer's last message; 409 window_closed otherwise. Send a template outside it. */
+                    text: string;
                 };
             };
         };
@@ -5998,6 +6034,8 @@ export interface operations {
                         occurredAt: string;
                         /** Format: date-time */
                         createdAt: string;
+                        /** @description `<platform>:<counterparty id>` (an IGSID, a PSID, or a WhatsApp wa_id in digits), scoped to accountId: with accountId it identifies one conversation. Pass it to listMessages to read that conversation. Null when the counterparty is unknown; optional so clients built before it existed still type-check. */
+                        conversationKey?: string | null;
                     };
                 };
             };
@@ -6240,9 +6278,9 @@ export interface operations {
                             /** Format: uuid */
                             profileId: string;
                             url: string;
-                            events: ("comment.created" | "message.postback")[];
+                            events: ("comment.created" | "message.postback" | "message.created")[];
                             /** @description The one platform this webhook receives events from, or null for every supported platform. Always present in responses; optional so clients built before it existed still type-check. */
-                            platform?: ("instagram" | "tiktok") | null;
+                            platform?: ("instagram" | "tiktok" | "facebook" | "whatsapp") | null;
                             /** @enum {string} */
                             status: "active" | "disabled";
                             /** Format: date-time */
@@ -6302,12 +6340,12 @@ export interface operations {
                     /** Format: uuid */
                     profileId: string;
                     url: string;
-                    events: ("comment.created" | "message.postback")[];
+                    events: ("comment.created" | "message.postback" | "message.created")[];
                     /**
-                     * @description Receive events from this platform only. Omit to receive every supported platform. `message.postback` requires `instagram` or no platform.
+                     * @description Receive events from this platform only. Omit to receive every supported platform. `message.postback` requires `instagram` or no platform; `comment.created` requires `instagram`, `tiktok` or no platform; `message.created` requires `instagram`, `facebook`, `whatsapp` or no platform.
                      * @enum {string}
                      */
-                    platform?: "instagram" | "tiktok";
+                    platform?: "instagram" | "tiktok" | "facebook" | "whatsapp";
                 };
             };
         };
@@ -6325,9 +6363,9 @@ export interface operations {
                             /** Format: uuid */
                             profileId: string;
                             url: string;
-                            events: ("comment.created" | "message.postback")[];
+                            events: ("comment.created" | "message.postback" | "message.created")[];
                             /** @description The one platform this webhook receives events from, or null for every supported platform. Always present in responses; optional so clients built before it existed still type-check. */
-                            platform?: ("instagram" | "tiktok") | null;
+                            platform?: ("instagram" | "tiktok" | "facebook" | "whatsapp") | null;
                             /** @enum {string} */
                             status: "active" | "disabled";
                             /** Format: date-time */
@@ -6458,12 +6496,12 @@ export interface operations {
                      * @default comment.created
                      * @enum {string}
                      */
-                    type?: "comment.created" | "message.postback";
+                    type?: "comment.created" | "message.postback" | "message.created";
                     /**
                      * @default tiktok
                      * @enum {string}
                      */
-                    platform?: "tiktok" | "instagram";
+                    platform?: "instagram" | "tiktok" | "facebook" | "whatsapp";
                 };
             };
         };

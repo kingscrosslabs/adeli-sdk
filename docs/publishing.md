@@ -25,6 +25,16 @@ A `201`/`200` result may be synchronous; `202` means accepted processing; it doe
 
 Thread and aggregate operations may return `207` with successful records and per-item/provider failures. Consume successful results and surface errors; never automatically retry a partial or ambiguous write. A local timeout or cancellation only ends the SDK request and leaves remote outcome unknown. Inspect the provider/API before any resubmission. X reads can cost money. Both `createAdAccount` and `createCampaign` require an idempotency key and neither auto-retries; profile creation's key is optional.
 
+## Direct messages
+
+`client.messages.sendMessage` sends text on Instagram and Facebook. On WhatsApp it sends an approved `template`, or free `text` (1–4,096 characters) inside the 24-hour window after the customer's last message; a body cannot carry both. Outside the window a text send fails with `409 window_closed`, and a template is the only way to reach the customer.
+
+```ts
+await client.messages.sendMessage({ body: { platform: 'whatsapp', accountId, recipient: '+15555550123', text: 'Thanks, we are on it.' } });
+```
+
+`client.messages.listMessages` with `accountId` and `conversationKey` reads one conversation: the newest `limit` messages before `cursor`, oldest first, and `nextCursor` toward older ones. Every message, and every `message.created` webhook, carries its `conversationKey`. `iterateConversation` in `@adeli/sdk/helpers` follows the cursor for you.
+
 ## Instagram DMs and private replies
 
 `client.messages.sendInstagramMessage` sends an Instagram DM to a person (`recipient: { id }`, their Instagram-scoped id) or a private reply to a comment (`recipient: { commentId }`), with up to three optional `postback` or `url` buttons. `sendMessage` is unchanged and does not take buttons or comment recipients. The `201` result's `recipient` is the person's Instagram-scoped id, including for a private reply, so a later DM can use `recipient: { id }`. A comment's `authorId` from `listComments` is the same id.

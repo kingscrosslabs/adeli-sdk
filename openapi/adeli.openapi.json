@@ -53,7 +53,7 @@
     },
     {
       "name": "Webhooks",
-      "description": "Signed HTTP callbacks for new comments and button taps."
+      "description": "Signed HTTP callbacks for new comments, inbound direct messages and button taps."
     },
     {
       "name": "Analytics",
@@ -11384,6 +11384,7 @@
       "get": {
         "operationId": "listMessages",
         "summary": "List direct-message conversations",
+        "description": "Without conversationKey, every message for the profile, account or platform, oldest first. With conversationKey (which requires accountId; 400 invalid_request otherwise), one conversation read from the history Adeli stores: the newest `limit` messages (default 50, at most 100) before `cursor`, oldest first within the page, and `nextCursor` toward older messages (null at the start of the conversation). Each message carries its conversationKey.",
         "tags": [
           "Messages"
         ],
@@ -11426,6 +11427,38 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          {
+            "name": "conversationKey",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(instagram|facebook|whatsapp):[0-9A-Za-z._-]{1,200}$"
+            },
+            "description": "One conversation's messages: a message's conversationKey. Requires accountId. The response then holds the newest `limit` messages before `cursor`, oldest first, and `nextCursor`."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "description": "nextCursor from the previous page, toward older messages. Requires conversationKey."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "description": "Messages per page with conversationKey, 1–100. Defaults to 50."
           }
         ],
         "responses": {
@@ -11515,6 +11548,13 @@
                             "type": "string",
                             "format": "date-time",
                             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                          },
+                          "conversationKey": {
+                            "description": "`<platform>:<counterparty id>` (an IGSID, a PSID, or a WhatsApp wa_id in digits), scoped to accountId: with accountId it identifies one conversation. Pass it to listMessages to read that conversation. Null when the counterparty is unknown; optional so clients built before it existed still type-check.",
+                            "type": [
+                              "string",
+                              "null"
+                            ]
                           }
                         },
                         "required": [
@@ -11573,6 +11613,13 @@
                           "message"
                         ]
                       }
+                    },
+                    "nextCursor": {
+                      "description": "Present only when conversationKey is given: pass it as cursor for the next, older page; null when there are no older messages.",
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     }
                   },
                   "required": [
@@ -11670,6 +11717,13 @@
                             "type": "string",
                             "format": "date-time",
                             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                          },
+                          "conversationKey": {
+                            "description": "`<platform>:<counterparty id>` (an IGSID, a PSID, or a WhatsApp wa_id in digits), scoped to accountId: with accountId it identifies one conversation. Pass it to listMessages to read that conversation. Null when the counterparty is unknown; optional so clients built before it existed still type-check.",
+                            "type": [
+                              "string",
+                              "null"
+                            ]
                           }
                         },
                         "required": [
@@ -11728,6 +11782,13 @@
                           "message"
                         ]
                       }
+                    },
+                    "nextCursor": {
+                      "description": "Present only when conversationKey is given: pass it as cursor for the next, older page; null when there are no older messages.",
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     }
                   },
                   "required": [
@@ -11804,6 +11865,7 @@
       "post": {
         "operationId": "sendMessage",
         "summary": "Send a direct message",
+        "description": "Instagram and Facebook send text. WhatsApp sends an approved `template`, or free `text` (up to 4,096 characters) inside the 24-hour window after the customer's last message, never both. A reply outside a platform's 24-hour window is 409 window_closed.",
         "tags": [
           "Messages"
         ],
@@ -11938,6 +12000,40 @@
                       "template"
                     ],
                     "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "platform": {
+                        "type": "string",
+                        "const": "whatsapp"
+                      },
+                      "accountId": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "profileId": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "recipient": {
+                        "type": "string",
+                        "pattern": "^\\+?[1-9]\\d{7,14}$"
+                      },
+                      "text": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 4096,
+                        "description": "Free text, sent only inside the 24-hour window after the customer's last message; 409 window_closed otherwise. Send a template outside it."
+                      }
+                    },
+                    "required": [
+                      "platform",
+                      "accountId",
+                      "recipient",
+                      "text"
+                    ],
+                    "additionalProperties": false
                   }
                 ]
               }
@@ -12019,6 +12115,13 @@
                       "type": "string",
                       "format": "date-time",
                       "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    },
+                    "conversationKey": {
+                      "description": "`<platform>:<counterparty id>` (an IGSID, a PSID, or a WhatsApp wa_id in digits), scoped to accountId: with accountId it identifies one conversation. Pass it to listMessages to read that conversation. Null when the counterparty is unknown; optional so clients built before it existed still type-check.",
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     }
                   },
                   "required": [
@@ -12467,7 +12570,8 @@
                               "type": "string",
                               "enum": [
                                 "comment.created",
-                                "message.postback"
+                                "message.postback",
+                                "message.created"
                               ]
                             }
                           },
@@ -12478,7 +12582,9 @@
                                 "type": "string",
                                 "enum": [
                                   "instagram",
-                                  "tiktok"
+                                  "tiktok",
+                                  "facebook",
+                                  "whatsapp"
                                 ]
                               },
                               {
@@ -12562,7 +12668,7 @@
       "post": {
         "operationId": "createWebhook",
         "summary": "Create a webhook",
-        "description": "Registers a URL for comment.created and message.postback events on one profile. Pass `platform` to receive one platform's events only; omit it to receive every supported platform. `message.postback` is sent only for Instagram, so it cannot be combined with `platform: \"tiktok\"` (422 unsupported_for_platform). The signing secret is returned only in this response.",
+        "description": "Registers a URL for comment.created, message.postback and message.created events on one profile. Pass `platform` (`instagram`, `tiktok`, `facebook` or `whatsapp`) to receive one platform's events only; omit it to receive every supported platform. Each platform sends only some events: `comment.created` comes from Instagram and TikTok, `message.postback` from Instagram, and `message.created` (inbound direct messages) from Instagram, Facebook and WhatsApp. A platform with an event it does not send is 422 unsupported_for_platform. The signing secret is returned only in this response.",
         "tags": [
           "Webhooks"
         ],
@@ -12590,16 +12696,19 @@
                       "type": "string",
                       "enum": [
                         "comment.created",
-                        "message.postback"
+                        "message.postback",
+                        "message.created"
                       ]
                     }
                   },
                   "platform": {
-                    "description": "Receive events from this platform only. Omit to receive every supported platform. `message.postback` requires `instagram` or no platform.",
+                    "description": "Receive events from this platform only. Omit to receive every supported platform. `message.postback` requires `instagram` or no platform; `comment.created` requires `instagram`, `tiktok` or no platform; `message.created` requires `instagram`, `facebook`, `whatsapp` or no platform.",
                     "type": "string",
                     "enum": [
                       "instagram",
-                      "tiktok"
+                      "tiktok",
+                      "facebook",
+                      "whatsapp"
                     ]
                   }
                 },
@@ -12641,7 +12750,8 @@
                             "type": "string",
                             "enum": [
                               "comment.created",
-                              "message.postback"
+                              "message.postback",
+                              "message.created"
                             ]
                           }
                         },
@@ -12652,7 +12762,9 @@
                               "type": "string",
                               "enum": [
                                 "instagram",
-                                "tiktok"
+                                "tiktok",
+                                "facebook",
+                                "whatsapp"
                               ]
                             },
                             {
@@ -12817,7 +12929,7 @@
       "post": {
         "operationId": "testWebhook",
         "summary": "Send a test event",
-        "description": "Sends one signed sample event (`test: true`) to the webhook now and returns the receiver's status code. One attempt, no retries; at most one test per webhook every few seconds. Defaults to a TikTok `comment.created`.",
+        "description": "Sends one signed sample event (`test: true`) to the webhook now and returns the receiver's status code. One attempt, no retries; at most one test per webhook every few seconds. Defaults to a TikTok `comment.created`. A type the platform does not send is 422 unsupported_for_platform.",
         "tags": [
           "Webhooks"
         ],
@@ -12845,15 +12957,18 @@
                     "type": "string",
                     "enum": [
                       "comment.created",
-                      "message.postback"
+                      "message.postback",
+                      "message.created"
                     ]
                   },
                   "platform": {
                     "default": "tiktok",
                     "type": "string",
                     "enum": [
+                      "instagram",
                       "tiktok",
-                      "instagram"
+                      "facebook",
+                      "whatsapp"
                     ]
                   }
                 },
@@ -22765,6 +22880,13 @@
             "type": "string",
             "format": "date-time",
             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+          },
+          "conversationKey": {
+            "description": "`<platform>:<counterparty id>` (an IGSID, a PSID, or a WhatsApp wa_id in digits), scoped to accountId: with accountId it identifies one conversation. Pass it to listMessages to read that conversation. Null when the counterparty is unknown; optional so clients built before it existed still type-check.",
+            "type": [
+              "string",
+              "null"
+            ]
           }
         },
         "required": [
@@ -23538,6 +23660,13 @@
                   "type": "string",
                   "format": "date-time",
                   "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "conversationKey": {
+                  "description": "`<platform>:<counterparty id>` (an IGSID, a PSID, or a WhatsApp wa_id in digits), scoped to accountId: with accountId it identifies one conversation. Pass it to listMessages to read that conversation. Null when the counterparty is unknown; optional so clients built before it existed still type-check.",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
                 }
               },
               "required": [
@@ -23596,6 +23725,13 @@
                 "message"
               ]
             }
+          },
+          "nextCursor": {
+            "description": "Present only when conversationKey is given: pass it as cursor for the next, older page; null when there are no older messages.",
+            "type": [
+              "string",
+              "null"
+            ]
           }
         },
         "required": [

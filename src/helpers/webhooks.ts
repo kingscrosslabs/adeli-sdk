@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { ConfigurationError, MalformedResponseError } from '@adeli/sdk';
+import type { CreateWebhookBody } from '../resources/webhooks.js';
 
 /** The raw request body exactly as received. Verify before parsing; re-serialized JSON will not match. */
 export type WebhookPayload = string | Uint8Array;
@@ -108,6 +109,39 @@ export interface MessagePostbackEvent extends WebhookEventEnvelope {
   };
 }
 
+/** The platforms that send `message.created`. */
+export type MessageCreatedPlatform = 'instagram' | 'facebook' | 'whatsapp';
+/** The platforms a webhook can be registered for, as `createWebhook({ body: { platform } })` accepts. */
+export type WebhookPlatform = NonNullable<CreateWebhookBody['platform']>;
+
+export type MessageAttachmentType = 'image' | 'video' | 'audio' | 'file';
+
+export interface MessageCreatedAttachment {
+  readonly type: MessageAttachmentType;
+  /** Null when the provider sends no link, as WhatsApp does for media. */
+  readonly url: string | null;
+}
+
+/** An inbound direct message. Echoes and the account's own sends are never emitted. */
+export interface MessageCreatedEvent extends WebhookEventEnvelope {
+  readonly type: 'message.created';
+  readonly platform: MessageCreatedPlatform;
+  readonly data: {
+    /** The provider message id: an Instagram or Facebook `mid`, or a WhatsApp `wamid`. */
+    readonly messageId: string;
+    /** `<platform>:<counterparty id>`, scoped to `accountId`. Pass it to `listMessages` or `iterateConversation` to read the conversation. */
+    readonly conversationKey: string;
+    /** `id` is the IGSID, PSID or WhatsApp `wa_id` (digits only); reply to it with `sendMessage`. `username` is null today. */
+    readonly from: { readonly id: string; readonly username: string | null };
+    /** Null for an attachment-only message. */
+    readonly text: string | null;
+    readonly attachments: readonly MessageCreatedAttachment[];
+    readonly replyTo: { readonly messageId: string } | null;
+    /** Always false today: echoes are not emitted. */
+    readonly isEcho: boolean;
+  };
+}
+
 /** An event type (or platform) this SDK version does not know yet. `eventType` keeps the wire `type`. */
 export interface UnknownWebhookEvent extends WebhookEventEnvelope {
   readonly type: 'unknown';
@@ -116,7 +150,7 @@ export interface UnknownWebhookEvent extends WebhookEventEnvelope {
   readonly data: unknown;
 }
 
-export type WebhookEvent = CommentCreatedEvent | MessagePostbackEvent | UnknownWebhookEvent;
+export type WebhookEvent = CommentCreatedEvent | MessagePostbackEvent | MessageCreatedEvent | UnknownWebhookEvent;
 export type WebhookEventType = Exclude<WebhookEvent['type'], 'unknown'>;
 
 type JsonRecord = Record<string, unknown>;
@@ -131,6 +165,36 @@ function requireString(record: JsonRecord, key: string, where: string): string {
   const value = record[key];
   if (typeof value !== 'string') malformed(`${where}.${key} must be a string`);
   return value;
+}
+
+const MESSAGE_CREATED_PLATFORMS: readonly string[] = ['instagram', 'facebook', 'whatsapp'] satisfies readonly MessageCreatedPlatform[];
+const MESSAGE_ATTACHMENT_TYPES: readonly string[] = ['image', 'video', 'audio', 'file'] satisfies readonly MessageAttachmentType[];
+
+function parseMessageAttachment(value: unknown, index: number): MessageCreatedAttachment {
+  const where = `data.attachments[${index}]`;
+  if (!isRecord(value)) malformed(`${where} must be an object`);
+  const type = requireString(value, 'type', where);
+  if (!MESSAGE_ATTACHMENT_TYPES.includes(type)) malformed(`${where}.type must be image, video, audio or file`);
+  return { type: type as MessageAttachmentType, url: requireNullableString(value, 'url', where) };
+}
+
+function parseMessageCreatedData(data: unknown): MessageCreatedEvent['data'] {
+  if (!isRecord(data)) malformed('data must be an object');
+  const from = data.from;
+  if (!isRecord(from)) malformed('data.from must be an object');
+  if (!Array.isArray(data.attachments)) malformed('data.attachments must be an array');
+  const replyTo = data.replyTo;
+  if (replyTo !== null && !isRecord(replyTo)) malformed('data.replyTo must be an object or null');
+  if (typeof data.isEcho !== 'boolean') malformed('data.isEcho must be a boolean');
+  return {
+    messageId: requireString(data, 'messageId', 'data'),
+    conversationKey: requireString(data, 'conversationKey', 'data'),
+    from: { id: requireString(from, 'id', 'data.from'), username: requireNullableString(from, 'username', 'data.from') },
+    text: requireNullableString(data, 'text', 'data'),
+    attachments: data.attachments.map(parseMessageAttachment),
+    replyTo: replyTo === null ? null : { messageId: requireString(replyTo, 'messageId', 'data.replyTo') },
+    isEcho: data.isEcho,
+  };
 }
 
 function requireNullableString(record: JsonRecord, key: string, where: string): string | null {
@@ -203,6 +267,9 @@ export function parseWebhookEvent(payload: WebhookPayload): WebhookEvent {
       title: requireNullableString(data, 'title', 'data'),
       messageId: requireNullableString(data, 'messageId', 'data'),
     } };
+  }
+  if (type === 'message.created' && MESSAGE_CREATED_PLATFORMS.includes(platform)) {
+    return { ...envelope, type, platform: platform as MessageCreatedPlatform, data: parseMessageCreatedData(data) };
   }
   return { ...envelope, type: 'unknown', eventType: type, platform, data };
 }

@@ -66,6 +66,15 @@ for await (const page of iterateCommentPages(
 
 The iterator pins the first authoritative `postId` when the initial query omitted one and preserves page cache metadata such as `complete`/`syncedAt`; that metadata describes freshness/completeness of the returned page, not whether `nextCursor` exists.
 
+`iterateConversationPages` and `iterateConversation` read one direct-message conversation: `accountId` and a message's `conversationKey` are required, and `limit` (1–100, default 50) and a starting `cursor` are optional. Pages come newest first, following `nextCursor` toward older messages; within a page messages are oldest first, as the API returns them, while `iterateConversation` yields each message newest first. They take the same `maxPages`, `timeoutMs`, and `signal` options and stop on a null, empty, or repeated cursor, or the page limit. A page whose messages belong to another account or conversation throws `MalformedResponseError`.
+
+```ts
+import { iterateConversation } from '@adeli/sdk/helpers';
+
+const recent = [];
+for await (const message of iterateConversation(client, { query: { accountId, conversationKey } }, { maxPages: 2 })) recent.push(message);
+```
+
 ## Deadlines, cancellation, and errors
 
 Pass an `AbortSignal` and/or per-call `timeoutMs` in the second argument. Cancellation stops this client request; it cannot undo work already accepted by Adeli. Polling helpers have a separate total deadline and never fetch a returned OAuth/status URL directly. Treat an aborted write as an ambiguous remote outcome and inspect the provider before resubmitting.
