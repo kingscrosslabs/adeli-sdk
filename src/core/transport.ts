@@ -43,6 +43,19 @@ function redact(value: unknown, secret: string): unknown {
   return value;
 }
 
+/** Stop waiting on a slow key resolver once the request deadline or caller signal fires. */
+function abortable<T>(promise: Promise<T>, signal: AbortSignal): Promise<T> {
+  if (signal.aborted) return Promise.reject(new DOMException('aborted', 'AbortError'));
+  return new Promise<T>((resolve, reject) => {
+    const onAbort = () => reject(new DOMException('aborted', 'AbortError'));
+    signal.addEventListener('abort', onAbort, { once: true });
+    promise.then(
+      (value) => { signal.removeEventListener('abort', onAbort); resolve(value); },
+      (error: unknown) => { signal.removeEventListener('abort', onAbort); reject(error); },
+    );
+  });
+}
+
 async function readResponseText(response: Response, signal: AbortSignal): Promise<string> {
   if (response.status === 204) return '';
   if (signal.aborted) throw new DOMException('aborted', 'AbortError');
@@ -85,7 +98,7 @@ async function readResponseText(response: Response, signal: AbortSignal): Promis
 
 export class Transport {
   constructor(private readonly config: ResolvedConfig) {}
-  /** Prevent client configuration, especially apiKey, from leaking through JSON serialization. */
+  /** Prevent client configuration, especially the apiKey or its resolver, from leaking through JSON serialization. */
   toJSON(): Record<string, never> { return {}; }
 
   /** Send raw bytes to a one-object presigned URL without leaking the Adeli API key. */
@@ -177,7 +190,11 @@ export class Transport {
 
   private async perform<B>(request: TransportRequest<B>, signal: AbortSignal): Promise<{ ok: true; data: unknown; status: number; headers: Headers } | { ok: false; data: undefined; status: number; headers: Headers; error: ReturnType<typeof apiError> }> {
     const url = buildURL(this.config.baseURL, request.operation.path, request.path, request.query);
-    const headers = new Headers({ authorization: `Bearer ${this.config.apiKey}`, accept: 'application/json' });
+    // Resolved per attempt so a retry carries a rotated key; redaction below uses this exact value.
+    // A static key resolves synchronously, so it adds no tick before fetch.
+    const resolved = this.config.apiKey();
+    const apiKey = typeof resolved === 'string' ? resolved : await abortable(resolved, signal);
+    const headers = new Headers({ authorization: `Bearer ${apiKey}`, accept: 'application/json' });
     let encodedBody: BodyInit | undefined;
     let duplex: 'half' | undefined;
     if (request.body !== undefined) {
@@ -224,13 +241,13 @@ export class Transport {
       const envelope = data !== null && typeof data === 'object' && !Array.isArray(data) ? (data as Record<string, unknown>).error : undefined;
       const errorBody = envelope !== null && typeof envelope === 'object' && !Array.isArray(envelope) ? envelope as Record<string, unknown> : undefined;
       const code = typeof errorBody?.code === 'string' ? errorBody.code : undefined;
-      const redactedCode = code === undefined ? undefined : String(redact(code, this.config.apiKey));
+      const redactedCode = code === undefined ? undefined : String(redact(code, apiKey));
       const message = typeof errorBody?.message === 'string' ? errorBody.message : `Adeli request failed with status ${response.status}`;
       const hasDetails = errorBody !== undefined && Object.prototype.hasOwnProperty.call(errorBody, 'details');
-      const details = hasDetails ? errorBody.details : redact(data, this.config.apiKey);
+      const details = hasDetails ? errorBody.details : redact(data, apiKey);
       return {
         ok: false, data: undefined, status: response.status, headers: response.headers,
-        error: apiError(String(redact(message, this.config.apiKey)), { status: response.status, details: redact(details, this.config.apiKey), headers: response.headers, ...(redactedCode === undefined ? {} : { code: redactedCode }) }),
+        error: apiError(String(redact(message, apiKey)), { status: response.status, details: redact(details, apiKey), headers: response.headers, ...(redactedCode === undefined ? {} : { code: redactedCode }) }),
       };
     }
     return { ok: true, data: response.status === 204 ? undefined : data, status: response.status, headers: response.headers };

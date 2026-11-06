@@ -66,6 +66,14 @@ export ADELI_API_KEY="..." # from https://app.tryadeli.com
 
 Your API key is a secret. Create the client only in server code, and never expose the key through a `NEXT_PUBLIC_` or `VITE_` env var. On Cloudflare Workers without `nodejs_compat`, pass `apiKey` explicitly.
 
+`apiKey` can also be a function returning a string or a promise of one. The SDK calls it before every request attempt and never caches the result, so rotated keys from a secret store are picked up right away:
+
+```ts
+const adeli = new Adeli({ apiKey: async () => (await secrets.get('adeli-api-key')).value });
+```
+
+See [Rotating keys with a resolver](https://github.com/kingscrosslabs/adeli-sdk/blob/main/docs/client.md#rotating-keys-with-a-resolver).
+
 ## Basic usage
 
 Every call resolves to `{ data, status, headers }`.

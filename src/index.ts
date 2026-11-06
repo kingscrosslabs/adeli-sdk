@@ -2,7 +2,7 @@ export { Adeli } from './client.js';
 export type { GetMeQuery, Identity } from './client.js';
 export { AdeliError, AdeliApiError, AuthenticationError, CancellationError, ConfigurationError, MalformedResponseError, NetworkError, PermissionRequiredError, RateLimitError, RedirectError, TimeoutError, ValidationError, isAdeliApiError, isPermissionRequiredDetails } from './core/errors.js';
 export type { PermissionRequiredDetails } from './core/errors.js';
-export type { ApiResponse, ClientOptions, OperationMetadata, OperationOptions, RequestOptions } from './core/types.js';
+export type { ApiKey, ApiKeyResolver, ApiResponse, ClientOptions, OperationMetadata, OperationOptions, RequestOptions } from './core/types.js';
 export type { Account, AccountDetailResponse, AccountPermissionState, AccountUpdateResponse, AccountsAggregateResponse, CapabilityDescriptor, DisconnectAccountResponse, ReconnectGuidance, UpdateAccountBody, XCapabilities, XCapabilitiesUpdate } from './resources/accounts.js';
 export type { ConnectionSession, ConnectionSessionError, CreateProfileBody, DeleteProfileResponse, JsonObject, JsonValue, Profile, PublicPlatform, StartConnectionBody, UpdateProfileBody } from './resources/profiles.js';
 export type { BinaryUpload, CreateMediaUploadsBody, CreateMediaUploadsResponse, CreatePostBody, CreatePostWithFiles, DeletePostPath, DeletePostQuery, FacebookPostStatusResponse, InstagramPostStatusResponse, ListPostsQuery, PostListResponse, PostStatusQuery, TikTokCreatorInfoResponse, TikTokMultipartBody, TikTokPostStatusResponse, UploadYouTubeVideoBody, YouTubeStagedUploadBody, YouTubeUploadBody, YouTubeUploadResponse, YouTubeVideoStatusResponse } from './resources/posts.js';
