@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CancellationError, MalformedResponseError, TimeoutError, type ApiResponse } from '@adeli/sdk';
-import { iterateCommentPages, iterateComments, waitForConnection, waitForFacebookPost, waitForInstagramPost, waitForPublication, waitForTikTokPost, waitForYouTubeVideo } from '@adeli/sdk/helpers';
+import { iterateCommentPages, iterateComments, iterateConversation, iterateConversationPages, waitForConnection, waitForFacebookPost, waitForInstagramPost, waitForPublication, waitForTikTokPost, waitForYouTubeVideo } from '@adeli/sdk/helpers';
 
 const response = <T>(data: T): ApiResponse<T> => ({ data, status: 200, headers: new Headers({ 'x-test': 'yes' }) });
 const connection = (status: string): ApiResponse<any> => response({ id: 'session', profileId: 'profile', platform: 'facebook', status });
@@ -287,5 +287,78 @@ describe('comment iterators', () => {
     controller.abort();
     await expect(request).rejects.toBeInstanceOf(CancellationError);
     await expect(iterateCommentPages(client as any, { query: { platform: 'youtube', accountId: 'account' } }, { timeoutMs: 5 }).next()).rejects.toBeInstanceOf(TimeoutError);
+  });
+});
+
+const conversationKey = 'instagram:17841400000000001';
+const dm = (id: string, overrides: Record<string, unknown> = {}) => ({ id, providerId: `mid.${id}`, platform: 'instagram', accountId: 'account', profileId: 'profile', direction: 'inbound', type: 'text', recipient: null, sender: '17841400000000001', body: id, status: 'received', occurredAt: '2026-11-06T12:00:00.000Z', createdAt: '2026-11-06T12:00:00.000Z', conversationKey, ...overrides });
+const messagePage = (messages: unknown[], nextCursor: string | null): ApiResponse<any> => response({ status: 'complete', messages, errors: [], nextCursor });
+
+describe('conversation iterators', () => {
+  it('follows nextCursor toward older pages and yields messages newest first', async () => {
+    const seen: unknown[] = [];
+    const pagesByCursor: Record<string, ApiResponse<any>> = {
+      start: messagePage([dm('m3'), dm('m4')], 'older-1'),
+      'older-1': messagePage([dm('m1'), dm('m2')], null),
+    };
+    const client = { messages: { listMessages: async (args: { query?: any }) => { seen.push({ ...args.query }); return pagesByCursor[args.query.cursor ?? 'start']!; } } };
+    const query = { accountId: 'account', conversationKey, limit: 2 };
+    const ids = [];
+    for await (const message of iterateConversation(client, { query })) ids.push(message.id);
+    expect(ids).toEqual(['m4', 'm3', 'm2', 'm1']);
+    expect(seen).toEqual([{ accountId: 'account', conversationKey, limit: 2 }, { accountId: 'account', conversationKey, limit: 2, cursor: 'older-1' }]);
+    expect(query).toEqual({ accountId: 'account', conversationKey, limit: 2 });
+  });
+
+  it('yields whole pages, stops on a repeated cursor and at maxPages, and does not prefetch', async () => {
+    let calls = 0;
+    const repeating = { messages: { listMessages: async () => { calls += 1; return messagePage([dm('m1')], 'same'); } } };
+    const pages = [];
+    for await (const page of iterateConversationPages(repeating, { query: { accountId: 'account', conversationKey } }, { maxPages: 5 })) pages.push(page);
+    expect(pages).toHaveLength(2);
+    expect(pages[0]?.headers.get('x-test')).toBe('yes');
+    calls = 0;
+    const endless = { messages: { listMessages: async () => { calls += 1; return messagePage([dm(`m${calls}`)], `cursor-${calls}`); } } };
+    const bounded = [];
+    for await (const page of iterateConversationPages(endless, { query: { accountId: 'account', conversationKey } }, { maxPages: 3 })) bounded.push(page);
+    expect(bounded).toHaveLength(3);
+    for await (const message of iterateConversation(endless, { query: { accountId: 'account', conversationKey } })) { void message; break; }
+    expect(calls).toBe(4);
+  });
+
+  it('requires accountId and conversationKey before any request', async () => {
+    let calls = 0;
+    const client = { messages: { listMessages: async () => { calls += 1; return messagePage([], null); } } };
+    await expect(iterateConversationPages(client, { query: { accountId: '', conversationKey } }).next()).rejects.toThrow('requires accountId');
+    await expect(iterateConversationPages(client, { query: { accountId: 'account', conversationKey: '' } }).next()).rejects.toThrow('requires conversationKey');
+    await expect(iterateConversationPages(client, { query: { accountId: 'account', conversationKey } }, { maxPages: 0 }).next()).rejects.toThrow('maxPages');
+    expect(calls).toBe(0);
+  });
+
+  it('rejects malformed pages, cursors, and messages from another account or conversation', async () => {
+    const query = { accountId: 'account', conversationKey };
+    const cases = [
+      response({ status: 'complete', errors: [] }),
+      messagePage([dm('m1')], 42 as any),
+      messagePage([{ body: 'no id' }], null),
+      messagePage([dm('m1', { accountId: 'other' })], null),
+      messagePage([dm('m1', { conversationKey: 'instagram:other' })], null),
+    ];
+    for (const page of cases) {
+      const client = { messages: { listMessages: async () => page } };
+      await expect(iterateConversationPages(client as any, { query }).next()).rejects.toBeInstanceOf(MalformedResponseError);
+    }
+    const nullKey = { messages: { listMessages: async () => messagePage([dm('m1', { conversationKey: null })], null) } };
+    await expect(iterateConversation(nullKey as any, { query }).next()).resolves.toMatchObject({ value: { id: 'm1' } });
+  });
+
+  it('cancels and times out conversation requests', async () => {
+    const controller = new AbortController();
+    const client = { messages: { listMessages: () => new Promise<ApiResponse<any>>(() => undefined) } };
+    const query = { accountId: 'account', conversationKey };
+    const request = iterateConversationPages(client, { query }, { signal: controller.signal }).next();
+    controller.abort();
+    await expect(request).rejects.toBeInstanceOf(CancellationError);
+    await expect(iterateConversationPages(client, { query }, { timeoutMs: 5 }).next()).rejects.toBeInstanceOf(TimeoutError);
   });
 });

@@ -51,7 +51,7 @@ data.accounts; // every connected account, fully typed
 - Zero runtime dependencies, with ESM and CommonJS builds
 - Runs on Node.js 22+, Vercel functions, and Cloudflare Workers
 - Media uploads that stream straight to storage
-- Bounded polling, comment iterators, and webhook verification
+- Bounded polling, comment and conversation iterators, and webhook verification
 - No retries unless you opt in, and a typed error class for each failure
 
 ## Installation
@@ -65,6 +65,14 @@ export ADELI_API_KEY="..." # from https://app.tryadeli.com
 ```
 
 Your API key is a secret. Create the client only in server code, and never expose the key through a `NEXT_PUBLIC_` or `VITE_` env var. On Cloudflare Workers without `nodejs_compat`, pass `apiKey` explicitly.
+
+`apiKey` can also be a function returning a string or a promise of one. The SDK calls it before every request attempt and never caches the result, so rotated keys from a secret store are picked up right away:
+
+```ts
+const adeli = new Adeli({ apiKey: async () => (await secrets.get('adeli-api-key')).value });
+```
+
+See [Rotating keys with a resolver](https://github.com/kingscrosslabs/adeli-sdk/blob/main/docs/client.md#rotating-keys-with-a-resolver).
 
 ## Basic usage
 
@@ -152,6 +160,22 @@ for await (const comment of iterateComments(
 }
 ```
 
+### Read a conversation
+
+Every message carries a `conversationKey` (`<platform>:<counterparty id>`), as does every `message.created` webhook. `iterateConversation` walks one conversation from its newest message back, following `nextCursor`:
+
+```ts
+import { iterateConversation } from '@adeli/sdk/helpers';
+
+for await (const message of iterateConversation(
+  adeli,
+  { query: { accountId, conversationKey: 'instagram:17841400000000001', limit: 50 } },
+  { maxPages: 5 },
+)) {
+  console.log(message.direction, message.body);
+}
+```
+
 ### Verify webhooks
 
 ```ts
@@ -169,6 +193,10 @@ export async function POST(request: Request) {
   const event = parseWebhookEvent(payload);
   if (event.type === 'comment.created' && event.platform === 'tiktok') {
     // event.data.text, event.data.from.username, event.data.mediaId (the video id)
+  }
+  if (event.type === 'message.created') {
+    // An inbound Instagram, Facebook or WhatsApp DM: event.platform, event.data.conversationKey,
+    // event.data.from.id, event.data.text (null for attachments only), event.data.attachments
   }
   return new Response(null, { status: 204 });
 }
@@ -189,6 +217,17 @@ const { data: created } = await adeli.webhooks.createWebhook({ body: { profileId
 const { data: result } = await adeli.webhooks.testWebhook({ path: { webhookId: created.webhook.id } });
 console.log(result.delivered, result.statusCode); // true 204
 ```
+
+Events by platform (`createWebhook` with `platform` receives only that platform's events; a platform with an event it does not send is `422 unsupported_for_platform`):
+
+| Platform    | Events                                                   |
+| ----------- | -------------------------------------------------------- |
+| `instagram` | `comment.created`, `message.postback`, `message.created` |
+| `tiktok`    | `comment.created`                                        |
+| `facebook`  | `message.created`                                        |
+| `whatsapp`  | `message.created`                                        |
+
+`message.created` is an inbound direct message; echoes and the account's own sends are never delivered. An event type this SDK version does not know parses as `type: 'unknown'`.
 
 See `examples/webhook-receiver.ts` for a fuller receiver.
 
@@ -235,7 +274,7 @@ See [`examples/`](https://github.com/kingscrosslabs/adeli-sdk/tree/main/examples
 | Import               | Contents                                                | Runs on                                                         |
 | -------------------- | ------------------------------------------------------- | --------------------------------------------------------------- |
 | `@adeli/sdk`         | The `Adeli` client, types, and error classes            | Node.js 22+, Vercel functions, Cloudflare Workers               |
-| `@adeli/sdk/helpers` | Polling, comment iterators, and webhook verification    | Same. Webhook verification needs `node:crypto` (Workers: `nodejs_compat`) |
+| `@adeli/sdk/helpers` | Polling, iterators, and webhook verification            | Same. Webhook verification needs `node:crypto` (Workers: `nodejs_compat`) |
 | `@adeli/sdk/uploads` | `fileFromPath` and `blobFromPath`                       | Node.js only                                                    |
 
 The SDK throws in browsers.

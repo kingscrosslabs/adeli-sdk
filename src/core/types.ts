@@ -31,8 +31,18 @@ export interface OperationOptions<P extends PathParams = PathParams, Q extends Q
   body?: B | undefined;
 }
 
+/**
+ * Returns the Adeli API key for one outbound request. The SDK calls it on every
+ * request attempt, retries included, and never caches the result, so a rotated
+ * key is picked up on the next attempt.
+ */
+export type ApiKeyResolver = () => string | Promise<string>;
+/** A static Adeli API key, or a resolver called before every request attempt. */
+export type ApiKey = string | ApiKeyResolver;
+
 export interface ClientOptions {
-  apiKey?: string | undefined;
+  /** A static key is validated at construction; a resolver's result is validated on every attempt. Falls back to `ADELI_API_KEY`. */
+  apiKey?: ApiKey | undefined;
   baseURL?: string | undefined;
   timeoutMs?: number | undefined;
   maxRetries?: number | undefined;

@@ -19,6 +19,9 @@ export function startWebhookReceiver(port = Number(process.env.PORT ?? 4242)) {
     const event = parseWebhookEvent(payload);
     if (event.type === 'comment.created' && event.platform === 'tiktok') {
       console.log(`TikTok comment on ${event.data.mediaId} from @${event.data.from.username ?? 'unknown'}: ${event.data.text}${event.test ? ' (test)' : ''}`);
+    } else if (event.type === 'message.created') {
+      const attachments = event.data.attachments.map(attachment => attachment.type).join(', ');
+      console.log(`${event.platform} DM in ${event.data.conversationKey} from ${event.data.from.id}: ${event.data.text ?? `[${attachments}]`}`);
     } else if (event.type === 'comment.created') {
       console.log(`Instagram comment on ${event.data.mediaId} from @${event.data.from.username ?? 'unknown'}: ${event.data.text}`);
     } else {

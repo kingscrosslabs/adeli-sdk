@@ -44,7 +44,7 @@ export function isPermissionRequiredDetails(value: unknown): value is Permission
 
 export class AdeliError extends Error {
   override readonly name: string = 'AdeliError';
-  constructor(message: string) { super(message); }
+  constructor(message: string, options?: ErrorOptions) { super(message, options); }
 }
 
 export class ConfigurationError extends AdeliError { override readonly name = 'ConfigurationError'; }

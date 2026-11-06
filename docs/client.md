@@ -9,6 +9,18 @@ const client = new Adeli({ apiKey: process.env.ADELI_API_KEY });
 
 `apiKey` wins over `ADELI_API_KEY`. `baseURL` is an origin (not an origin plus `/api/v1`); production origins must use HTTPS, while HTTP is reserved for explicit local development. `timeoutMs` is a total local deadline and `maxRetries` is opt-in. Timer values must be positive, finite, and no greater than `2_147_483_647` milliseconds (about 24.8 days); larger values are rejected before a request rather than being clamped by Node. The default retry count is zero. With opt-in retries, audited safe reads, and profile and publication creation with a stable idempotency key, qualify. Daily quota exhaustion, permission/billing/semantic conflicts, and other known non-transient failures are never retried. `listPosts` is conservatively excluded because an X read can be billed; `getXUsage` is a safe read of Adeli's stored usage ledger and does not call X itself, so it is eligible for the ordinary transient-read policy.
 
+### Rotating keys with a resolver
+
+`apiKey` also accepts a function, typed `ApiKeyResolver` (`() => string | Promise<string>`), for keys that come from a secret store or rotate:
+
+```ts
+import { Adeli, type ApiKeyResolver } from '@adeli/sdk';
+const apiKey: ApiKeyResolver = async () => (await secrets.get('adeli-api-key')).value;
+const client = new Adeli({ apiKey });
+```
+
+The SDK calls the resolver before every request attempt, retries included, and never caches the result, so a rotated key is used on the next attempt. Cache inside the resolver if your secret store is slow or rate-limited. A static string is validated when the client is constructed; a resolver is not called then, and each value it returns is validated before it is sent. An empty or blank string, a non-string, or a value that isn't a valid HTTP header throws `ConfigurationError` without echoing the value. A resolver that throws or rejects surfaces as `ConfigurationError` with the original error as `cause`. Neither is retried. The resolver runs inside the request's `timeoutMs` deadline and honours its `signal`. The value sent on an attempt is redacted from that attempt's error messages and details, and neither the resolver nor a key appears in a serialized client.
+
 ## Runtimes
 
 The root entry needs only `fetch` and loads no Node builtin at import, so it runs on Node.js 22+, Vercel functions, and Cloudflare Workers. In a Worker without `nodejs_compat`, pass `apiKey` explicitly. The subpaths have narrower requirements:
@@ -53,6 +65,15 @@ for await (const page of iterateCommentPages(
 ```
 
 The iterator pins the first authoritative `postId` when the initial query omitted one and preserves page cache metadata such as `complete`/`syncedAt`; that metadata describes freshness/completeness of the returned page, not whether `nextCursor` exists.
+
+`iterateConversationPages` and `iterateConversation` read one direct-message conversation: `accountId` and a message's `conversationKey` are required, and `limit` (1–100, default 50) and a starting `cursor` are optional. Pages come newest first, following `nextCursor` toward older messages; within a page messages are oldest first, as the API returns them, while `iterateConversation` yields each message newest first. They take the same `maxPages`, `timeoutMs`, and `signal` options and stop on a null, empty, or repeated cursor, or the page limit. A page whose messages belong to another account or conversation throws `MalformedResponseError`.
+
+```ts
+import { iterateConversation } from '@adeli/sdk/helpers';
+
+const recent = [];
+for await (const message of iterateConversation(client, { query: { accountId, conversationKey } }, { maxPages: 2 })) recent.push(message);
+```
 
 ## Deadlines, cancellation, and errors
 

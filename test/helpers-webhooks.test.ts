@@ -80,6 +80,35 @@ describe('parseWebhookEvent', () => {
     expect(() => parseWebhookEvent(JSON.stringify({ ...envelope, platform: 'tiktok', type: 'comment.created', data: { ...tiktokData, from: { id: 'tt-user-1', username: 'person' } } }))).toThrow(MalformedResponseError);
   });
 
+  it.each([
+    ['instagram', 'instagram:17841400000000001', 'm_abc'],
+    ['facebook', 'facebook:2468000000000001', 'm_def'],
+    ['whatsapp', 'whatsapp:15555550123', 'wamid.HBgL'],
+  ] as const)('types a %s message.created', (platform, key, messageId) => {
+    const data = { messageId, conversationKey: key, from: { id: key.split(':')[1], username: null }, text: 'Hi', attachments: [], replyTo: null, isEcho: false };
+    const event = parseWebhookEvent(JSON.stringify({ ...envelope, platform, type: 'message.created', data }));
+    expect(event).toEqual({ ...envelope, test: false, platform, type: 'message.created', data });
+    if (event.type !== 'message.created') throw new Error('expected message.created');
+    expect(event.data.conversationKey).toBe(key);
+  });
+
+  it('types message.created attachments, a null text, and a reply', () => {
+    const data = { messageId: 'm_2', conversationKey: 'instagram:1', from: { id: '1', username: null }, text: null, attachments: [{ type: 'image', url: 'https://cdn.example/a.jpg' }, { type: 'video', url: null }, { type: 'audio', url: null }, { type: 'file', url: 'https://cdn.example/b.pdf' }], replyTo: { messageId: 'm_1' }, isEcho: false };
+    expect(parseWebhookEvent(JSON.stringify({ ...envelope, type: 'message.created', data }))).toEqual({ ...envelope, test: false, type: 'message.created', data });
+  });
+
+  it.each([
+    ['an unknown attachment type', { attachments: [{ type: 'sticker', url: null }] }],
+    ['a non-array attachments', { attachments: null }],
+    ['a missing conversationKey', { conversationKey: undefined }],
+    ['a null sender id', { from: { id: null, username: null } }],
+    ['a malformed replyTo', { replyTo: { messageId: 7 } }],
+    ['a non-boolean isEcho', { isEcho: 'false' }],
+  ])('throws MalformedResponseError for a message.created with %s', (_label, change) => {
+    const data = { messageId: 'm_1', conversationKey: 'instagram:1', from: { id: '1', username: null }, text: 'Hi', attachments: [], replyTo: null, isEcho: false, ...change };
+    expect(() => parseWebhookEvent(JSON.stringify({ ...envelope, type: 'message.created', data }))).toThrow(MalformedResponseError);
+  });
+
   it('keeps the test flag of a sample sent by testWebhook', () => {
     const sample = { ...envelope, id: 'evt_test_1', platform: 'tiktok', type: 'comment.created', test: true, data: { commentId: 'test_1', mediaId: 'test_0', parentId: null, text: 'Test comment from Adeli', from: { id: 'test_user', username: 'adeli.test', displayName: 'Adeli Test' }, isSelf: false } };
     expect(parseWebhookEvent(JSON.stringify(sample))).toMatchObject({ test: true, platform: 'tiktok', type: 'comment.created' });
@@ -89,6 +118,7 @@ describe('parseWebhookEvent', () => {
   it('parses an unrecognised type or platform as unknown instead of throwing', () => {
     expect(parseWebhookEvent(JSON.stringify({ ...envelope, type: 'message.received', data: { anything: true } }))).toEqual({ ...envelope, test: false, type: 'unknown', eventType: 'message.received', data: { anything: true } });
     expect(parseWebhookEvent(JSON.stringify({ ...envelope, platform: 'facebook', type: 'comment.created', data: {} }))).toMatchObject({ type: 'unknown', eventType: 'comment.created', platform: 'facebook' });
+    expect(parseWebhookEvent(JSON.stringify({ ...envelope, platform: 'tiktok', type: 'message.created', data: {} }))).toMatchObject({ type: 'unknown', eventType: 'message.created', platform: 'tiktok' });
   });
 
   it.each([
