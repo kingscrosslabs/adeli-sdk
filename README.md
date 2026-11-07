@@ -263,7 +263,7 @@ See [`examples/`](https://github.com/kingscrosslabs/adeli-sdk/tree/main/examples
 | YouTube    |   ✅    |   ✅    |    ✅     |    ✅    |          |     |
 | X          |   ✅    |   ✅    |           |          |          |     |
 | Bluesky    |   ✅    |   ✅    |           |          |          |     |
-| Meta Ads   |   🧪    |         |           |          |          | 🧪  |
+| Meta Ads   |   ✅    |         |           |          |          | ✅  |
 | TikTok Ads |   🧪    |         |           |          |          | 🧪  |
 | LinkedIn Ads |   ✅    |         |           |          |          | ✅  |
 
