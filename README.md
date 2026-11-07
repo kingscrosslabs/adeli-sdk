@@ -257,7 +257,7 @@ See [`examples/`](https://github.com/kingscrosslabs/adeli-sdk/tree/main/examples
 
 | Platform   | Connect | Publish | Analytics | Comments | Messages | Ads |
 | ---------- | :-----: | :-----: | :-------: | :------: | :------: | :-: |
-| Instagram  |   ✅    |   🧪    |    🧪     |    🧪    |    ✅    |     |
+| Instagram  |   ✅    |   ✅    |    ✅     |    ✅    |    ✅    |     |
 | Facebook   |   ✅    |   🧪    |    🧪     |    🧪    |    ✅    |     |
 | TikTok     |   ✅    |   ✅    |    ✅     |    ✅    |          |     |
 | YouTube    |   ✅    |   ✅    |    ✅     |    ✅    |          |     |
