@@ -237,11 +237,15 @@ function tiktokStatus(response: ApiResponse<TikTokPostStatusResponse>): 'pending
 
 function publicationStatus(response: ApiResponse<Publication>): 'pending' | 'terminal' | 'invalid' {
   switch (response.data?.status) {
+    // A scheduled publication or draft is waiting, not finished: the wait continues until it is published (or the deadline).
+    case 'scheduled':
+    case 'draft':
     case 'queued':
     case 'processing': return 'pending';
     case 'published':
     case 'partial':
-    case 'failed': return 'terminal';
+    case 'failed':
+    case 'canceled': return 'terminal';
     default: return 'invalid';
   }
 }

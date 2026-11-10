@@ -222,11 +222,15 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * List publications
+         * @description Publications in the profile, newest first, or soonest first with `status=scheduled`. Filter by `status`, `platform`, or `accountId`; page with `cursor` and `limit`.
+         */
+        get: operations["listPublications"];
         put?: never;
         /**
          * Publish one post to several accounts
-         * @description Shared `content` and `media` go to every target in `platforms`; a target's own `content`, `media`, and `options` (that platform's `createPost` fields) override them. Every target is validated as `createPost` would validate it, then the publication is accepted durably with 202 and a `statusUrl`. Poll `getPublication` until `status` is `published`, `partial`, or `failed`. Scheduling is not supported yet.
+         * @description Shared `content` and `media` go to every target in `platforms`; a target's own `content`, `media`, and `options` (that platform's `createPost` fields) override them. Every target is validated as `createPost` would validate it, then the publication is accepted durably with 202 and a `statusUrl`. Poll `getPublication` until `status` is `published`, `partial`, or `failed`. With `scheduledFor` (one minute to 365 days ahead) the publication is stored with status `scheduled` and answered with 201; Adeli publishes it within about a minute of that time. With `draft: true` it is stored as a `draft` until `publishPublication` or `updatePublication` with a `scheduledFor`. Staged media of a scheduled publication or draft is kept until it is published or canceled; `{ url }` media is fetched when it is published.
          */
         post: operations["createPublication"];
         delete?: never;
@@ -249,6 +253,34 @@ export interface paths {
         get: operations["getPublication"];
         put?: never;
         post?: never;
+        /**
+         * Cancel a scheduled publication or draft
+         * @description The publication becomes `canceled` and is never published; its kept media is deleted. Answers 409 once it has started.
+         */
+        delete: operations["cancelPublication"];
+        options?: never;
+        head?: never;
+        /**
+         * Reschedule or edit a scheduled publication or draft
+         * @description Only while the publication is `scheduled` or a `draft`. `scheduledFor` reschedules it (a draft becomes scheduled). `platforms`, with optional `content` and `media`, replaces the post, validated as `createPublication` would. Answers 409 once the publication has started or was canceled.
+         */
+        patch: operations["updatePublication"];
+        trace?: never;
+    };
+    "/api/v1/publications/{publicationId}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish a scheduled publication or draft now
+         * @description Starts the publication at once, as `createPublication` without `scheduledFor` would. Poll `getPublication` for progress. Answers 409 once it has started or was canceled.
+         */
+        post: operations["publishPublication"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1204,6 +1236,15 @@ export interface components {
                 reach?: number | null;
             };
             publishedAt: string | null;
+            /**
+             * @description `scheduled` for a post waiting in a scheduled publication; its `id` is the publication target's id. Optional so clients built before it existed still type-check.
+             * @enum {string}
+             */
+            status?: "published" | "scheduled";
+            /** @description When a scheduled post goes out. */
+            scheduledFor?: string | null;
+            /** @description The scheduled publication this post belongs to. */
+            publicationId?: string | null;
         };
         NormalizedMessage: {
             id: string;
@@ -1234,9 +1275,17 @@ export interface components {
             id: string;
             /** Format: uuid */
             profileId: string;
-            /** @enum {string} */
-            status: "queued" | "processing" | "published" | "partial" | "failed";
+            /**
+             * @description `scheduled` waits for `scheduledFor`; `draft` waits to be published; `canceled` was canceled before it started. Only publications created with `scheduledFor` or `draft` ever have these three.
+             * @enum {string}
+             */
+            status: "scheduled" | "draft" | "queued" | "processing" | "published" | "partial" | "failed" | "canceled";
             progress: number;
+            /** @description When a scheduled publication goes out. Null for one published at once or a draft. */
+            scheduledFor?: string | null;
+            /** @description The IANA time zone the scheduled time was chosen in, for display. */
+            timeZone?: string | null;
+            canceledAt?: string | null;
             statusUrl: string;
             /** Format: date-time */
             createdAt: string;
@@ -1359,6 +1408,15 @@ export interface components {
                     reach?: number | null;
                 };
                 publishedAt: string | null;
+                /**
+                 * @description `scheduled` for a post waiting in a scheduled publication; its `id` is the publication target's id. Optional so clients built before it existed still type-check.
+                 * @enum {string}
+                 */
+                status?: "published" | "scheduled";
+                /** @description When a scheduled post goes out. */
+                scheduledFor?: string | null;
+                /** @description The scheduled publication this post belongs to. */
+                publicationId?: string | null;
             }[];
             errors: {
                 /** @enum {string} */
@@ -2962,6 +3020,15 @@ export interface operations {
                                 reach?: number | null;
                             };
                             publishedAt: string | null;
+                            /**
+                             * @description `scheduled` for a post waiting in a scheduled publication; its `id` is the publication target's id. Optional so clients built before it existed still type-check.
+                             * @enum {string}
+                             */
+                            status?: "published" | "scheduled";
+                            /** @description When a scheduled post goes out. */
+                            scheduledFor?: string | null;
+                            /** @description The scheduled publication this post belongs to. */
+                            publicationId?: string | null;
                         }[];
                         errors: {
                             /** @enum {string} */
@@ -3007,6 +3074,15 @@ export interface operations {
                                 reach?: number | null;
                             };
                             publishedAt: string | null;
+                            /**
+                             * @description `scheduled` for a post waiting in a scheduled publication; its `id` is the publication target's id. Optional so clients built before it existed still type-check.
+                             * @enum {string}
+                             */
+                            status?: "published" | "scheduled";
+                            /** @description When a scheduled post goes out. */
+                            scheduledFor?: string | null;
+                            /** @description The scheduled publication this post belongs to. */
+                            publicationId?: string | null;
                         }[];
                         errors: {
                             /** @enum {string} */
@@ -3645,6 +3721,15 @@ export interface operations {
                             reach?: number | null;
                         };
                         publishedAt: string | null;
+                        /**
+                         * @description `scheduled` for a post waiting in a scheduled publication; its `id` is the publication target's id. Optional so clients built before it existed still type-check.
+                         * @enum {string}
+                         */
+                        status?: "published" | "scheduled";
+                        /** @description When a scheduled post goes out. */
+                        scheduledFor?: string | null;
+                        /** @description The scheduled publication this post belongs to. */
+                        publicationId?: string | null;
                         warnings?: {
                             code: string;
                             message: string;
@@ -3984,6 +4069,118 @@ export interface operations {
             };
         };
     };
+    listPublications: {
+        parameters: {
+            query?: {
+                /** @description Only publications in this status. Scheduled ones are listed soonest first; others newest first. */
+                status?: "scheduled" | "draft" | "queued" | "processing" | "published" | "partial" | "failed" | "canceled";
+                /** @description Only publications with a target on this platform. */
+                platform?: "instagram" | "facebook" | "tiktok" | "youtube" | "x" | "bluesky" | "linkedin";
+                /** @description Only publications with a target on this account. */
+                accountId?: string;
+                profileId?: string;
+                /** @description nextCursor from the previous page. */
+                cursor?: string;
+                /** @description Publications per page, 1–100. Defaults to 25. */
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        publications: {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            profileId: string;
+                            /**
+                             * @description `scheduled` waits for `scheduledFor`; `draft` waits to be published; `canceled` was canceled before it started. Only publications created with `scheduledFor` or `draft` ever have these three.
+                             * @enum {string}
+                             */
+                            status: "scheduled" | "draft" | "queued" | "processing" | "published" | "partial" | "failed" | "canceled";
+                            progress: number;
+                            /** @description When a scheduled publication goes out. Null for one published at once or a draft. */
+                            scheduledFor?: string | null;
+                            /** @description The IANA time zone the scheduled time was chosen in, for display. */
+                            timeZone?: string | null;
+                            canceledAt?: string | null;
+                            statusUrl: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            completedAt: string | null;
+                            targets: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {string} */
+                                platform: "instagram" | "facebook" | "tiktok" | "youtube" | "x" | "bluesky" | "linkedin";
+                                /** Format: uuid */
+                                accountId: string;
+                                /** @enum {string} */
+                                status: "queued" | "submitting" | "processing" | "published" | "failed" | "outcome_unknown";
+                                attempts: number;
+                                result: {
+                                    [key: string]: unknown;
+                                } | null;
+                                error: {
+                                    code: string;
+                                    message: string;
+                                } | null;
+                            }[];
+                        }[];
+                        /** @description Pass as cursor for the next page; null on the last page. */
+                        nextCursor: string | null;
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
     createPublication: {
         parameters: {
             query?: never;
@@ -4021,6 +4218,15 @@ export interface operations {
                             [key: string]: unknown;
                         };
                     }[];
+                    /**
+                     * Format: date-time
+                     * @description When to publish, as ISO 8601 with a UTC offset, from one minute to 365 days ahead. Adeli publishes within about a minute of this time.
+                     */
+                    scheduledFor?: string;
+                    /** @description The IANA time zone the time was chosen in, such as America/New_York. Stored only to show the time back the same way. */
+                    timeZone?: string;
+                    /** @description Save the publication as a draft. It is published only by publishPublication or by giving it a scheduledFor. */
+                    draft?: boolean;
                 };
             };
         };
@@ -4036,9 +4242,66 @@ export interface operations {
                         id: string;
                         /** Format: uuid */
                         profileId: string;
-                        /** @enum {string} */
-                        status: "queued" | "processing" | "published" | "partial" | "failed";
+                        /**
+                         * @description `scheduled` waits for `scheduledFor`; `draft` waits to be published; `canceled` was canceled before it started. Only publications created with `scheduledFor` or `draft` ever have these three.
+                         * @enum {string}
+                         */
+                        status: "scheduled" | "draft" | "queued" | "processing" | "published" | "partial" | "failed" | "canceled";
                         progress: number;
+                        /** @description When a scheduled publication goes out. Null for one published at once or a draft. */
+                        scheduledFor?: string | null;
+                        /** @description The IANA time zone the scheduled time was chosen in, for display. */
+                        timeZone?: string | null;
+                        canceledAt?: string | null;
+                        statusUrl: string;
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        completedAt: string | null;
+                        targets: {
+                            /** Format: uuid */
+                            id: string;
+                            /** @enum {string} */
+                            platform: "instagram" | "facebook" | "tiktok" | "youtube" | "x" | "bluesky" | "linkedin";
+                            /** Format: uuid */
+                            accountId: string;
+                            /** @enum {string} */
+                            status: "queued" | "submitting" | "processing" | "published" | "failed" | "outcome_unknown";
+                            attempts: number;
+                            result: {
+                                [key: string]: unknown;
+                            } | null;
+                            error: {
+                                code: string;
+                                message: string;
+                            } | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Success */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        /**
+                         * @description `scheduled` waits for `scheduledFor`; `draft` waits to be published; `canceled` was canceled before it started. Only publications created with `scheduledFor` or `draft` ever have these three.
+                         * @enum {string}
+                         */
+                        status: "scheduled" | "draft" | "queued" | "processing" | "published" | "partial" | "failed" | "canceled";
+                        progress: number;
+                        /** @description When a scheduled publication goes out. Null for one published at once or a draft. */
+                        scheduledFor?: string | null;
+                        /** @description The IANA time zone the scheduled time was chosen in, for display. */
+                        timeZone?: string | null;
+                        canceledAt?: string | null;
                         statusUrl: string;
                         /** Format: date-time */
                         createdAt: string;
@@ -4077,9 +4340,17 @@ export interface operations {
                         id: string;
                         /** Format: uuid */
                         profileId: string;
-                        /** @enum {string} */
-                        status: "queued" | "processing" | "published" | "partial" | "failed";
+                        /**
+                         * @description `scheduled` waits for `scheduledFor`; `draft` waits to be published; `canceled` was canceled before it started. Only publications created with `scheduledFor` or `draft` ever have these three.
+                         * @enum {string}
+                         */
+                        status: "scheduled" | "draft" | "queued" | "processing" | "published" | "partial" | "failed" | "canceled";
                         progress: number;
+                        /** @description When a scheduled publication goes out. Null for one published at once or a draft. */
+                        scheduledFor?: string | null;
+                        /** @description The IANA time zone the scheduled time was chosen in, for display. */
+                        timeZone?: string | null;
+                        canceledAt?: string | null;
                         statusUrl: string;
                         /** Format: date-time */
                         createdAt: string;
@@ -4186,9 +4457,17 @@ export interface operations {
                         id: string;
                         /** Format: uuid */
                         profileId: string;
-                        /** @enum {string} */
-                        status: "queued" | "processing" | "published" | "partial" | "failed";
+                        /**
+                         * @description `scheduled` waits for `scheduledFor`; `draft` waits to be published; `canceled` was canceled before it started. Only publications created with `scheduledFor` or `draft` ever have these three.
+                         * @enum {string}
+                         */
+                        status: "scheduled" | "draft" | "queued" | "processing" | "published" | "partial" | "failed" | "canceled";
                         progress: number;
+                        /** @description When a scheduled publication goes out. Null for one published at once or a draft. */
+                        scheduledFor?: string | null;
+                        /** @description The IANA time zone the scheduled time was chosen in, for display. */
+                        timeZone?: string | null;
+                        canceledAt?: string | null;
                         statusUrl: string;
                         /** Format: date-time */
                         createdAt: string;
@@ -4245,6 +4524,373 @@ export interface operations {
             };
         };
     };
+    cancelPublication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The publication's id. */
+                publicationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        /**
+                         * @description `scheduled` waits for `scheduledFor`; `draft` waits to be published; `canceled` was canceled before it started. Only publications created with `scheduledFor` or `draft` ever have these three.
+                         * @enum {string}
+                         */
+                        status: "scheduled" | "draft" | "queued" | "processing" | "published" | "partial" | "failed" | "canceled";
+                        progress: number;
+                        /** @description When a scheduled publication goes out. Null for one published at once or a draft. */
+                        scheduledFor?: string | null;
+                        /** @description The IANA time zone the scheduled time was chosen in, for display. */
+                        timeZone?: string | null;
+                        canceledAt?: string | null;
+                        statusUrl: string;
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        completedAt: string | null;
+                        targets: {
+                            /** Format: uuid */
+                            id: string;
+                            /** @enum {string} */
+                            platform: "instagram" | "facebook" | "tiktok" | "youtube" | "x" | "bluesky" | "linkedin";
+                            /** Format: uuid */
+                            accountId: string;
+                            /** @enum {string} */
+                            status: "queued" | "submitting" | "processing" | "published" | "failed" | "outcome_unknown";
+                            attempts: number;
+                            result: {
+                                [key: string]: unknown;
+                            } | null;
+                            error: {
+                                code: string;
+                                message: string;
+                            } | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The request conflicts with existing state */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    updatePublication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The publication's id. */
+                publicationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: date-time
+                     * @description When to publish, as ISO 8601 with a UTC offset, from one minute to 365 days ahead. Adeli publishes within about a minute of this time.
+                     */
+                    scheduledFor?: string;
+                    /** @description The IANA time zone the time was chosen in, such as America/New_York. Stored only to show the time back the same way. */
+                    timeZone?: string;
+                    content?: string;
+                    media?: ({
+                        upload_id: string;
+                    } | {
+                        /** Format: uri */
+                        url: string;
+                    })[];
+                    platforms?: {
+                        /** @enum {string} */
+                        platform: "instagram" | "facebook" | "tiktok" | "youtube" | "x" | "bluesky" | "linkedin";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** @enum {string} */
+                        kind?: "image" | "carousel" | "video" | "reel" | "story";
+                        content?: string;
+                        media?: {
+                            [key: string]: unknown;
+                        }[];
+                        options?: {
+                            [key: string]: unknown;
+                        };
+                    }[];
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        /**
+                         * @description `scheduled` waits for `scheduledFor`; `draft` waits to be published; `canceled` was canceled before it started. Only publications created with `scheduledFor` or `draft` ever have these three.
+                         * @enum {string}
+                         */
+                        status: "scheduled" | "draft" | "queued" | "processing" | "published" | "partial" | "failed" | "canceled";
+                        progress: number;
+                        /** @description When a scheduled publication goes out. Null for one published at once or a draft. */
+                        scheduledFor?: string | null;
+                        /** @description The IANA time zone the scheduled time was chosen in, for display. */
+                        timeZone?: string | null;
+                        canceledAt?: string | null;
+                        statusUrl: string;
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        completedAt: string | null;
+                        targets: {
+                            /** Format: uuid */
+                            id: string;
+                            /** @enum {string} */
+                            platform: "instagram" | "facebook" | "tiktok" | "youtube" | "x" | "bluesky" | "linkedin";
+                            /** Format: uuid */
+                            accountId: string;
+                            /** @enum {string} */
+                            status: "queued" | "submitting" | "processing" | "published" | "failed" | "outcome_unknown";
+                            attempts: number;
+                            result: {
+                                [key: string]: unknown;
+                            } | null;
+                            error: {
+                                code: string;
+                                message: string;
+                            } | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The request conflicts with existing state */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    publishPublication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The publication's id. */
+                publicationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        /**
+                         * @description `scheduled` waits for `scheduledFor`; `draft` waits to be published; `canceled` was canceled before it started. Only publications created with `scheduledFor` or `draft` ever have these three.
+                         * @enum {string}
+                         */
+                        status: "scheduled" | "draft" | "queued" | "processing" | "published" | "partial" | "failed" | "canceled";
+                        progress: number;
+                        /** @description When a scheduled publication goes out. Null for one published at once or a draft. */
+                        scheduledFor?: string | null;
+                        /** @description The IANA time zone the scheduled time was chosen in, for display. */
+                        timeZone?: string | null;
+                        canceledAt?: string | null;
+                        statusUrl: string;
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        completedAt: string | null;
+                        targets: {
+                            /** Format: uuid */
+                            id: string;
+                            /** @enum {string} */
+                            platform: "instagram" | "facebook" | "tiktok" | "youtube" | "x" | "bluesky" | "linkedin";
+                            /** Format: uuid */
+                            accountId: string;
+                            /** @enum {string} */
+                            status: "queued" | "submitting" | "processing" | "published" | "failed" | "outcome_unknown";
+                            attempts: number;
+                            result: {
+                                [key: string]: unknown;
+                            } | null;
+                            error: {
+                                code: string;
+                                message: string;
+                            } | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`) */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The request conflicts with existing state */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
     retryPublication: {
         parameters: {
             query?: never;
@@ -4268,9 +4914,17 @@ export interface operations {
                         id: string;
                         /** Format: uuid */
                         profileId: string;
-                        /** @enum {string} */
-                        status: "queued" | "processing" | "published" | "partial" | "failed";
+                        /**
+                         * @description `scheduled` waits for `scheduledFor`; `draft` waits to be published; `canceled` was canceled before it started. Only publications created with `scheduledFor` or `draft` ever have these three.
+                         * @enum {string}
+                         */
+                        status: "scheduled" | "draft" | "queued" | "processing" | "published" | "partial" | "failed" | "canceled";
                         progress: number;
+                        /** @description When a scheduled publication goes out. Null for one published at once or a draft. */
+                        scheduledFor?: string | null;
+                        /** @description The IANA time zone the scheduled time was chosen in, for display. */
+                        timeZone?: string | null;
+                        canceledAt?: string | null;
                         statusUrl: string;
                         /** Format: date-time */
                         createdAt: string;
@@ -4824,6 +5478,15 @@ export interface operations {
                                 reach?: number | null;
                             };
                             publishedAt: string | null;
+                            /**
+                             * @description `scheduled` for a post waiting in a scheduled publication; its `id` is the publication target's id. Optional so clients built before it existed still type-check.
+                             * @enum {string}
+                             */
+                            status?: "published" | "scheduled";
+                            /** @description When a scheduled post goes out. */
+                            scheduledFor?: string | null;
+                            /** @description The scheduled publication this post belongs to. */
+                            publicationId?: string | null;
                         };
                     } | {
                         /** Format: uuid */

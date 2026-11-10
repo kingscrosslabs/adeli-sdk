@@ -5,7 +5,7 @@
 Generated from `src/operations.ts` metadata, AST-extracted resource method declarations, and the checked-in verified public docs mapping `openapi/docs-links.json`; this file is not hand-maintained.
 
 - Contract status: **candidate-unreleased**
-- Candidate OpenAPI SHA-256: `175bb1218d65d4a4a88b9e41679fe90a6fb01e66e9985deb75e37ac771daacc7`
+- Candidate OpenAPI SHA-256: `cbca8cc4d71d2ea604bab8c74d8b8c34bb7151171bb768bd2b65b9f881522685`
 - Public endpoint documentation: https://www.tryadeli.com/docs/
 
 | Resource | Method signature | HTTP | Path | Endpoint docs |
@@ -38,6 +38,10 @@ Generated from `src/operations.ts` metadata, AST-extracted resource method decla
 | publications | `createPublication(args: { readonly body: CreatePublicationWithFiles \| CreatePublicationBody }, options: CreatePublicationOptions = {}): Promise<ApiResponse<Publication>>` | POST | `/publications` | [api/posts/create-publication](https://www.tryadeli.com/docs/api/posts/create-publication) |
 | publications | `getPublication(args: { readonly path: PublicationPath }, options: RequestOptions = {}): Promise<ApiResponse<Publication>>` | GET | `/publications/{publicationId}` | [api/posts/get-publication](https://www.tryadeli.com/docs/api/posts/get-publication) |
 | publications | `retryPublication(args: { readonly path: PublicationPath }, options: RequestOptions = {}): Promise<ApiResponse<Publication>>` | POST | `/publications/{publicationId}/retry` | [api/posts/retry-publication](https://www.tryadeli.com/docs/api/posts/retry-publication) |
+| publications | `listPublications(args: { readonly query?: ListPublicationsQuery } = {}, options: RequestOptions = {}): Promise<ApiResponse<PublicationListResponse>>` | GET | `/publications` | [api/posts/list-publications](https://www.tryadeli.com/docs/api/posts/list-publications) |
+| publications | `updatePublication(args: { readonly path: PublicationPath; readonly body: UpdatePublicationBody }, options: RequestOptions = {}): Promise<ApiResponse<Publication>>` | PATCH | `/publications/{publicationId}` | [api/posts/update-publication](https://www.tryadeli.com/docs/api/posts/update-publication) |
+| publications | `cancelPublication(args: { readonly path: PublicationPath }, options: RequestOptions = {}): Promise<ApiResponse<Publication>>` | DELETE | `/publications/{publicationId}` | [api/posts/cancel-publication](https://www.tryadeli.com/docs/api/posts/cancel-publication) |
+| publications | `publishPublication(args: { readonly path: PublicationPath }, options: RequestOptions = {}): Promise<ApiResponse<Publication>>` | POST | `/publications/{publicationId}/publish` | [api/posts/publish-publication](https://www.tryadeli.com/docs/api/posts/publish-publication) |
 | comments | `listComments(args: { readonly query: CommentsQuery }, options: RequestOptions = {}): Promise<ApiResponse<CommentsResponse>>` | GET | `/comments` | [api/comments/list-comments](https://www.tryadeli.com/docs/api/comments/list-comments) |
 | comments | `createComment(args: { readonly body: CreateCommentBody }, options: RequestOptions = {}): Promise<ApiResponse<CommentMutationResponse>>` | POST | `/comments` | [api/comments/create-comment](https://www.tryadeli.com/docs/api/comments/create-comment) |
 | comments | `updateComment(args: { readonly path: Path<'updateComment'>; readonly body: UpdateCommentBody }, options: RequestOptions = {}): Promise<ApiResponse<UpdatedCommentResponse>>` | PATCH | `/comments/{commentId}` | [api/comments/update-comment](https://www.tryadeli.com/docs/api/comments/update-comment) |
