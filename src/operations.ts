@@ -23,6 +23,7 @@ export const operations = {
   deleteXPost: { operationId: 'deleteXPost', method: 'DELETE', path: '/posts/x/{postId}', retry: 'never' },
   deleteBlueskyPost: { operationId: 'deleteBlueskyPost', method: 'DELETE', path: '/posts/bluesky/{postId}', retry: 'never' },
   getInstagramPostStatus: { operationId: 'getInstagramPostStatus', method: 'GET', path: '/posts/instagram/status', retry: 'safe-read' },
+  listInstagramStories: { operationId: 'listInstagramStories', method: 'GET', path: '/posts/instagram/stories', retry: 'safe-read' },
   getFacebookPostStatus: { operationId: 'getFacebookPostStatus', method: 'GET', path: '/posts/facebook/status', retry: 'safe-read' },
   getTikTokPostStatus: { operationId: 'getTikTokPostStatus', method: 'GET', path: '/posts/tiktok/status', retry: 'safe-read' },
   getTikTokCreatorInfo: { operationId: 'getTikTokCreatorInfo', method: 'GET', path: '/posts/tiktok/creator-info', retry: 'safe-read' },

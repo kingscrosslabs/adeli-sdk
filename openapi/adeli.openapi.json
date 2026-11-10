@@ -11789,6 +11789,227 @@
         }
       }
     },
+    "/api/v1/posts/instagram/stories": {
+      "get": {
+        "operationId": "listInstagramStories",
+        "summary": "List an Instagram account's active stories",
+        "description": "Reads the account's live stories from Instagram, newest first: the last 24 hours, with `expiresAt` 24 hours after `timestamp`. `mediaUrl` is null for video with licensed audio. Live video stories and reshared stories are never included. Not cached.",
+        "tags": [
+          "Posts"
+        ],
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "profileId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "platform": {
+                      "type": "string",
+                      "const": "instagram"
+                    },
+                    "accountId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "profileId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "stories": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "The story's Instagram media id."
+                          },
+                          "mediaType": {
+                            "description": "IMAGE or VIDEO.",
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "mediaProductType": {
+                            "type": "string",
+                            "description": "Always STORY."
+                          },
+                          "mediaUrl": {
+                            "description": "The story's image or video. Null for video with licensed audio; use thumbnailUrl or permalink instead. Expires with the story.",
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "thumbnailUrl": {
+                            "description": "A video story's cover image. Null for images.",
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "permalink": {
+                            "description": "The story on Instagram, viewable only while it is live.",
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "timestamp": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+                            "description": "When the story was posted."
+                          },
+                          "expiresAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+                            "description": "When the story stops being live: 24 hours after timestamp."
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "mediaType",
+                          "mediaProductType",
+                          "mediaUrl",
+                          "thumbnailUrl",
+                          "permalink",
+                          "timestamp",
+                          "expiresAt"
+                        ]
+                      },
+                      "description": "Active stories, newest first."
+                    }
+                  },
+                  "required": [
+                    "platform",
+                    "accountId",
+                    "profileId",
+                    "stories"
+                  ]
+                },
+                "examples": {
+                  "default": {
+                    "summary": "Example",
+                    "value": {
+                      "platform": "instagram",
+                      "accountId": "00000000-0000-4000-8000-000000000002",
+                      "profileId": "00000000-0000-4000-8000-000000000001",
+                      "stories": [
+                        {
+                          "id": "17900000000000003",
+                          "mediaType": "VIDEO",
+                          "mediaProductType": "STORY",
+                          "mediaUrl": null,
+                          "thumbnailUrl": "https://scontent.cdninstagram.com/v/story-cover.jpg",
+                          "permalink": "https://instagram.com/stories/acmecoffee/3480000000000000003",
+                          "timestamp": "2026-11-10T15:20:00.000Z",
+                          "expiresAt": "2026-11-11T15:20:00.000Z"
+                        },
+                        {
+                          "id": "17900000000000002",
+                          "mediaType": "IMAGE",
+                          "mediaProductType": "STORY",
+                          "mediaUrl": "https://scontent.cdninstagram.com/v/story.jpg",
+                          "thumbnailUrl": null,
+                          "permalink": "https://instagram.com/stories/acmecoffee/3480000000000000002",
+                          "timestamp": "2026-11-10T09:05:00.000Z",
+                          "expiresAt": "2026-11-11T09:05:00.000Z"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The connection lacks a permission or provider-confirmed resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionRequiredError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Profile, account, or object not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The connected account cannot perform this operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/posts/facebook/status": {
       "get": {
         "operationId": "getFacebookPostStatus",

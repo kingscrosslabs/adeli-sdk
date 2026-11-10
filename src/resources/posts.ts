@@ -14,6 +14,10 @@ export type CreateMediaUploadsResponse = SuccessBody<'createMediaUploads'>;
 export type PostListResponse = SuccessBody<'listPosts'>;
 export type DeletePostResponse = SuccessBody<'deleteXPost'>;
 export type InstagramPostStatusResponse = SuccessBody<'getInstagramPostStatus'>;
+export type ListInstagramStoriesQuery = JsonQuery<'listInstagramStories'>;
+export type InstagramStoriesResponse = SuccessBody<'listInstagramStories'>;
+/** One active story: live for 24 hours, until `expiresAt`. */
+export type InstagramStory = InstagramStoriesResponse['stories'][number];
 export type FacebookPostStatusResponse = SuccessBody<'getFacebookPostStatus'>;
 export type TikTokPostStatusResponse = SuccessBody<'getTikTokPostStatus'>;
 export type TikTokCreatorInfoResponse = SuccessBody<'getTikTokCreatorInfo'>;
@@ -115,6 +119,10 @@ export class PostsResource {
   }
   getInstagramPostStatus(args: { readonly query: JsonQuery<'getInstagramPostStatus'> }, options: RequestOptions = {}): Promise<ApiResponse<InstagramPostStatusResponse>> {
     return this.transport.request({ operation: operations.getInstagramPostStatus, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs });
+  }
+  /** An Instagram account's active stories, newest first, read live. `mediaUrl` is null for video with licensed audio. */
+  listInstagramStories(args: { readonly query: ListInstagramStoriesQuery }, options: RequestOptions = {}): Promise<ApiResponse<InstagramStoriesResponse>> {
+    return this.transport.request({ operation: operations.listInstagramStories, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs });
   }
   getFacebookPostStatus(args: { readonly query: JsonQuery<'getFacebookPostStatus'> }, options: RequestOptions = {}): Promise<ApiResponse<FacebookPostStatusResponse>> {
     return this.transport.request({ operation: operations.getFacebookPostStatus, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs });

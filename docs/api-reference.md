@@ -5,7 +5,7 @@
 Generated from `src/operations.ts` metadata, AST-extracted resource method declarations, and the checked-in verified public docs mapping `openapi/docs-links.json`; this file is not hand-maintained.
 
 - Contract status: **candidate-unreleased**
-- Candidate OpenAPI SHA-256: `77abc1eaac502a73ffe45559322f49538c6ae89ba5f9045c86b56d717e54a7d0`
+- Candidate OpenAPI SHA-256: `75f2fde996ae6a0847baff5ccc215f61640d3a55be9d87f93031b09720afc467`
 - Public endpoint documentation: https://www.tryadeli.com/docs/
 
 | Resource | Method signature | HTTP | Path | Endpoint docs |
@@ -31,6 +31,7 @@ Generated from `src/operations.ts` metadata, AST-extracted resource method decla
 | posts | `deleteXPost(args: { readonly path: Path<'deleteXPost'>; readonly query: JsonQuery<'deleteXPost'> }, options: RequestOptions = {}): Promise<ApiResponse<DeletePostResponse>>` | DELETE | `/posts/x/{postId}` | [api/posts/delete-x-post](https://www.tryadeli.com/docs/api/posts/delete-x-post) |
 | posts | `deleteBlueskyPost(args: { readonly path: Path<'deleteBlueskyPost'>; readonly query: JsonQuery<'deleteBlueskyPost'> }, options: RequestOptions = {}): Promise<ApiResponse<SuccessBody<'deleteBlueskyPost'>>>` | DELETE | `/posts/bluesky/{postId}` | [api/posts/delete-bluesky-post](https://www.tryadeli.com/docs/api/posts/delete-bluesky-post) |
 | posts | `getInstagramPostStatus(args: { readonly query: JsonQuery<'getInstagramPostStatus'> }, options: RequestOptions = {}): Promise<ApiResponse<InstagramPostStatusResponse>>` | GET | `/posts/instagram/status` | [api/posts/get-instagram-publish-status](https://www.tryadeli.com/docs/api/posts/get-instagram-publish-status) |
+| posts | `listInstagramStories(args: { readonly query: ListInstagramStoriesQuery }, options: RequestOptions = {}): Promise<ApiResponse<InstagramStoriesResponse>>` | GET | `/posts/instagram/stories` | [api/posts/list-instagram-stories](https://www.tryadeli.com/docs/api/posts/list-instagram-stories) |
 | posts | `getFacebookPostStatus(args: { readonly query: JsonQuery<'getFacebookPostStatus'> }, options: RequestOptions = {}): Promise<ApiResponse<FacebookPostStatusResponse>>` | GET | `/posts/facebook/status` | [api/posts/get-facebook-video-status](https://www.tryadeli.com/docs/api/posts/get-facebook-video-status) |
 | posts | `getTikTokPostStatus(args: { readonly query: JsonQuery<'getTikTokPostStatus'> }, options: RequestOptions = {}): Promise<ApiResponse<TikTokPostStatusResponse>>` | GET | `/posts/tiktok/status` | [api/posts/get-tiktok-publish-status](https://www.tryadeli.com/docs/api/posts/get-tiktok-publish-status) |
 | posts | `getTikTokCreatorInfo(args: { readonly query: JsonQuery<'getTikTokCreatorInfo'> }, options: RequestOptions = {}): Promise<ApiResponse<TikTokCreatorInfoResponse>>` | GET | `/posts/tiktok/creator-info` | [api/posts/get-tiktok-creator-info](https://www.tryadeli.com/docs/api/posts/get-tiktok-creator-info) |
