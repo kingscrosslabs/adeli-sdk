@@ -5,7 +5,7 @@
 Generated from `src/operations.ts` metadata, AST-extracted resource method declarations, and the checked-in verified public docs mapping `openapi/docs-links.json`; this file is not hand-maintained.
 
 - Contract status: **candidate-unreleased**
-- Candidate OpenAPI SHA-256: `75f2fde996ae6a0847baff5ccc215f61640d3a55be9d87f93031b09720afc467`
+- Candidate OpenAPI SHA-256: `39ba6edb4cd0cdad5ce8beb3f7bdc77177f036483eeb02109d41b0b887d5dede`
 - Public endpoint documentation: https://www.tryadeli.com/docs/
 
 | Resource | Method signature | HTTP | Path | Endpoint docs |
@@ -75,6 +75,11 @@ Generated from `src/operations.ts` metadata, AST-extracted resource method decla
 | ads | `listAdTargeting(args: { readonly query: AdTargetingQuery }, options: RequestOptions = {}): Promise<ApiResponse<AdTargetingResponse>>` | GET | `/ads/targeting` | [api/ads/list-targeting](https://www.tryadeli.com/docs/api/ads/list-targeting) |
 | ads | `listAdIdentities(args: { readonly query: AdIdentitiesQuery }, options: RequestOptions = {}): Promise<ApiResponse<AdIdentitiesResponse>>` | GET | `/ads/identities` | [api/ads/list-identities](https://www.tryadeli.com/docs/api/ads/list-identities) |
 | ads | `createAdIdentity(args: { readonly query?: CreateAdIdentityQuery; readonly body: CreateAdIdentityBody }, options: RequestOptions = {}): Promise<ApiResponse<AdIdentityResponse>>` | POST | `/ads/identities` | [api/ads/create-identity](https://www.tryadeli.com/docs/api/ads/create-identity) |
+| ads | `updateCampaign(args: { readonly path: UpdateCampaignPath; readonly query?: UpdateCampaignQuery; readonly body: UpdateCampaignBody }, options: RequestOptions = {}): Promise<ApiResponse<UpdateCampaignResponse>>` | PATCH | `/ads/campaigns/{campaignId}` | [api/ads/update-campaign](https://www.tryadeli.com/docs/api/ads/update-campaign) |
+| ads | `deleteAdGroup(args: { readonly path: DeleteAdGroupPath; readonly query: DeleteAdGroupQuery }, options: RequestOptions = {}): Promise<ApiResponse<undefined>>` | DELETE | `/ads/ad-groups/{adGroupId}` | [api/ads/delete-ad-group](https://www.tryadeli.com/docs/api/ads/delete-ad-group) |
+| ads | `deleteAd(args: { readonly path: DeleteAdPath; readonly query: DeleteAdQuery }, options: RequestOptions = {}): Promise<ApiResponse<undefined>>` | DELETE | `/ads/ads/{adId}` | [api/ads/delete-ad](https://www.tryadeli.com/docs/api/ads/delete-ad) |
+| ads | `estimateAdReach(args: { readonly query?: EstimateAdReachQuery; readonly body: EstimateAdReachBody }, options: RequestOptions = {}): Promise<ApiResponse<AdReachEstimateResponse>>` | POST | `/ads/reach-estimate` | [api/ads/estimate-reach](https://www.tryadeli.com/docs/api/ads/estimate-reach) |
+| ads | `listAdInstagramAccounts(args: { readonly query: AdInstagramAccountsQuery }, options: RequestOptions = {}): Promise<ApiResponse<AdInstagramAccountsResponse>>` | GET | `/ads/instagram-accounts` | [api/ads/list-instagram-accounts](https://www.tryadeli.com/docs/api/ads/list-instagram-accounts) |
 | usage | `getUsage(_args: Record<never, never> = {}, options: RequestOptions = {}): Promise<ApiResponse<UsageResponse>>` | GET | `/usage` | [api/usage/get-usage](https://www.tryadeli.com/docs/api/usage/get-usage) |
 | usage | `getXUsage(_args: Record<never, never> = {}, options: RequestOptions = {}): Promise<ApiResponse<XUsageResponse>>` | GET | `/usage/x` | [pricing/x](https://www.tryadeli.com/docs/pricing/x) |
 | webhooks | `listWebhooks(args: { readonly query: ListWebhooksQuery }, options: RequestOptions = {}): Promise<ApiResponse<WebhooksResponse>>` | GET | `/webhooks` | [api/webhooks/list-webhooks](https://www.tryadeli.com/docs/api/webhooks/list-webhooks) |

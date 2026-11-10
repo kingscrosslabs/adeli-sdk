@@ -887,7 +887,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Ad performance insights */
+        /**
+         * Ad performance insights
+         * @description A daily series (`points`), or with `breakdown` totals split by one dimension (`rows`). Meta points and rows also carry reach, CTR, CPC, CPM, every action and its value (`actions`, `actionValues`, `costPerAction`), `conversionValue`, `roas`, and `results`/`costPerResult` for conversions or the `resultActionType` asked for.
+         */
         get: operations["getAdInsights"];
         put?: never;
         post?: never;
@@ -928,7 +931,7 @@ export interface paths {
         put?: never;
         /**
          * Create a paused campaign
-         * @description Meta boosts a Page post; TikTok creates a campaign, ad group and video ad; LinkedIn sponsors a post by the ad account's Page as a campaign group, campaign and creative, all drafts. Everything is created paused or as a draft: nothing spends until setAdStatus activates it.
+         * @description Meta: a body with `objective` builds a full campaign — objective, daily or lifetime budget, schedule, bid strategy, targeting and a new image, video or carousel creative, or a boosted Page or Instagram post — optionally inside an existing campaign or ad set; `validateOnly: true` checks it with Meta, creates nothing and answers 200 with the steps checked. A body without `objective` boosts a Page post. TikTok creates a campaign, ad group and video ad; LinkedIn sponsors a post by the ad account's Page as a campaign group, campaign and creative, all drafts. Everything is created paused or as a draft: nothing spends until setAdStatus activates it.
          */
         post: operations["createCampaign"];
         delete?: never;
@@ -949,6 +952,94 @@ export interface paths {
         post?: never;
         /** Delete a campaign */
         delete: operations["deleteCampaign"];
+        options?: never;
+        head?: never;
+        /**
+         * Change a Meta campaign's name, budget, bid strategy or spend cap
+         * @description Meta only. A budget or bid strategy applies to Advantage campaign budget (CBO) campaigns; one that budgets per ad set returns 400, so change it on the ad set. `spendCap: null` removes the cap.
+         */
+        patch: operations["updateCampaign"];
+        trace?: never;
+    };
+    "/api/v1/ads/ad-groups/{adGroupId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete a Meta ad set
+         * @description Meta only. Deletes the ad set and its ads; irreversible.
+         */
+        delete: operations["deleteAdGroup"];
+        options?: never;
+        head?: never;
+        /**
+         * Change an ad set (TikTok ad group, LinkedIn campaign)
+         * @description Meta: name, daily or lifetime budget (the type it already has), bid, start and end dates, and targeting (which replaces the whole spec). TikTok and LinkedIn: daily budget, end date or name.
+         */
+        patch: operations["updateAdGroup"];
+        trace?: never;
+    };
+    "/api/v1/ads/ads/{adId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete a Meta ad
+         * @description Meta only. Irreversible; the ad set and campaign stay.
+         */
+        delete: operations["deleteAd"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ads/reach-estimate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Estimate a Meta audience's size
+         * @description Meta only. A read: creates nothing. Bounds are null when Meta cannot estimate, as for some custom audiences.
+         */
+        post: operations["estimateAdReach"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ads/instagram-accounts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the Instagram accounts a Meta ad account can run ads as
+         * @description Meta only. Pass an `id` as `instagramAccountId` when creating a campaign.
+         */
+        get: operations["listAdInstagramAccounts"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -974,26 +1065,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/ads/ad-groups/{adGroupId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /**
-         * Change a TikTok ad group's or LinkedIn campaign's budget, end date or name
-         * @description TikTok and LinkedIn; Meta returns 400 unsupported_for_platform.
-         */
-        patch: operations["updateAdGroup"];
-        trace?: never;
-    };
     "/api/v1/ads/targeting": {
         parameters: {
             query?: never;
@@ -1002,8 +1073,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * TikTok and LinkedIn targeting options
-         * @description TikTok: regions, languages, interests. LinkedIn: locations, job_functions, seniorities, industries, company_sizes, each option's `id` being the URN a campaign targets.
+         * Search or list targeting options
+         * @description Meta: interests, behaviors, demographics, locations and languages, each option's `id` being what a campaign's targeting takes (a location's key, a language's locale id; demographics also need `type`). TikTok: regions, languages, interests. LinkedIn: locations, job_functions, seniorities, industries, company_sizes, each option's `id` being the URN a campaign targets.
          */
         get: operations["listAdTargeting"];
         put?: never;
@@ -9545,8 +9616,12 @@ export interface operations {
                 objectId?: string;
                 /** @description TikTok and LinkedIn: the level of `objectId`. Defaults to campaign (a LinkedIn campaign group). */
                 level?: "campaign" | "ad_group" | "ad";
-                /** @description TikTok (age, gender, country_code, platform) or LinkedIn (job_function, seniority, industry, company_size, country_code): return an audience breakdown (`rows`) instead of the daily series (`points`). LinkedIn rows carry a `label` and the response `delayed: true`. */
-                breakdown?: ("age" | "gender" | "country_code" | "platform") | ("job_function" | "seniority" | "industry" | "company_size" | "country_code");
+                /** @description Meta (age, gender, country, region, publisher_platform, platform_position, device_platform), TikTok (age, gender, country_code, platform) or LinkedIn (job_function, seniority, industry, company_size, country_code): return a breakdown (`rows`) instead of the daily series (`points`). Meta platform_position rows are labelled `platform:position`. LinkedIn rows carry a `label` and the response `delayed: true`. */
+                breakdown?: ("age" | "gender" | "country" | "region" | "publisher_platform" | "platform_position" | "device_platform") | ("age" | "gender" | "country_code" | "platform") | ("job_function" | "seniority" | "industry" | "company_size" | "country_code");
+                /** @description Meta: comma-separated attribution windows, from 1d_click, 7d_click, 28d_click, 1d_view, 1d_ev. The ad account's default when omitted. */
+                attributionWindows?: string;
+                /** @description Meta: the action type counted as a result for `results` and `costPerResult`, such as link_click or offsite_conversion.fb_pixel_purchase. Conversions when omitted. */
+                resultActionType?: string;
                 since?: string;
                 until?: string;
             };
@@ -9563,6 +9638,94 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
+                        /** @constant */
+                        platform: "meta_ads";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        adAccountId: string;
+                        objectId: string;
+                        points: {
+                            date: string;
+                            spend: number;
+                            impressions: number;
+                            clicks: number;
+                            conversions: number | null;
+                            reach: number;
+                            ctr: number | null;
+                            cpc: number | null;
+                            cpm: number | null;
+                            actions: {
+                                type: string;
+                                value: number;
+                            }[];
+                            actionValues: {
+                                type: string;
+                                value: number;
+                            }[];
+                            costPerAction: {
+                                type: string;
+                                value: number;
+                            }[];
+                            conversionValue: number | null;
+                            roas: number | null;
+                            results: number | null;
+                            costPerResult: number | null;
+                        }[];
+                        attributionWindows?: ("1d_click" | "7d_click" | "28d_click" | "1d_view" | "1d_ev")[];
+                        range: {
+                            since: string;
+                            until: string;
+                        };
+                        /** Format: date-time */
+                        fetchedAt: string;
+                    } | {
+                        /** @constant */
+                        platform: "meta_ads";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        adAccountId: string;
+                        objectId: string;
+                        /** @enum {string} */
+                        breakdown: "age" | "gender" | "country" | "region" | "publisher_platform" | "platform_position" | "device_platform";
+                        rows: {
+                            value: string;
+                            spend: number;
+                            impressions: number;
+                            clicks: number;
+                            conversions: number | null;
+                            reach: number;
+                            ctr: number | null;
+                            cpc: number | null;
+                            cpm: number | null;
+                            actions: {
+                                type: string;
+                                value: number;
+                            }[];
+                            actionValues: {
+                                type: string;
+                                value: number;
+                            }[];
+                            costPerAction: {
+                                type: string;
+                                value: number;
+                            }[];
+                            conversionValue: number | null;
+                            roas: number | null;
+                            results: number | null;
+                            costPerResult: number | null;
+                        }[];
+                        attributionWindows?: ("1d_click" | "7d_click" | "28d_click" | "1d_view" | "1d_ev")[];
+                        range: {
+                            since: string;
+                            until: string;
+                        };
+                        /** Format: date-time */
+                        fetchedAt: string;
+                    } | {
                         /** @enum {string} */
                         platform: "meta_ads" | "tiktok_ads" | "linkedin_ads";
                         /** Format: uuid */
@@ -9871,6 +10034,183 @@ export interface operations {
             content: {
                 "application/json": {
                     adAccountId: string;
+                    /** @enum {string} */
+                    objective: "traffic" | "engagement" | "awareness" | "video_views" | "lead_generation" | "conversions" | "app_promotion";
+                    campaignName: string;
+                    adName?: string;
+                    campaignId?: string;
+                    adSetId?: string;
+                    budget?: {
+                        /** @enum {string} */
+                        type: "daily" | "lifetime";
+                        amount: number;
+                    };
+                    /**
+                     * @default ad_set
+                     * @enum {string}
+                     */
+                    budgetLevel?: "ad_set" | "campaign";
+                    startDate?: string;
+                    endDate?: string;
+                    bid?: {
+                        /** @enum {string} */
+                        strategy: "lowest_cost" | "bid_cap" | "cost_cap" | "min_roas";
+                        amount?: number;
+                        roasFloor?: number;
+                    };
+                    targeting?: {
+                        ageMin?: number;
+                        ageMax?: number;
+                        /**
+                         * @default all
+                         * @enum {string}
+                         */
+                        gender?: "all" | "male" | "female";
+                        locations: {
+                            countries?: string[];
+                            regions?: {
+                                key: string;
+                            }[];
+                            cities?: {
+                                key: string;
+                                radius?: number;
+                                /** @enum {string} */
+                                distanceUnit?: "mile" | "kilometer";
+                            }[];
+                            zips?: {
+                                key: string;
+                            }[];
+                        };
+                        excludedLocations?: {
+                            countries?: string[];
+                            regions?: {
+                                key: string;
+                            }[];
+                            cities?: {
+                                key: string;
+                                radius?: number;
+                                /** @enum {string} */
+                                distanceUnit?: "mile" | "kilometer";
+                            }[];
+                            zips?: {
+                                key: string;
+                            }[];
+                        };
+                        interests?: {
+                            id: string;
+                            name?: string;
+                        }[];
+                        behaviors?: {
+                            id: string;
+                            name?: string;
+                        }[];
+                        demographics?: {
+                            id: string;
+                            name?: string;
+                            /** @enum {string} */
+                            type: "life_events" | "family_statuses" | "industries" | "income" | "education_statuses" | "relationship_statuses" | "work_positions" | "work_employers" | "education_schools" | "education_majors" | "user_adclusters";
+                        }[];
+                        languages?: number[];
+                        customAudiences?: string[];
+                        excludedCustomAudiences?: string[];
+                        /** @default automatic */
+                        placements?: "automatic" | {
+                            publisherPlatforms: ("facebook" | "instagram" | "audience_network" | "messenger" | "threads")[];
+                            facebookPositions?: ("feed" | "right_hand_column" | "marketplace" | "video_feeds" | "story" | "search" | "instream_video" | "facebook_reels" | "facebook_reels_overlay" | "profile_feed" | "notification")[];
+                            instagramPositions?: ("stream" | "story" | "explore" | "explore_home" | "reels" | "profile_feed" | "ig_search" | "profile_reels")[];
+                            audienceNetworkPositions?: ("classic" | "rewarded_video")[];
+                            messengerPositions?: ("messenger_home" | "sponsored_messages" | "story")[];
+                            devicePlatforms?: ("mobile" | "desktop")[];
+                        };
+                        /** @default false */
+                        advantageAudience?: boolean;
+                    };
+                    creative: {
+                        /** @constant */
+                        type: "page_post";
+                        pagePostId: string;
+                    } | {
+                        /** @constant */
+                        type: "instagram_post";
+                        instagramMediaId: string;
+                    } | {
+                        /** @constant */
+                        type: "image";
+                        image: {
+                            uploadId: string;
+                        } | {
+                            /** Format: uri */
+                            url: string;
+                        };
+                        headline?: string;
+                        body?: string;
+                        description?: string;
+                        /** @enum {string} */
+                        callToAction?: "LEARN_MORE" | "SHOP_NOW" | "SIGN_UP" | "BOOK_NOW" | "CONTACT_US" | "DOWNLOAD" | "GET_OFFER" | "GET_QUOTE" | "SUBSCRIBE" | "WATCH_MORE" | "APPLY_NOW" | "ORDER_NOW" | "BUY_NOW" | "INSTALL_MOBILE_APP" | "USE_APP" | "DONATE_NOW" | "GET_DIRECTIONS" | "SEE_MENU" | "PLAY_GAME" | "LISTEN_NOW" | "NO_BUTTON";
+                        /** Format: uri */
+                        linkUrl?: string;
+                    } | {
+                        /** @constant */
+                        type: "video";
+                        video: ({
+                            uploadId: string;
+                        } | {
+                            /** Format: uri */
+                            url: string;
+                        }) | {
+                            videoId: string;
+                        };
+                        thumbnail?: {
+                            uploadId: string;
+                        } | {
+                            /** Format: uri */
+                            url: string;
+                        };
+                        headline?: string;
+                        body?: string;
+                        description?: string;
+                        /** @enum {string} */
+                        callToAction?: "LEARN_MORE" | "SHOP_NOW" | "SIGN_UP" | "BOOK_NOW" | "CONTACT_US" | "DOWNLOAD" | "GET_OFFER" | "GET_QUOTE" | "SUBSCRIBE" | "WATCH_MORE" | "APPLY_NOW" | "ORDER_NOW" | "BUY_NOW" | "INSTALL_MOBILE_APP" | "USE_APP" | "DONATE_NOW" | "GET_DIRECTIONS" | "SEE_MENU" | "PLAY_GAME" | "LISTEN_NOW" | "NO_BUTTON";
+                        /** Format: uri */
+                        linkUrl?: string;
+                    } | {
+                        /** @constant */
+                        type: "carousel";
+                        body?: string;
+                        /** Format: uri */
+                        linkUrl?: string;
+                        /** @enum {string} */
+                        callToAction?: "LEARN_MORE" | "SHOP_NOW" | "SIGN_UP" | "BOOK_NOW" | "CONTACT_US" | "DOWNLOAD" | "GET_OFFER" | "GET_QUOTE" | "SUBSCRIBE" | "WATCH_MORE" | "APPLY_NOW" | "ORDER_NOW" | "BUY_NOW" | "INSTALL_MOBILE_APP" | "USE_APP" | "DONATE_NOW" | "GET_DIRECTIONS" | "SEE_MENU" | "PLAY_GAME" | "LISTEN_NOW" | "NO_BUTTON";
+                        cards: {
+                            image: {
+                                uploadId: string;
+                            } | {
+                                /** Format: uri */
+                                url: string;
+                            };
+                            headline?: string;
+                            description?: string;
+                            /** Format: uri */
+                            linkUrl?: string;
+                            /** @enum {string} */
+                            callToAction?: "LEARN_MORE" | "SHOP_NOW" | "SIGN_UP" | "BOOK_NOW" | "CONTACT_US" | "DOWNLOAD" | "GET_OFFER" | "GET_QUOTE" | "SUBSCRIBE" | "WATCH_MORE" | "APPLY_NOW" | "ORDER_NOW" | "BUY_NOW" | "INSTALL_MOBILE_APP" | "USE_APP" | "DONATE_NOW" | "GET_DIRECTIONS" | "SEE_MENU" | "PLAY_GAME" | "LISTEN_NOW" | "NO_BUTTON";
+                        }[];
+                    };
+                    instagramAccountId?: string;
+                    pixelId?: string;
+                    /** @enum {string} */
+                    conversionEvent?: "PURCHASE" | "LEAD" | "COMPLETE_REGISTRATION" | "ADD_TO_CART" | "INITIATED_CHECKOUT" | "ADD_PAYMENT_INFO" | "ADD_TO_WISHLIST" | "SUBSCRIBE" | "START_TRIAL" | "CONTACT" | "SCHEDULE" | "SUBMIT_APPLICATION" | "SEARCH" | "VIEW_CONTENT" | "DONATE" | "FIND_LOCATION" | "CUSTOMIZE_PRODUCT" | "OTHER";
+                    leadFormId?: string;
+                    applicationId?: string;
+                    /** Format: uri */
+                    appStoreUrl?: string;
+                    /** @default [] */
+                    specialAdCategories?: ("HOUSING" | "EMPLOYMENT" | "CREDIT" | "FINANCIAL_PRODUCTS_SERVICES")[];
+                    specialAdCategoryCountries?: string[];
+                    /** @default false */
+                    validateOnly?: boolean;
+                } | {
+                    adAccountId: string;
                     pagePostId: string;
                     dailyBudget: number;
                     startDate: string;
@@ -9953,7 +10293,13 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
+                    "application/json": ({
+                        /** @constant */
+                        platform?: "meta_ads";
+                        /** Format: uuid */
+                        accountId?: string;
+                        /** Format: uuid */
+                        profileId?: string;
                         campaign: {
                             /** Format: uuid */
                             id: string;
@@ -9963,7 +10309,10 @@ export interface operations {
                             metaAdsConnectionId: string | null;
                             adAccountId: string;
                             pageId: string;
-                            pagePostId: string;
+                            pagePostId: string | null;
+                            /** @enum {string} */
+                            source: "page_post" | "instagram_post" | "image" | "video" | "carousel";
+                            objective: string | null;
                             idempotencyKey: string;
                             campaignId: string | null;
                             adSetId: string | null;
@@ -9982,6 +10331,11 @@ export interface operations {
                             adSetId: string;
                             creativeId: string;
                             adId: string;
+                        };
+                        videoId?: string | null;
+                        reused?: {
+                            campaign: boolean;
+                            adSet: boolean;
                         };
                         preview: {
                             format: string;
@@ -10056,6 +10410,22 @@ export interface operations {
                             adId: string;
                         };
                         replayed: boolean;
+                    }) | {
+                        /** @enum {string} */
+                        platform: "meta_ads" | "tiktok_ads" | "linkedin_ads";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        /** @constant */
+                        validateOnly: true;
+                        steps: {
+                            /** @enum {string} */
+                            step: "campaign" | "ad set" | "video" | "creative" | "ad";
+                            /** @enum {string} */
+                            result: "valid" | "skipped";
+                            reason?: string;
+                        }[];
                     };
                 };
             };
@@ -10066,6 +10436,12 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
+                        /** @constant */
+                        platform?: "meta_ads";
+                        /** Format: uuid */
+                        accountId?: string;
+                        /** Format: uuid */
+                        profileId?: string;
                         campaign: {
                             /** Format: uuid */
                             id: string;
@@ -10075,7 +10451,10 @@ export interface operations {
                             metaAdsConnectionId: string | null;
                             adAccountId: string;
                             pageId: string;
-                            pagePostId: string;
+                            pagePostId: string | null;
+                            /** @enum {string} */
+                            source: "page_post" | "instagram_post" | "image" | "video" | "carousel";
+                            objective: string | null;
                             idempotencyKey: string;
                             campaignId: string | null;
                             adSetId: string | null;
@@ -10094,6 +10473,11 @@ export interface operations {
                             adSetId: string;
                             creativeId: string;
                             adId: string;
+                        };
+                        videoId?: string | null;
+                        reused?: {
+                            campaign: boolean;
+                            adSet: boolean;
                         };
                         preview: {
                             format: string;
@@ -10346,6 +10730,850 @@ export interface operations {
             };
         };
     };
+    updateCampaign: {
+        parameters: {
+            query?: {
+                /** @description The Meta Ads (`meta_ads`), TikTok Ads (`tiktok_ads`) or LinkedIn Ads (`linkedin_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages, organic TikTok or organic LinkedIn account id is not accepted. */
+                accountId?: string;
+                /** @description The profile whose ads account to use, when no `accountId` is given. */
+                profileId?: string;
+                /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
+                platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
+            };
+            header?: never;
+            path: {
+                /** @description Meta or TikTok campaign id, or LinkedIn campaign group id. */
+                campaignId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    adAccountId: string;
+                    name?: string;
+                    budget?: {
+                        /** @enum {string} */
+                        type: "daily" | "lifetime";
+                        amount: number;
+                    };
+                    /** @enum {string} */
+                    bidStrategy?: "lowest_cost" | "bid_cap" | "cost_cap" | "min_roas";
+                    spendCap?: number | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        platform: "meta_ads";
+                        /** Format: uuid */
+                        accountId: string;
+                        adAccountId: string;
+                        campaign: {
+                            campaignId: string;
+                            updated: string[];
+                        };
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connection lacks a permission or provider-confirmed resource */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PermissionRequiredError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The request conflicts with existing state */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connected account cannot perform this operation */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Provider quota or rate limit exhausted */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    deleteAdGroup: {
+        parameters: {
+            query: {
+                /** @description The Meta Ads (`meta_ads`), TikTok Ads (`tiktok_ads`) or LinkedIn Ads (`linkedin_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages, organic TikTok or organic LinkedIn account id is not accepted. */
+                accountId?: string;
+                /** @description The profile whose ads account to use, when no `accountId` is given. */
+                profileId?: string;
+                /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
+                platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
+                adAccountId: string;
+            };
+            header?: never;
+            path: {
+                /** @description Meta ad set id, TikTok ad group id, or LinkedIn campaign id. */
+                adGroupId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connection lacks a permission or provider-confirmed resource */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PermissionRequiredError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The request conflicts with existing state */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connected account cannot perform this operation */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Provider quota or rate limit exhausted */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    updateAdGroup: {
+        parameters: {
+            query?: {
+                /** @description The Meta Ads (`meta_ads`), TikTok Ads (`tiktok_ads`) or LinkedIn Ads (`linkedin_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages, organic TikTok or organic LinkedIn account id is not accepted. */
+                accountId?: string;
+                /** @description The profile whose ads account to use, when no `accountId` is given. */
+                profileId?: string;
+                /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
+                platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
+            };
+            header?: never;
+            path: {
+                /** @description Meta ad set id, TikTok ad group id, or LinkedIn campaign id. */
+                adGroupId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    adAccountId: string;
+                    name?: string;
+                    budget?: {
+                        /** @enum {string} */
+                        type: "daily" | "lifetime";
+                        amount: number;
+                    };
+                    bid?: {
+                        /** @enum {string} */
+                        strategy: "lowest_cost" | "bid_cap" | "cost_cap" | "min_roas";
+                        amount?: number;
+                        roasFloor?: number;
+                    };
+                    startDate?: string;
+                    endDate?: string;
+                    targeting?: {
+                        ageMin?: number;
+                        ageMax?: number;
+                        /**
+                         * @default all
+                         * @enum {string}
+                         */
+                        gender?: "all" | "male" | "female";
+                        locations: {
+                            countries?: string[];
+                            regions?: {
+                                key: string;
+                            }[];
+                            cities?: {
+                                key: string;
+                                radius?: number;
+                                /** @enum {string} */
+                                distanceUnit?: "mile" | "kilometer";
+                            }[];
+                            zips?: {
+                                key: string;
+                            }[];
+                        };
+                        excludedLocations?: {
+                            countries?: string[];
+                            regions?: {
+                                key: string;
+                            }[];
+                            cities?: {
+                                key: string;
+                                radius?: number;
+                                /** @enum {string} */
+                                distanceUnit?: "mile" | "kilometer";
+                            }[];
+                            zips?: {
+                                key: string;
+                            }[];
+                        };
+                        interests?: {
+                            id: string;
+                            name?: string;
+                        }[];
+                        behaviors?: {
+                            id: string;
+                            name?: string;
+                        }[];
+                        demographics?: {
+                            id: string;
+                            name?: string;
+                            /** @enum {string} */
+                            type: "life_events" | "family_statuses" | "industries" | "income" | "education_statuses" | "relationship_statuses" | "work_positions" | "work_employers" | "education_schools" | "education_majors" | "user_adclusters";
+                        }[];
+                        languages?: number[];
+                        customAudiences?: string[];
+                        excludedCustomAudiences?: string[];
+                        /** @default automatic */
+                        placements?: "automatic" | {
+                            publisherPlatforms: ("facebook" | "instagram" | "audience_network" | "messenger" | "threads")[];
+                            facebookPositions?: ("feed" | "right_hand_column" | "marketplace" | "video_feeds" | "story" | "search" | "instream_video" | "facebook_reels" | "facebook_reels_overlay" | "profile_feed" | "notification")[];
+                            instagramPositions?: ("stream" | "story" | "explore" | "explore_home" | "reels" | "profile_feed" | "ig_search" | "profile_reels")[];
+                            audienceNetworkPositions?: ("classic" | "rewarded_video")[];
+                            messengerPositions?: ("messenger_home" | "sponsored_messages" | "story")[];
+                            devicePlatforms?: ("mobile" | "desktop")[];
+                        };
+                        /** @default false */
+                        advantageAudience?: boolean;
+                    };
+                } | {
+                    adAccountId: string;
+                    name?: string;
+                    dailyBudget?: number;
+                    endDate?: string;
+                } | {
+                    adAccountId: string;
+                    name?: string;
+                    dailyBudget?: number;
+                    endDate?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        platform: "tiktok_ads" | "linkedin_ads";
+                        /** Format: uuid */
+                        accountId: string;
+                        adAccountId: string;
+                        adGroup: {
+                            adGroupId: string;
+                            name?: string;
+                            dailyBudget?: number;
+                            endDate?: string;
+                        };
+                    } | {
+                        /** @constant */
+                        platform: "meta_ads";
+                        /** Format: uuid */
+                        accountId: string;
+                        adAccountId: string;
+                        adGroup: {
+                            adSetId: string;
+                            updated: string[];
+                        };
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connection lacks a permission or provider-confirmed resource */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PermissionRequiredError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The request conflicts with existing state */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connected account cannot perform this operation */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Provider quota or rate limit exhausted */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    deleteAd: {
+        parameters: {
+            query: {
+                /** @description The Meta Ads (`meta_ads`), TikTok Ads (`tiktok_ads`) or LinkedIn Ads (`linkedin_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages, organic TikTok or organic LinkedIn account id is not accepted. */
+                accountId?: string;
+                /** @description The profile whose ads account to use, when no `accountId` is given. */
+                profileId?: string;
+                /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
+                platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
+                adAccountId: string;
+            };
+            header?: never;
+            path: {
+                /** @description Meta ad id. */
+                adId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connection lacks a permission or provider-confirmed resource */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PermissionRequiredError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The request conflicts with existing state */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connected account cannot perform this operation */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Provider quota or rate limit exhausted */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    estimateAdReach: {
+        parameters: {
+            query?: {
+                /** @description The Meta Ads (`meta_ads`), TikTok Ads (`tiktok_ads`) or LinkedIn Ads (`linkedin_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages, organic TikTok or organic LinkedIn account id is not accepted. */
+                accountId?: string;
+                /** @description The profile whose ads account to use, when no `accountId` is given. */
+                profileId?: string;
+                /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
+                platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    adAccountId: string;
+                    targeting: {
+                        ageMin?: number;
+                        ageMax?: number;
+                        /**
+                         * @default all
+                         * @enum {string}
+                         */
+                        gender?: "all" | "male" | "female";
+                        locations: {
+                            countries?: string[];
+                            regions?: {
+                                key: string;
+                            }[];
+                            cities?: {
+                                key: string;
+                                radius?: number;
+                                /** @enum {string} */
+                                distanceUnit?: "mile" | "kilometer";
+                            }[];
+                            zips?: {
+                                key: string;
+                            }[];
+                        };
+                        excludedLocations?: {
+                            countries?: string[];
+                            regions?: {
+                                key: string;
+                            }[];
+                            cities?: {
+                                key: string;
+                                radius?: number;
+                                /** @enum {string} */
+                                distanceUnit?: "mile" | "kilometer";
+                            }[];
+                            zips?: {
+                                key: string;
+                            }[];
+                        };
+                        interests?: {
+                            id: string;
+                            name?: string;
+                        }[];
+                        behaviors?: {
+                            id: string;
+                            name?: string;
+                        }[];
+                        demographics?: {
+                            id: string;
+                            name?: string;
+                            /** @enum {string} */
+                            type: "life_events" | "family_statuses" | "industries" | "income" | "education_statuses" | "relationship_statuses" | "work_positions" | "work_employers" | "education_schools" | "education_majors" | "user_adclusters";
+                        }[];
+                        languages?: number[];
+                        customAudiences?: string[];
+                        excludedCustomAudiences?: string[];
+                        /** @default automatic */
+                        placements?: "automatic" | {
+                            publisherPlatforms: ("facebook" | "instagram" | "audience_network" | "messenger" | "threads")[];
+                            facebookPositions?: ("feed" | "right_hand_column" | "marketplace" | "video_feeds" | "story" | "search" | "instream_video" | "facebook_reels" | "facebook_reels_overlay" | "profile_feed" | "notification")[];
+                            instagramPositions?: ("stream" | "story" | "explore" | "explore_home" | "reels" | "profile_feed" | "ig_search" | "profile_reels")[];
+                            audienceNetworkPositions?: ("classic" | "rewarded_video")[];
+                            messengerPositions?: ("messenger_home" | "sponsored_messages" | "story")[];
+                            devicePlatforms?: ("mobile" | "desktop")[];
+                        };
+                        /** @default false */
+                        advantageAudience?: boolean;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        platform: "meta_ads";
+                        /** Format: uuid */
+                        accountId: string;
+                        adAccountId: string;
+                        estimate: {
+                            lower: number | null;
+                            upper: number | null;
+                            ready: boolean;
+                        };
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connection lacks a permission or provider-confirmed resource */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PermissionRequiredError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The request conflicts with existing state */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connected account cannot perform this operation */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Provider quota or rate limit exhausted */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    listAdInstagramAccounts: {
+        parameters: {
+            query: {
+                /** @description The Meta Ads (`meta_ads`), TikTok Ads (`tiktok_ads`) or LinkedIn Ads (`linkedin_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages, organic TikTok or organic LinkedIn account id is not accepted. */
+                accountId?: string;
+                /** @description The profile whose ads account to use, when no `accountId` is given. */
+                profileId?: string;
+                /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
+                platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
+                adAccountId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        platform: "meta_ads";
+                        /** Format: uuid */
+                        accountId: string;
+                        adAccountId: string;
+                        instagramAccounts: {
+                            id: string;
+                            username: string | null;
+                            avatarUrl: string | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connection lacks a permission or provider-confirmed resource */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PermissionRequiredError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The request conflicts with existing state */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connected account cannot perform this operation */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Provider quota or rate limit exhausted */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
     setAdStatus: {
         parameters: {
             query?: {
@@ -10485,134 +11713,6 @@ export interface operations {
             };
         };
     };
-    updateAdGroup: {
-        parameters: {
-            query?: {
-                /** @description The Meta Ads (`meta_ads`), TikTok Ads (`tiktok_ads`) or LinkedIn Ads (`linkedin_ads`) account. It names its profile and network, so `profileId` and `platform` can be left out. A Facebook Pages, organic TikTok or organic LinkedIn account id is not accepted. */
-                accountId?: string;
-                /** @description The profile whose ads account to use, when no `accountId` is given. */
-                profileId?: string;
-                /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
-                platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
-            };
-            header?: never;
-            path: {
-                /** @description TikTok ad group id, or LinkedIn campaign id. */
-                adGroupId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    adAccountId: string;
-                    name?: string;
-                    dailyBudget?: number;
-                    endDate?: string;
-                } | {
-                    adAccountId: string;
-                    name?: string;
-                    dailyBudget?: number;
-                    endDate?: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Success */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @enum {string} */
-                        platform: "tiktok_ads" | "linkedin_ads";
-                        /** Format: uuid */
-                        accountId: string;
-                        adAccountId: string;
-                        adGroup: {
-                            adGroupId: string;
-                            name?: string;
-                            dailyBudget?: number;
-                            endDate?: string;
-                        };
-                    };
-                };
-            };
-            /** @description Invalid request or provider failure */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Missing or invalid API key */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description The connection lacks a permission or provider-confirmed resource */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PermissionRequiredError"];
-                };
-            };
-            /** @description Profile, account, or object not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description The request conflicts with existing state */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description The connected account cannot perform this operation */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Provider quota or rate limit exhausted */
-            429: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Invalid request or provider failure */
-            502: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
     listAdTargeting: {
         parameters: {
             query: {
@@ -10623,11 +11723,15 @@ export interface operations {
                 /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
                 platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
                 adAccountId: string;
-                type: ("regions" | "languages" | "interests") | ("locations" | "job_functions" | "seniorities" | "industries" | "company_sizes");
+                type: ("interests" | "behaviors" | "demographics" | "locations" | "languages") | ("regions" | "languages" | "interests") | ("locations" | "job_functions" | "seniorities" | "industries" | "company_sizes");
                 /** @description TikTok: region availability depends on the campaign goal. Defaults to traffic. */
                 goal?: "traffic" | "reach" | "video_views";
-                /** @description LinkedIn: search locations or industries by name. */
+                /** @description Meta: search by name (required for interests and locations; filters behaviors, demographics and languages). LinkedIn: search locations or industries by name. */
                 q?: string;
+                /** @description Meta locations: comma-separated, from country, region, city, zip. All four when omitted. */
+                locationTypes?: string;
+                /** @description Meta locations: limit to one country. */
+                countryCode?: string;
             };
             header?: never;
             path?: never;
@@ -10654,6 +11758,25 @@ export interface operations {
                             name: string;
                             parentId: string | null;
                             level: string | null;
+                        }[];
+                    } | {
+                        /** @constant */
+                        platform: "meta_ads";
+                        /** Format: uuid */
+                        accountId: string;
+                        adAccountId: string;
+                        /** @enum {string} */
+                        type: "interests" | "behaviors" | "demographics" | "locations" | "languages";
+                        options: {
+                            id: string;
+                            name: string;
+                            type: string | null;
+                            locationType?: string | null;
+                            countryCode?: string | null;
+                            region?: string | null;
+                            audienceSizeLower?: number | null;
+                            audienceSizeUpper?: number | null;
+                            path?: string[];
                         }[];
                     };
                 };

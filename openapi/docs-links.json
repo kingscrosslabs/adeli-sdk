@@ -78,6 +78,11 @@
     "listAdTargeting": [{"method":"GET","path":"/api/v1/ads/targeting","href":"/docs/api/ads/list-targeting"}],
     "listAdIdentities": [{"method":"GET","path":"/api/v1/ads/identities","href":"/docs/api/ads/list-identities"}],
     "createAdIdentity": [{"method":"POST","path":"/api/v1/ads/identities","href":"/docs/api/ads/create-identity"}],
+    "updateCampaign": [{"method":"PATCH","path":"/api/v1/ads/campaigns/{campaignId}","href":"/docs/api/ads/update-campaign"}],
+    "deleteAdGroup": [{"method":"DELETE","path":"/api/v1/ads/ad-groups/{adGroupId}","href":"/docs/api/ads/delete-ad-group"}],
+    "deleteAd": [{"method":"DELETE","path":"/api/v1/ads/ads/{adId}","href":"/docs/api/ads/delete-ad"}],
+    "estimateAdReach": [{"method":"POST","path":"/api/v1/ads/reach-estimate","href":"/docs/api/ads/estimate-reach"}],
+    "listAdInstagramAccounts": [{"method":"GET","path":"/api/v1/ads/instagram-accounts","href":"/docs/api/ads/list-instagram-accounts"}],
     "getUsage": [{"method":"GET","path":"/api/v1/usage","href":"/docs/api/usage/get-usage"}],
     "getXUsage": [{"method":"GET","path":"/api/v1/usage/x","href":"/docs/pricing/x"}]
   }

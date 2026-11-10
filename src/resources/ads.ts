@@ -31,12 +31,12 @@ export type AdInsightsResponse = SuccessBody<'getAdInsights'>;
 export type AdLeadsResponse = SuccessBody<'listAdLeads'>;
 export type CampaignResponse = SuccessBody<'createCampaign'>;
 export type AdStatusResponse = SuccessBody<'setAdStatus'>;
-/** TikTok Ads and LinkedIn Ads: a TikTok ad group's, or LinkedIn campaign's, budget, end date or name. */
+/** A Meta ad set's name, budget, bid, dates or targeting; a TikTok ad group's, or LinkedIn campaign's, budget, end date or name. */
 export type UpdateAdGroupPath = Path<'updateAdGroup'>;
 export type UpdateAdGroupQuery = JsonQuery<'updateAdGroup'>;
 export type UpdateAdGroupBody = JsonBody<'updateAdGroup'>;
 export type AdGroupResponse = SuccessBody<'updateAdGroup'>;
-/** TikTok Ads and LinkedIn Ads: targeting options (TikTok regions, languages, interests; LinkedIn locations, job functions, seniorities, industries, company sizes). */
+/** Targeting options: Meta interests, behaviors, demographics, locations, languages; TikTok regions, languages, interests; LinkedIn locations, job functions, seniorities, industries, company sizes. */
 export type AdTargetingQuery = JsonQuery<'listAdTargeting'>;
 export type AdTargetingResponse = SuccessBody<'listAdTargeting'>;
 /** TikTok Ads only: the brand identities an ad runs as. */
@@ -45,6 +45,23 @@ export type AdIdentitiesResponse = SuccessBody<'listAdIdentities'>;
 export type CreateAdIdentityQuery = JsonQuery<'createAdIdentity'>;
 export type CreateAdIdentityBody = JsonBody<'createAdIdentity'>;
 export type AdIdentityResponse = SuccessBody<'createAdIdentity'>;
+/** Meta Ads only: a campaign's name, Advantage campaign budget, bid strategy or spend cap. */
+export type UpdateCampaignPath = Path<'updateCampaign'>;
+export type UpdateCampaignQuery = JsonQuery<'updateCampaign'>;
+export type UpdateCampaignBody = JsonBody<'updateCampaign'>;
+export type UpdateCampaignResponse = SuccessBody<'updateCampaign'>;
+/** Meta Ads only: delete one ad set with its ads, or one ad. */
+export type DeleteAdGroupPath = Path<'deleteAdGroup'>;
+export type DeleteAdGroupQuery = JsonQuery<'deleteAdGroup'>;
+export type DeleteAdPath = Path<'deleteAd'>;
+export type DeleteAdQuery = JsonQuery<'deleteAd'>;
+/** Meta Ads only: how many people a targeting spec reaches. Creates nothing. */
+export type EstimateAdReachQuery = JsonQuery<'estimateAdReach'>;
+export type EstimateAdReachBody = JsonBody<'estimateAdReach'>;
+export type AdReachEstimateResponse = SuccessBody<'estimateAdReach'>;
+/** Meta Ads only: the Instagram accounts an ad account can run ads as. */
+export type AdInstagramAccountsQuery = JsonQuery<'listAdInstagramAccounts'>;
+export type AdInstagramAccountsResponse = SuccessBody<'listAdInstagramAccounts'>;
 
 function requiredIdempotency(options: IdempotentOptions | undefined): string {
   const key = options?.idempotencyKey;
@@ -75,4 +92,9 @@ export class AdsResource {
   listAdTargeting(args: { readonly query: AdTargetingQuery }, options: RequestOptions = {}): Promise<ApiResponse<AdTargetingResponse>> { return this.transport.request({ operation: operations.listAdTargeting, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs }); }
   listAdIdentities(args: { readonly query: AdIdentitiesQuery }, options: RequestOptions = {}): Promise<ApiResponse<AdIdentitiesResponse>> { return this.transport.request({ operation: operations.listAdIdentities, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs }); }
   createAdIdentity(args: { readonly query?: CreateAdIdentityQuery; readonly body: CreateAdIdentityBody }, options: RequestOptions = {}): Promise<ApiResponse<AdIdentityResponse>> { return this.transport.request({ operation: operations.createAdIdentity, query: args.query, body: args.body, signal: options.signal, timeoutMs: options.timeoutMs }); }
+  updateCampaign(args: { readonly path: UpdateCampaignPath; readonly query?: UpdateCampaignQuery; readonly body: UpdateCampaignBody }, options: RequestOptions = {}): Promise<ApiResponse<UpdateCampaignResponse>> { return this.transport.request({ operation: operations.updateCampaign, path: args.path, query: args.query, body: args.body, signal: options.signal, timeoutMs: options.timeoutMs }); }
+  deleteAdGroup(args: { readonly path: DeleteAdGroupPath; readonly query: DeleteAdGroupQuery }, options: RequestOptions = {}): Promise<ApiResponse<undefined>> { return this.transport.request({ operation: operations.deleteAdGroup, path: args.path, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs }); }
+  deleteAd(args: { readonly path: DeleteAdPath; readonly query: DeleteAdQuery }, options: RequestOptions = {}): Promise<ApiResponse<undefined>> { return this.transport.request({ operation: operations.deleteAd, path: args.path, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs }); }
+  estimateAdReach(args: { readonly query?: EstimateAdReachQuery; readonly body: EstimateAdReachBody }, options: RequestOptions = {}): Promise<ApiResponse<AdReachEstimateResponse>> { return this.transport.request({ operation: operations.estimateAdReach, query: args.query, body: args.body, signal: options.signal, timeoutMs: options.timeoutMs }); }
+  listAdInstagramAccounts(args: { readonly query: AdInstagramAccountsQuery }, options: RequestOptions = {}): Promise<ApiResponse<AdInstagramAccountsResponse>> { return this.transport.request({ operation: operations.listAdInstagramAccounts, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs }); }
 }
