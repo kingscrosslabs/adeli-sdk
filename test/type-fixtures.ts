@@ -53,9 +53,11 @@ void instagramDirect;
 const whatsappText: SendMessageBody = { platform: 'whatsapp', accountId: id, recipient: '+15555550123', text: 'Thanks for your message' };
 const whatsappTemplate: SendMessageBody = { platform: 'whatsapp', accountId: id, recipient: '+15555550123', template: { name: 'order_update', language: 'en_US' } };
 const conversationQuery: ListMessagesQuery = { accountId: id, conversationKey: 'whatsapp:15555550123', cursor: 'opaque', limit: 100 };
+const storyRepliesQuery: ListMessagesQuery = { platform: 'instagram', accountId: id, storyId: '17900000000000001' };
 void whatsappText;
 void whatsappTemplate;
 void conversationQuery;
+void storyRepliesQuery;
 // @ts-expect-error a WhatsApp send carries text or a template.
 const whatsappEmpty: SendMessageBody = { platform: 'whatsapp', accountId: id, recipient: '+15555550123' };
 void whatsappEmpty;

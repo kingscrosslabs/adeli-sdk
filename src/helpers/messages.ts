@@ -5,7 +5,7 @@ import { abortError, isRecord, makeDeadline, malformed, requestPage, validateOpt
 import type { PageIteratorOptions } from './paging.js';
 
 /** One conversation: a message's `conversationKey` and the account it belongs to. `cursor` starts from an older page. */
-export type ConversationIteratorQuery = Omit<MessagesQuery, 'accountId' | 'conversationKey'> & {
+export type ConversationIteratorQuery = Omit<MessagesQuery, 'accountId' | 'conversationKey' | 'storyId'> & {
   readonly accountId: string;
   readonly conversationKey: string;
 };

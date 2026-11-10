@@ -9,6 +9,8 @@ export type SendMessageBody = JsonBody<'sendMessage'>;
 export type MessagesResponse = SuccessBody<'listMessages'>;
 /** A stored direct message. `conversationKey` (`<platform>:<counterparty id>`) identifies its conversation within `accountId`. */
 export type Message = MessagesResponse['messages'][number];
+/** The Instagram story a message replies to (`reply`) or mentions the account in (`mention`). Same shape as `message.created`'s `data.story`. */
+export type MessageStory = NonNullable<Message['story']>;
 export type SentMessage = SuccessBody<'sendMessage'>;
 export type SendInstagramMessageBody = JsonBody<'sendInstagramMessage'>;
 export type SentInstagramMessage = SuccessBody<'sendInstagramMessage'>;
@@ -25,6 +27,8 @@ export class MessagesResource {
    * conversation: the newest `limit` messages (default 50, at most 100) before
    * `cursor`, oldest first, and `nextCursor` toward older messages. To walk a
    * whole conversation, use `iterateConversation` from `@adeli/sdk/helpers`.
+   * With `storyId` (a message's `story.id`), only the inbound Instagram replies
+   * to that story; each reply's `sender` is the IGSID to message back.
    */
   listMessages(args: { readonly query?: MessagesQuery } = {}, options: RequestOptions = {}): Promise<ApiResponse<MessagesResponse>> {
     return this.transport.request({ operation: operations.listMessages, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs });
