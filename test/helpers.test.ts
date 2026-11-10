@@ -193,10 +193,20 @@ describe('waitForPublication', () => {
   });
 
   it('rejects an unknown publication status and times out a publication that never finishes', async () => {
-    const unknown = { getPublication: async () => publication('scheduled') };
+    const unknown = { getPublication: async () => publication('later') };
     await expect(waitForPublication(unknown, { path: { publicationId: 'publication' } }, pendingOptions)).rejects.toBeInstanceOf(MalformedResponseError);
     const stuck = { getPublication: async () => publication('processing') };
     await expect(waitForPublication(stuck, { path: { publicationId: 'publication' } }, { timeoutMs: 20, intervalMs: 5 })).rejects.toBeInstanceOf(TimeoutError);
+  });
+
+  it('keeps waiting through scheduled and draft, and stops on canceled', async () => {
+    const statuses = ['scheduled', 'queued', 'published'];
+    const scheduled = { getPublication: async () => publication(statuses.shift() ?? 'published') };
+    expect((await waitForPublication(scheduled, { path: { publicationId: 'publication' } }, pendingOptions)).data.status).toBe('published');
+    const canceled = { getPublication: async () => publication('canceled') };
+    expect((await waitForPublication(canceled, { path: { publicationId: 'publication' } }, pendingOptions)).data.status).toBe('canceled');
+    const draft = { getPublication: async () => publication('draft') };
+    await expect(waitForPublication(draft, { path: { publicationId: 'publication' } }, { timeoutMs: 20, intervalMs: 5 })).rejects.toBeInstanceOf(TimeoutError);
   });
 });
 

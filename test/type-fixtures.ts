@@ -100,11 +100,26 @@ async function requiredArguments(client: Adeli): Promise<void> {
     content: 'Launch', media: [new Blob(['v'], { type: 'video/mp4' })],
     platforms: [{ platform: 'instagram', accountId: id, kind: 'reel' }, { platform: 'x', accountId: id, media: [{ file: new Blob(['i'], { type: 'image/jpeg' }), altText: 'alt' }] }],
   } }, { idempotencyKey: 'launch' });
-  const publicationStatus: 'queued' | 'processing' | 'published' | 'partial' | 'failed' = created.data.status;
+  const publicationStatus: 'scheduled' | 'draft' | 'queued' | 'processing' | 'published' | 'partial' | 'failed' | 'canceled' = created.data.status;
   const targetStatus: 'queued' | 'submitting' | 'processing' | 'published' | 'failed' | 'outcome_unknown' | undefined = created.data.targets[0]?.status;
   void publicationStatus;
   void targetStatus;
   await client.publications.retryPublication({ path: { publicationId: created.data.id } });
+  const scheduled = await client.publications.createPublication({ body: { content: 'Later', platforms: [{ platform: 'x', accountId: id }], scheduledFor: '2026-11-13T07:30:00-05:00', timeZone: 'America/New_York' } });
+  const scheduledFor: string | null | undefined = scheduled.data.scheduledFor;
+  void scheduledFor;
+  await client.publications.createPublication({ body: { platforms: [{ platform: 'x', accountId: id }], draft: true } });
+  const waiting = await client.publications.listPublications({ query: { status: 'scheduled', profileId: id, limit: 10 } });
+  const nextCursor: string | null = waiting.data.nextCursor;
+  void nextCursor;
+  await client.publications.updatePublication({ path: { publicationId: scheduled.data.id }, body: { scheduledFor: '2026-11-14T08:00:00-05:00' } });
+  await client.publications.publishPublication({ path: { publicationId: scheduled.data.id } });
+  await client.publications.cancelPublication({ path: { publicationId: scheduled.data.id } });
+  // @ts-expect-error listPublications filters by a known status.
+  await client.publications.listPublications({ query: { status: 'later' } });
+  const listed = await client.posts.listPosts({ query: { profileId: id } });
+  const postStatus: 'published' | 'scheduled' | undefined = listed.data.posts[0]?.status;
+  void postStatus;
   // @ts-expect-error a publication needs its platforms targets.
   await client.publications.createPublication({ body: { content: 'Launch' } });
   // @ts-expect-error a publication target names a supported platform.

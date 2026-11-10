@@ -119,7 +119,24 @@ if (done.data.status !== 'published') await client.publications.retryPublication
 
 A publication is `queued` or `processing` until it is `published` (every target succeeded), `partial`, or `failed`. `waitForPublication` returns that terminal response rather than throwing, and calls `onProgress` with every snapshot. Each target reports its own `status`, `attempts`, `result` (that platform's `createPost` response), and `error`. A target in `outcome_unknown` may already be live, so `retryPublication` never re-runs it. `retryPublication` re-runs only `failed` targets and answers `409` while the publication is running or when nothing failed. Stopping a wait does not stop the publication.
 
-A shared `Blob`/`File` is uploaded once, with `createMediaUploads({ platforms })` naming every platform that uses it. A file in a target's own `media` or `options` is uploaded for that platform only. With an `idempotencyKey`, the same key and body return the original publication with `200`, and a different body answers `409 idempotency_conflict`. Files are uploaded again on every call, so a repeated file-backed create produces a different body. To repeat one safely, stage the files yourself with `createMediaUploads` and pass their `upload_id`s. Scheduling is not supported yet.
+A shared `Blob`/`File` is uploaded once, with `createMediaUploads({ platforms })` naming every platform that uses it. A file in a target's own `media` or `options` is uploaded for that platform only. With an `idempotencyKey`, the same key and body return the original publication with `200`, and a different body answers `409 idempotency_conflict`. Files are uploaded again on every call, so a repeated file-backed create produces a different body. To repeat one safely, stage the files yourself with `createMediaUploads` and pass their `upload_id`s.
+
+### Scheduling and drafts
+
+```ts
+const scheduled = await client.publications.createPublication({ body: {
+  content: 'Launch day',
+  platforms: [{ platform: 'instagram', accountId: instagramId, media: [{ upload_id: stagedImageId }] }],
+  scheduledFor: '2026-11-13T07:30:00-05:00',
+  timeZone: 'America/New_York',
+} });
+
+const upcoming = await client.publications.listPublications({ query: { status: 'scheduled', profileId } });
+await client.publications.updatePublication({ path: { publicationId: scheduled.data.id }, body: { scheduledFor: '2026-11-14T08:00:00-05:00' } });
+await client.publications.publishPublication({ path: { publicationId: scheduled.data.id } });
+```
+
+With `scheduledFor` (ISO 8601 with an offset, one minute to 365 days ahead) a publication is stored as `scheduled` and answered with `201`; Adeli publishes it within about a minute of that time. `draft: true` stores it as a `draft` instead. `listPublications` lists a profile's publications, soonest first for `status: 'scheduled'`, with `nextCursor` for the next page. `updatePublication` reschedules (a draft becomes scheduled) or replaces the post, `publishPublication` starts it now, and `cancelPublication` cancels it (`canceled`); all three answer `409` once it has started. None of them is retried automatically. Staged media is kept until the publication is published or canceled; `{ url }` media is fetched at publish time. `listPosts` lists each scheduled post first with `status: 'scheduled'` and `scheduledFor`. `waitForPublication` keeps waiting through `scheduled` and `draft`, and stops on `canceled`.
 
 ## Direct media uploads
 

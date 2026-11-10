@@ -79,8 +79,13 @@ function wireResponse(operationId: string, _status?: string): unknown {
       if (_status === '201') return post;
       if (_status === '202') return { id: 'upload-1', platform: 'youtube', accountId: id, profileId: id, publishId: 'publish-1', videoId: 'video-1', permalink: 'https://youtube.example/video-1', status: 'ACCEPTED', requestedPrivacy: 'private', appliedPrivacy: 'private', privacyRestricted: false, publishAt: null, thumbnail: null, statusUrl: '/api/v1/posts/youtube/status', warnings: [] };
       return { id: 'thread-1', status: 'partial', platform: 'x', accountId: id, profileId: id, providerId: 'provider-1', permalink: 'https://social.example/post-1', posts: [{ index: 0, status: 'published', providerId: 'provider-1', url: 'https://social.example/post-1' }] };
-    case 'createPublication': return _status === '200' ? publication : { ...publication, status: 'queued', progress: 0, completedAt: null, targets: publication.targets.map((target) => ({ ...target, status: 'queued', attempts: 0, result: null, error: null })) };
+    case 'createPublication': if (_status === '201') return { ...publication, status: 'scheduled', progress: 0, scheduledFor: '2026-11-13T12:30:00.000Z', timeZone: 'America/New_York', canceledAt: null, completedAt: null, targets: publication.targets.map((target) => ({ ...target, status: 'queued', attempts: 0, result: null, error: null })) };
+      return _status === '200' ? publication : { ...publication, status: 'queued', progress: 0, completedAt: null, targets: publication.targets.map((target) => ({ ...target, status: 'queued', attempts: 0, result: null, error: null })) };
     case 'getPublication': return publication;
+    case 'listPublications': return { publications: [{ ...publication, status: 'scheduled', progress: 0, scheduledFor: '2026-11-13T12:30:00.000Z', timeZone: 'America/New_York', canceledAt: null, completedAt: null }], nextCursor: 'next' };
+    case 'updatePublication': return { ...publication, status: 'scheduled', progress: 0, scheduledFor: '2026-11-14T13:00:00.000Z', timeZone: 'America/New_York', canceledAt: null, completedAt: null };
+    case 'cancelPublication': return { ...publication, status: 'canceled', progress: 0, canceledAt: '2026-11-10T15:20:00.000Z' };
+    case 'publishPublication': return { ...publication, status: 'queued', progress: 0, completedAt: null };
     case 'retryPublication': return { ...publication, status: 'processing', progress: 0.5, completedAt: null, targets: [publication.targets[0], { ...publication.targets[1], status: 'queued', error: null }] };
     case 'uploadYouTubeVideo': return { id: 'upload-1', platform: 'youtube', accountId: id, profileId: id, publishId: 'publish-1', videoId: 'video-1', permalink: 'https://youtube.example/video-1', status: 'ACCEPTED', requestedPrivacy: 'private', appliedPrivacy: 'private', privacyRestricted: false, publishAt: null, thumbnail: null, statusUrl: '/api/v1/posts/youtube/status', warnings: [] };
     case 'deleteXPost': return { id: 'post-1', accountId: id, providerId: 'provider-1', deleted: true, platform: 'x' };
@@ -135,7 +140,7 @@ type WireCase = { id: string; call: (options: RequestOptions) => Promise<ApiResp
 function jsonBody(body: Record<string, unknown>): ExpectedBody { return body; }
 function requireRequest(value: Request | undefined, id: string): Request { if (value === undefined) throw new Error(`${id}: fetch was not called`); return value; }
 // Request expectations are deliberately written independently of operations metadata; the registry is only a coverage allow-list.
-test('all 66 registered operations preserve exact wire requests and response envelopes', async () => {
+test('all 70 registered operations preserve exact wire requests and response envelopes', async () => {
   let currentFixture: WireCase | undefined;
   let returnUnauthorized = false;
   const unauthorizedDetails = { reason: 'wire-contract', nested: { preserved: true } };
@@ -174,6 +179,10 @@ test('all 66 registered operations preserve exact wire requests and response env
     { id: 'getYouTubeVideoStatus', call: (o) => client.posts.getYouTubeVideoStatus({ query: { accountId: id, videoId: 'video' } }, o), method: 'GET', path: '/api/v1/posts/youtube/status', query: `accountId=${id}&videoId=video`, status: 200, response: wireResponse('getYouTubeVideoStatus') },
     { id: 'createPublication', call: (o) => client.publications.createPublication({ body: { profileId: id, content: 'hello', media: [{ upload_id: 'staged' }], platforms: [{ platform: 'x', accountId: id }, { platform: 'tiktok', accountId: id, options: { music_usage_confirmed: true, remove_editor_attribution: false } }] } }, { ...o, idempotencyKey: 'publication-key' }), method: 'POST', path: '/api/v1/publications', body: jsonBody({ profileId: id, content: 'hello', media: [{ upload_id: 'staged' }], platforms: [{ platform: 'x', accountId: id }, { platform: 'tiktok', accountId: id, options: { music_usage_confirmed: true, remove_editor_attribution: false } }] }), status: 202, response: wireResponse('createPublication'), idempotencyKey: 'publication-key' },
     { id: 'getPublication', call: (o) => client.publications.getPublication({ path: { publicationId: 'publication/a' } }, o), method: 'GET', path: '/api/v1/publications/publication%2Fa', status: 200, response: wireResponse('getPublication') },
+    { id: 'listPublications', call: (o) => client.publications.listPublications({ query: { status: 'scheduled', profileId: id, limit: 10 } }, o), method: 'GET', path: '/api/v1/publications', query: `status=scheduled&profileId=${id}&limit=10`, status: 200, response: wireResponse('listPublications') },
+    { id: 'updatePublication', call: (o) => client.publications.updatePublication({ path: { publicationId: id }, body: { scheduledFor: '2026-11-14T08:00:00-05:00', timeZone: 'America/New_York' } }, o), method: 'PATCH', path: `/api/v1/publications/${id}`, body: jsonBody({ scheduledFor: '2026-11-14T08:00:00-05:00', timeZone: 'America/New_York' }), status: 200, response: wireResponse('updatePublication') },
+    { id: 'cancelPublication', call: (o) => client.publications.cancelPublication({ path: { publicationId: id } }, o), method: 'DELETE', path: `/api/v1/publications/${id}`, status: 200, response: wireResponse('cancelPublication') },
+    { id: 'publishPublication', call: (o) => client.publications.publishPublication({ path: { publicationId: id } }, o), method: 'POST', path: `/api/v1/publications/${id}/publish`, status: 202, response: wireResponse('publishPublication') },
     { id: 'retryPublication', call: (o) => client.publications.retryPublication({ path: { publicationId: id } }, o), method: 'POST', path: `/api/v1/publications/${id}/retry`, status: 202, response: wireResponse('retryPublication') },
     { id: 'listComments', call: (o) => client.comments.listComments({ query: { platform: 'youtube', accountId: id, profileId: id, postId: id, cursor: 'next' } }, o), method: 'GET', path: '/api/v1/comments', query: `platform=youtube&accountId=${id}&profileId=${id}&postId=${id}&cursor=next`, status: 200, response: wireResponse('listComments') },
     { id: 'createComment', call: (o) => client.comments.createComment({ body: { platform: 'youtube', accountId: id, profileId: id, postId: id, message: 'hello' } }, o), method: 'POST', path: '/api/v1/comments', body: jsonBody({ platform: 'youtube', accountId: id, profileId: id, postId: id, message: 'hello' }), status: 201, response: wireResponse('createComment') },
@@ -218,7 +227,7 @@ test('all 66 registered operations preserve exact wire requests and response env
   const { operations } = await import('../src/operations.js');
   expect(new Set(cases.map((item) => item.id))).toEqual(new Set(Object.keys(operations)));
   expect(cases).toHaveLength(Object.keys(operations).length);
-  expect(declaredSuccessPairs()).toHaveLength(76);
+  expect(declaredSuccessPairs()).toHaveLength(81);
   for (const fixture of cases) {
     for (const status of successStatuses(fixture.id)) {
       delete state.request;

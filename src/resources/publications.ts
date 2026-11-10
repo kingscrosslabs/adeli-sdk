@@ -1,5 +1,5 @@
 import type { components } from '../generated/api.js';
-import type { OperationJsonBody as JsonBody, OperationPath as Path } from '../core/generated.js';
+import type { OperationJsonBody as JsonBody, OperationPath as Path, OperationQuery as Query, OperationSuccessBody as SuccessBody } from '../core/generated.js';
 import type { ApiResponse, RequestOptions } from '../core/types.js';
 import type { Transport } from '../core/transport.js';
 import { operations } from '../operations.js';
@@ -9,7 +9,10 @@ import type { BinaryUpload } from './posts.js';
 
 /** One post to several accounts, and each account's outcome. */
 export type Publication = components['schemas']['Publication'];
-/** `queued` and `processing` are in flight; `published`, `partial`, and `failed` are terminal. */
+/**
+ * `scheduled` waits for `scheduledFor` and `draft` waits to be published; `queued` and
+ * `processing` are in flight; `published`, `partial`, `failed`, and `canceled` are terminal.
+ */
 export type PublicationStatus = Publication['status'];
 /** One account the publication posts to. `result` is that platform's `createPost` response once it is known. */
 export type PublicationTarget = Publication['targets'][number];
@@ -19,6 +22,10 @@ export type PublicationPlatform = PublicationTarget['platform'];
 export type CreatePublicationBody = JsonBody<'createPublication'>;
 export type PublicationTargetBody = CreatePublicationBody['platforms'][number];
 export type PublicationPath = Path<'getPublication'>;
+export type ListPublicationsQuery = Query<'listPublications'>;
+export type PublicationListResponse = SuccessBody<'listPublications'>;
+/** `scheduledFor` reschedules (a draft becomes scheduled); `platforms` with optional `content` and `media` replaces the post. */
+export type UpdatePublicationBody = JsonBody<'updatePublication'>;
 
 type SharedMediaItem = NonNullable<CreatePublicationBody['media']>[number];
 type TargetMediaItem = NonNullable<PublicationTargetBody['media']>[number];
@@ -79,6 +86,11 @@ export class PublicationsResource {
    * anything is written; the `202` publication then publishes in the background.
    * Follow it with `getPublication` or `waitForPublication` from `@adeli/sdk/helpers`.
    *
+   * With `scheduledFor` (ISO 8601 with an offset, one minute to 365 days ahead) the
+   * publication is stored as `scheduled` with `201` and published within about a
+   * minute of that time; with `draft: true` it is stored as a `draft`. Staged media
+   * is kept until then.
+   *
    * Blob/File media is uploaded first. A shared file is uploaded once for every
    * platform that uses it, and a target's own file for that platform only. Each
    * call uploads again, so to repeat a file-backed create with the same
@@ -100,5 +112,24 @@ export class PublicationsResource {
    */
   retryPublication(args: { readonly path: PublicationPath }, options: RequestOptions = {}): Promise<ApiResponse<Publication>> {
     return this.transport.request({ operation: operations.retryPublication, path: args.path, signal: options.signal, timeoutMs: options.timeoutMs });
+  }
+  /** A profile's publications: soonest first with `status: 'scheduled'`, newest first otherwise. Page with `nextCursor`. */
+  listPublications(args: { readonly query?: ListPublicationsQuery } = {}, options: RequestOptions = {}): Promise<ApiResponse<PublicationListResponse>> {
+    return this.transport.request({ operation: operations.listPublications, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs });
+  }
+  /**
+   * Reschedule a `scheduled` publication or `draft`, or replace its post. Answers
+   * `409` once it has started or was canceled. Never retried automatically.
+   */
+  updatePublication(args: { readonly path: PublicationPath; readonly body: UpdatePublicationBody }, options: RequestOptions = {}): Promise<ApiResponse<Publication>> {
+    return this.transport.request({ operation: operations.updatePublication, path: args.path, body: args.body, signal: options.signal, timeoutMs: options.timeoutMs });
+  }
+  /** Publish a `scheduled` publication or `draft` now (`202`). Answers `409` once it has started or was canceled. Never retried automatically. */
+  publishPublication(args: { readonly path: PublicationPath }, options: RequestOptions = {}): Promise<ApiResponse<Publication>> {
+    return this.transport.request({ operation: operations.publishPublication, path: args.path, signal: options.signal, timeoutMs: options.timeoutMs });
+  }
+  /** Cancel a `scheduled` publication or delete a `draft` before it starts; its kept media is deleted. Never retried automatically. */
+  cancelPublication(args: { readonly path: PublicationPath }, options: RequestOptions = {}): Promise<ApiResponse<Publication>> {
+    return this.transport.request({ operation: operations.cancelPublication, path: args.path, signal: options.signal, timeoutMs: options.timeoutMs });
   }
 }
