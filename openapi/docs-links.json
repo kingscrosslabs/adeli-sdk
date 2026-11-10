@@ -44,6 +44,7 @@
     "listMessages": [{"method":"GET","path":"/api/v1/messages","href":"/docs/api/messages/list-messages"}],
     "sendMessage": [{"method":"POST","path":"/api/v1/messages","href":"/docs/api/messages/send-message"}],
     "sendInstagramMessage": [{"method":"POST","path":"/api/v1/messages/instagram","href":"/docs/api/messages/send-instagram-message"}],
+    "getInstagramUser": [{"method":"GET","path":"/api/v1/messages/instagram/users/{igsid}","href":"/docs/api/messages/get-instagram-user"}],
     "listWebhooks": [{"method":"GET","path":"/api/v1/webhooks","href":"/docs/api/webhooks/list-webhooks"}],
     "createWebhook": [{"method":"POST","path":"/api/v1/webhooks","href":"/docs/api/webhooks/create-webhook"}],
     "deleteWebhook": [{"method":"DELETE","path":"/api/v1/webhooks/{webhookId}","href":"/docs/api/webhooks/delete-webhook"}],

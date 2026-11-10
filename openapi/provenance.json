@@ -1,8 +1,8 @@
 {
   "source": "adeli-core-working-tree",
   "specUrl": "candidate file",
-  "retrievedAt": "2026-11-06T15:04:05.588Z",
-  "sha256": "c38c2650e18df8c84ab740f37bda874b1e853194020eb0be82f630796457b52d",
+  "retrievedAt": "2026-11-10T01:17:24.245Z",
+  "sha256": "175bb1218d65d4a4a88b9e41679fe90a6fb01e66e9985deb75e37ac771daacc7",
   "upstreamCommit": null,
   "status": "candidate-unreleased"
 }

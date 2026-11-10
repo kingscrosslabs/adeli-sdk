@@ -85,7 +85,7 @@ describe('parseWebhookEvent', () => {
     ['facebook', 'facebook:2468000000000001', 'm_def'],
     ['whatsapp', 'whatsapp:15555550123', 'wamid.HBgL'],
   ] as const)('types a %s message.created', (platform, key, messageId) => {
-    const data = { messageId, conversationKey: key, from: { id: key.split(':')[1], username: null }, text: 'Hi', attachments: [], replyTo: null, isEcho: false };
+    const data = { messageId, conversationKey: key, from: { id: key.split(':')[1], username: null }, text: 'Hi', attachments: [], replyTo: null, story: null, isEcho: false };
     const event = parseWebhookEvent(JSON.stringify({ ...envelope, platform, type: 'message.created', data }));
     expect(event).toEqual({ ...envelope, test: false, platform, type: 'message.created', data });
     if (event.type !== 'message.created') throw new Error('expected message.created');
@@ -93,11 +93,22 @@ describe('parseWebhookEvent', () => {
   });
 
   it('types message.created attachments, a null text, and a reply', () => {
-    const data = { messageId: 'm_2', conversationKey: 'instagram:1', from: { id: '1', username: null }, text: null, attachments: [{ type: 'image', url: 'https://cdn.example/a.jpg' }, { type: 'video', url: null }, { type: 'audio', url: null }, { type: 'file', url: 'https://cdn.example/b.pdf' }], replyTo: { messageId: 'm_1' }, isEcho: false };
+    const data = { messageId: 'm_2', conversationKey: 'instagram:1', from: { id: '1', username: null }, text: null, attachments: [{ type: 'image', url: 'https://cdn.example/a.jpg' }, { type: 'video', url: null }, { type: 'audio', url: null }, { type: 'file', url: 'https://cdn.example/b.pdf' }], replyTo: { messageId: 'm_1' }, story: null, isEcho: false };
     expect(parseWebhookEvent(JSON.stringify({ ...envelope, type: 'message.created', data }))).toEqual({ ...envelope, test: false, type: 'message.created', data });
   });
 
+  it('types an Instagram story reply and mention, and reads a missing story as null', () => {
+    const base = { messageId: 'm_3', conversationKey: 'instagram:1', from: { id: '1', username: null }, text: 'So good', attachments: [], replyTo: null, isEcho: false };
+    const reply = { ...base, story: { type: 'reply', id: '17900000000000077', url: 'https://cdn.example/s.mp4' } };
+    expect(parseWebhookEvent(JSON.stringify({ ...envelope, type: 'message.created', data: reply }))).toEqual({ ...envelope, test: false, type: 'message.created', data: reply });
+    const mention = { ...base, text: null, attachments: [{ type: 'file', url: 'https://cdn.example/m.jpg' }], story: { type: 'mention', id: null, url: 'https://cdn.example/m.jpg' } };
+    expect(parseWebhookEvent(JSON.stringify({ ...envelope, type: 'message.created', data: mention }))).toMatchObject({ data: { story: { type: 'mention', id: null } } });
+    expect(parseWebhookEvent(JSON.stringify({ ...envelope, type: 'message.created', data: base }))).toMatchObject({ data: { story: null } });
+  });
+
   it.each([
+    ['a story with an unknown type', { story: { type: 'highlight', id: null, url: null } }],
+    ['a non-object story', { story: 'reply' }],
     ['an unknown attachment type', { attachments: [{ type: 'sticker', url: null }] }],
     ['a non-array attachments', { attachments: null }],
     ['a missing conversationKey', { conversationKey: undefined }],

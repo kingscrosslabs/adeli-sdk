@@ -37,6 +37,7 @@ export const operations = {
   listMessages: { operationId: 'listMessages', method: 'GET', path: '/messages', retry: 'safe-read' },
   sendMessage: { operationId: 'sendMessage', method: 'POST', path: '/messages', retry: 'never' },
   sendInstagramMessage: { operationId: 'sendInstagramMessage', method: 'POST', path: '/messages/instagram', retry: 'never' },
+  getInstagramUser: { operationId: 'getInstagramUser', method: 'GET', path: '/messages/instagram/users/{igsid}', retry: 'safe-read' },
   getInstagramAccountInsights: { operationId: 'getInstagramAccountInsights', method: 'GET', path: '/analytics/instagram/account-insights', retry: 'safe-read' },
   getFacebookPageMetrics: { operationId: 'getFacebookPageMetrics', method: 'GET', path: '/analytics/facebook/page-metrics', retry: 'safe-read' },
   getTikTokAccountAnalytics: { operationId: 'getTikTokAccountAnalytics', method: 'GET', path: '/analytics/tiktok/account-analytics', retry: 'safe-read' },
