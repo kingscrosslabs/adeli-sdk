@@ -229,6 +229,8 @@ Events by platform (`createWebhook` with `platform` receives only that platform'
 
 `message.created` is an inbound direct message; echoes and the account's own sends are never delivered. An event type this SDK version does not know parses as `type: 'unknown'`.
 
+On Instagram, `event.data.story` is `{ type: 'reply' | 'mention', id, url }` when the message replies to the account's story or mentions it in someone else's, and null otherwise. To gate a flow on a follow, read the sender with `client.messages.getInstagramUser({ path: { igsid: event.data.from.id }, query: { accountId: event.accountId } })` and check `user.isFollowing`; Instagram answers once the person has messaged the account or tapped one of its buttons, and `409 user_consent_required` before that.
+
 See `examples/webhook-receiver.ts` for a fuller receiver.
 
 ### Handle errors

@@ -497,6 +497,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/messages/instagram/users/{igsid}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get an Instagram user who messaged the account
+         * @description Reads someone who has messaged the Instagram account, live from Instagram: their username and name, and whether they follow the account (`isFollowing`). Instagram shares this only after the person has sent the account a message or tapped one of its buttons; before that it is 409 user_consent_required. An id Instagram does not recognise is 404 user_not_found. Not cached.
+         */
+        get: operations["getInstagramUser"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/webhooks": {
         parameters: {
             query?: never;
@@ -6200,6 +6220,113 @@ export interface operations {
             };
             /** @description Billing is required: a card is needed to connect more accounts or use X (`billing_required`, `x_billing_required`), or the workspace has used its free monthly allowance (`usage_limit_reached`) */
             402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connection lacks a permission or provider-confirmed resource */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PermissionRequiredError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The request conflicts with existing state */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connected account cannot perform this operation */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getInstagramUser: {
+        parameters: {
+            query: {
+                accountId: string;
+                profileId?: string;
+            };
+            header?: never;
+            path: {
+                /** @description The person's Instagram-scoped user id (IGSID): `message.created` `from.id` or `message.postback` `senderId`. */
+                igsid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        platform: "instagram";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        user: {
+                            /** @description The Instagram-scoped user id (IGSID). */
+                            id: string;
+                            username: string | null;
+                            name: string | null;
+                            followerCount: number | null;
+                            /** @description Whether this person follows the connected account. Null when Instagram did not say. */
+                            isFollowing: boolean | null;
+                            /** @description Whether the connected account follows this person. Null when Instagram did not say. */
+                            isFollowedByAccount: boolean | null;
+                        };
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };

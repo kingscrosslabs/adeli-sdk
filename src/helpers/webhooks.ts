@@ -122,6 +122,17 @@ export interface MessageCreatedAttachment {
   readonly url: string | null;
 }
 
+/**
+ * An Instagram message about one of the account's stories: a `reply` to it, or a
+ * `mention` of the account in someone else's story (which also arrives as a
+ * `file` attachment). `id` and `url` may be null; the `url` expires.
+ */
+export interface MessageCreatedStory {
+  readonly type: 'reply' | 'mention';
+  readonly id: string | null;
+  readonly url: string | null;
+}
+
 /** An inbound direct message. Echoes and the account's own sends are never emitted. */
 export interface MessageCreatedEvent extends WebhookEventEnvelope {
   readonly type: 'message.created';
@@ -137,6 +148,8 @@ export interface MessageCreatedEvent extends WebhookEventEnvelope {
     readonly text: string | null;
     readonly attachments: readonly MessageCreatedAttachment[];
     readonly replyTo: { readonly messageId: string } | null;
+    /** Set when an Instagram message replies to or mentions the account's story; null otherwise, and on Facebook and WhatsApp. */
+    readonly story: MessageCreatedStory | null;
     /** Always false today: echoes are not emitted. */
     readonly isEcho: boolean;
   };
@@ -178,6 +191,17 @@ function parseMessageAttachment(value: unknown, index: number): MessageCreatedAt
   return { type: type as MessageAttachmentType, url: requireNullableString(value, 'url', where) };
 }
 
+const MESSAGE_STORY_TYPES: readonly string[] = ['reply', 'mention'] satisfies readonly MessageCreatedStory['type'][];
+
+/** Servers before story support send no `story`; that reads as null. */
+function parseMessageStory(value: unknown): MessageCreatedStory | null {
+  if (value === undefined || value === null) return null;
+  if (!isRecord(value)) malformed('data.story must be an object or null');
+  const type = requireString(value, 'type', 'data.story');
+  if (!MESSAGE_STORY_TYPES.includes(type)) malformed('data.story.type must be reply or mention');
+  return { type: type as MessageCreatedStory['type'], id: requireNullableString(value, 'id', 'data.story'), url: requireNullableString(value, 'url', 'data.story') };
+}
+
 function parseMessageCreatedData(data: unknown): MessageCreatedEvent['data'] {
   if (!isRecord(data)) malformed('data must be an object');
   const from = data.from;
@@ -193,6 +217,7 @@ function parseMessageCreatedData(data: unknown): MessageCreatedEvent['data'] {
     text: requireNullableString(data, 'text', 'data'),
     attachments: data.attachments.map(parseMessageAttachment),
     replyTo: replyTo === null ? null : { messageId: requireString(replyTo, 'messageId', 'data.replyTo') },
+    story: parseMessageStory(data.story),
     isEcho: data.isEcho,
   };
 }

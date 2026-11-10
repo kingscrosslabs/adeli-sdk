@@ -12936,6 +12936,221 @@
         }
       }
     },
+    "/api/v1/messages/instagram/users/{igsid}": {
+      "get": {
+        "operationId": "getInstagramUser",
+        "summary": "Get an Instagram user who messaged the account",
+        "description": "Reads someone who has messaged the Instagram account, live from Instagram: their username and name, and whether they follow the account (`isFollowing`). Instagram shares this only after the person has sent the account a message or tapped one of its buttons; before that it is 409 user_consent_required. An id Instagram does not recognise is 404 user_not_found. Not cached.",
+        "tags": [
+          "Messages"
+        ],
+        "parameters": [
+          {
+            "name": "igsid",
+            "in": "path",
+            "required": true,
+            "description": "The person's Instagram-scoped user id (IGSID): `message.created` `from.id` or `message.postback` `senderId`.",
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{1,40}$"
+            }
+          },
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "profileId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "platform": {
+                      "type": "string",
+                      "const": "instagram"
+                    },
+                    "accountId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "profileId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The Instagram-scoped user id (IGSID)."
+                        },
+                        "username": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "name": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "followerCount": {
+                          "anyOf": [
+                            {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "isFollowing": {
+                          "description": "Whether this person follows the connected account. Null when Instagram did not say.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
+                        },
+                        "isFollowedByAccount": {
+                          "description": "Whether the connected account follows this person. Null when Instagram did not say.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "username",
+                        "name",
+                        "followerCount",
+                        "isFollowing",
+                        "isFollowedByAccount"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "platform",
+                    "accountId",
+                    "profileId",
+                    "user"
+                  ]
+                },
+                "examples": {
+                  "default": {
+                    "summary": "Example",
+                    "value": {
+                      "platform": "instagram",
+                      "accountId": "00000000-0000-4000-8000-000000000002",
+                      "profileId": "00000000-0000-4000-8000-000000000001",
+                      "user": {
+                        "id": "1790000000000002",
+                        "username": "maya.makes",
+                        "name": "Maya",
+                        "followerCount": 812,
+                        "isFollowing": true,
+                        "isFollowedByAccount": false
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The connection lacks a permission or provider-confirmed resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionRequiredError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Profile, account, or object not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The request conflicts with existing state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The connected account cannot perform this operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/webhooks": {
       "get": {
         "operationId": "listWebhooks",

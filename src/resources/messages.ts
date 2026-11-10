@@ -1,5 +1,5 @@
 import type { ApiResponse, RequestOptions } from '../core/types.js';
-import type { OperationJsonBody as JsonBody, OperationQuery as JsonQuery, OperationSuccessBody as SuccessBody } from '../core/generated.js';
+import type { OperationJsonBody as JsonBody, OperationPath as Path, OperationQuery as JsonQuery, OperationSuccessBody as SuccessBody } from '../core/generated.js';
 import type { Transport } from '../core/transport.js';
 import { operations } from '../operations.js';
 
@@ -12,6 +12,11 @@ export type Message = MessagesResponse['messages'][number];
 export type SentMessage = SuccessBody<'sendMessage'>;
 export type SendInstagramMessageBody = JsonBody<'sendInstagramMessage'>;
 export type SentInstagramMessage = SuccessBody<'sendInstagramMessage'>;
+export type GetInstagramUserPath = Path<'getInstagramUser'>;
+export type GetInstagramUserQuery = JsonQuery<'getInstagramUser'>;
+export type InstagramUserResponse = SuccessBody<'getInstagramUser'>;
+/** Someone who messaged an Instagram account. `isFollowing` is whether they follow it; null when Instagram does not say. */
+export type InstagramMessagingUser = InstagramUserResponse['user'];
 
 export class MessagesResource {
   constructor(private readonly transport: Transport) {}
@@ -30,5 +35,15 @@ export class MessagesResource {
   }
   sendInstagramMessage(args: { readonly body: SendInstagramMessageBody }, options: RequestOptions = {}): Promise<ApiResponse<SentInstagramMessage>> {
     return this.transport.request({ operation: operations.sendInstagramMessage, body: args.body, signal: options.signal, timeoutMs: options.timeoutMs });
+  }
+  /**
+   * Read someone who has messaged an Instagram account, live, with whether they
+   * follow it (`user.isFollowing`). `igsid` is a `message.created` `from.id` or a
+   * `message.postback` `senderId`. Instagram answers only after the person has
+   * messaged the account or tapped one of its buttons: before that, 409
+   * `user_consent_required`. An unknown id is 404 `user_not_found`.
+   */
+  getInstagramUser(args: { readonly path: GetInstagramUserPath; readonly query: GetInstagramUserQuery }, options: RequestOptions = {}): Promise<ApiResponse<InstagramUserResponse>> {
+    return this.transport.request({ operation: operations.getInstagramUser, path: args.path, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs });
   }
 }
