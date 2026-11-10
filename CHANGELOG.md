@@ -1,5 +1,16 @@
 # @adeli/sdk
 
+## 0.4.0
+
+### Minor Changes
+
+- 14c151f: Add `messages.getInstagramUser({ path: { igsid }, query: { accountId } })`, which reads someone who has messaged an Instagram account, live, with `user.isFollowing` (whether they follow the account), `isFollowedByAccount`, `username`, `name` and `followerCount`. Instagram answers only after the person has messaged the account or tapped one of its buttons; before that it is `409 user_consent_required`, and an unknown id is `404 user_not_found`. `MessageCreatedEvent` gains `data.story` (`MessageCreatedStory`, `{ type: 'reply' | 'mention', id, url }` or null): set when an Instagram message replies to the account's story or mentions the account in someone else's. A server that does not send `story` parses as `story: null`.
+- 603b639: Schedule publications and save drafts. `createPublication` accepts `scheduledFor` (ISO 8601 with an offset, one minute to 365 days ahead), `timeZone`, and `draft`; a scheduled publication or draft answers `201` with status `scheduled` or `draft`, and `Publication` gains `scheduledFor`, `timeZone`, and `canceledAt`. New `publications.listPublications`, `updatePublication` (reschedule or replace the post), `publishPublication` (publish now), and `cancelPublication`; the three writes are never retried automatically. `Publication['status']` adds `scheduled`, `draft`, and `canceled`, so an exhaustive `switch` needs three new branches. `listPosts` returns scheduled posts first, with optional `status: 'scheduled'`, `scheduledFor`, and `publicationId` on `NormalizedPost`. `waitForPublication` keeps waiting through `scheduled` and `draft` and treats `canceled` as terminal.
+
+### Patch Changes
+
+- ee0cd74: Instagram publishing, analytics and comments are now available on the production API, alongside connect, profile, `listPosts` and messages. No code changes; the README platform matrix and `docs/availability.md` mark them as production.
+
 ## 0.3.1
 
 ### Patch Changes
