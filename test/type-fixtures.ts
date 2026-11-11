@@ -1,4 +1,4 @@
-import type { Account, ApiResponse, Profile, StartConnectionBody } from '../src/index.js';
+import type { Account, ApiResponse, InstagramStory, Profile, StartConnectionBody } from '../src/index.js';
 import type { CreatePostBody, CreatePostWithFiles, TikTokMultipartBody } from '../src/resources/posts.js';
 import type { CreateAdAccountBody } from '../src/resources/ads.js';
 import type { ListMessagesQuery, SendInstagramMessageBody, SendMessageBody } from '../src/resources/messages.js';
@@ -97,6 +97,9 @@ async function requiredArguments(client: Adeli): Promise<void> {
   await client.posts.createMediaUploads({ body: { profileId: id, platform: 'youtube', files: [{ clientId: 'video', purpose: 'post_media', contentType: 'video/mp4', size: 10 }] } });
   await client.posts.createMediaUploads({ body: { profileId: id, platform: 'linkedin', files: [{ clientId: 'deck', purpose: 'post_media', contentType: 'application/pdf', size: 10 }] } });
   await client.posts.getInstagramPostStatus({ query: { jobId: id, profileId: id } });
+  const stories = await client.posts.listInstagramStories({ query: { accountId: id } });
+  const story: InstagramStory | undefined = stories.data.stories[0];
+  void story;
   await client.posts.createMediaUploads({ body: { profileId: id, platforms: ['instagram', 'tiktok', 'youtube'], files: [{ clientId: 'video', purpose: 'post_media', contentType: 'video/mp4', size: 10 }] } });
   const created = await client.publications.createPublication({ body: {
     content: 'Launch', media: [new Blob(['v'], { type: 'video/mp4' })],

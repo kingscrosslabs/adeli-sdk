@@ -378,6 +378,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/posts/instagram/stories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List an Instagram account's active stories
+         * @description Reads the account's live stories from Instagram, newest first: the last 24 hours, with `expiresAt` 24 hours after `timestamp`. `mediaUrl` is null for video with licensed audio. Live video stories and reshared stories are never included. Not cached.
+         */
+        get: operations["listInstagramStories"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/posts/facebook/status": {
         parameters: {
             query?: never;
@@ -5551,6 +5571,115 @@ export interface operations {
             };
             /** @description Profile, account, or object not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    listInstagramStories: {
+        parameters: {
+            query: {
+                accountId: string;
+                profileId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        platform: "instagram";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        /** @description Active stories, newest first. */
+                        stories: {
+                            /** @description The story's Instagram media id. */
+                            id: string;
+                            /** @description IMAGE or VIDEO. */
+                            mediaType: string | null;
+                            /** @description Always STORY. */
+                            mediaProductType: string;
+                            /** @description The story's image or video. Null for video with licensed audio; use thumbnailUrl or permalink instead. Expires with the story. */
+                            mediaUrl: string | null;
+                            /** @description A video story's cover image. Null for images. */
+                            thumbnailUrl: string | null;
+                            /** @description The story on Instagram, viewable only while it is live. */
+                            permalink: string | null;
+                            /**
+                             * Format: date-time
+                             * @description When the story was posted.
+                             */
+                            timestamp: string;
+                            /**
+                             * Format: date-time
+                             * @description When the story stops being live: 24 hours after timestamp.
+                             */
+                            expiresAt: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connection lacks a permission or provider-confirmed resource */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PermissionRequiredError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connected account cannot perform this operation */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };
