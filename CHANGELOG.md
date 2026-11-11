@@ -1,5 +1,12 @@
 # @adeli/sdk
 
+## 0.5.0
+
+### Minor Changes
+
+- ed1c3f6: List the replies to an Instagram story. `Message` gains optional `story` (`{ type: 'reply' | 'mention', id, url }` or `null`, the same shape as `message.created`'s `data.story`), exported as `MessageStory`. `listMessages` accepts `storyId`, a reply's `story.id`, and then returns only the inbound Instagram replies to that story; each reply's `sender` is the IGSID to message back with `sendInstagramMessage`. `storyId` can't be combined with `conversationKey` or a non-Instagram `platform` (400 `invalid_request`), and `iterateConversation` does not accept it.
+- 5b18c26: Add `posts.listInstagramStories({ query: { accountId } })`, which lists an Instagram account's active stories, newest first, read live: `id`, `mediaType`, `mediaProductType`, `mediaUrl` (null for video with licensed audio), `thumbnailUrl`, `permalink`, `timestamp`, and `expiresAt` (24 hours after `timestamp`). Exports `InstagramStory`, `InstagramStoriesResponse` and `ListInstagramStoriesQuery`.
+
 ## 0.4.0
 
 ### Minor Changes

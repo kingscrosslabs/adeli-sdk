@@ -1,6 +1,6 @@
 {
   "name": "@adeli/sdk",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Official TypeScript SDK for Adeli, the unified social media and ads API",
   "keywords": [
     "adeli",
