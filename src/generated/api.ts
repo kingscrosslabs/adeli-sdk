@@ -494,7 +494,7 @@ export interface paths {
         };
         /**
          * List direct-message conversations
-         * @description Without conversationKey, every message for the profile, account or platform, oldest first. With conversationKey (which requires accountId; 400 invalid_request otherwise), one conversation read from the history Adeli stores: the newest `limit` messages (default 50, at most 100) before `cursor`, oldest first within the page, and `nextCursor` toward older messages (null at the start of the conversation). Each message carries its conversationKey.
+         * @description Without conversationKey, every message for the profile, account or platform, oldest first. With conversationKey (which requires accountId; 400 invalid_request otherwise), one conversation read from the history Adeli stores: the newest `limit` messages (default 50, at most 100) before `cursor`, oldest first within the page, and `nextCursor` toward older messages (null at the start of the conversation). Each message carries its conversationKey, and its story when it replies to or mentions an Instagram story. With storyId, only the inbound Instagram messages that replied to that story, from every Instagram account in scope; not combinable with conversationKey or another platform, and never served from the response cache.
          */
         get: operations["listMessages"];
         put?: never;
@@ -1269,6 +1269,18 @@ export interface components {
             createdAt: string;
             /** @description `<platform>:<counterparty id>` (an IGSID, a PSID, or a WhatsApp wa_id in digits), scoped to accountId: with accountId it identifies one conversation. Pass it to listMessages to read that conversation. Null when the counterparty is unknown; optional so clients built before it existed still type-check. */
             conversationKey?: string | null;
+            /** @description The Instagram story this message replies to or mentions; null for every other message. Optional so clients built before it existed still type-check. */
+            story?: {
+                /**
+                 * @description `reply` to one of the account's stories, or a `mention` of the account in someone else's story.
+                 * @enum {string}
+                 */
+                type: "reply" | "mention";
+                /** @description The story's id. Pass a reply's story id as storyId to listMessages to read every reply to that story. */
+                id: string | null;
+                /** @description Instagram's link to the story; it stops working when the story expires. */
+                url: string | null;
+            } | null;
         };
         Publication: {
             /** Format: uuid */
@@ -1453,6 +1465,18 @@ export interface components {
                 createdAt: string;
                 /** @description `<platform>:<counterparty id>` (an IGSID, a PSID, or a WhatsApp wa_id in digits), scoped to accountId: with accountId it identifies one conversation. Pass it to listMessages to read that conversation. Null when the counterparty is unknown; optional so clients built before it existed still type-check. */
                 conversationKey?: string | null;
+                /** @description The Instagram story this message replies to or mentions; null for every other message. Optional so clients built before it existed still type-check. */
+                story?: {
+                    /**
+                     * @description `reply` to one of the account's stories, or a `mention` of the account in someone else's story.
+                     * @enum {string}
+                     */
+                    type: "reply" | "mention";
+                    /** @description The story's id. Pass a reply's story id as storyId to listMessages to read every reply to that story. */
+                    id: string | null;
+                    /** @description Instagram's link to the story; it stops working when the story expires. */
+                    url: string | null;
+                } | null;
             }[];
             errors: {
                 /** @enum {string} */
@@ -6480,6 +6504,8 @@ export interface operations {
                 cursor?: string;
                 /** @description Messages per page with conversationKey, 1–100. Defaults to 50. */
                 limit?: number;
+                /** @description Only the inbound Instagram messages that replied to this story: a message's story.id. Each reply's sender is the id to message back. Instagram only. */
+                storyId?: string;
             };
             header?: never;
             path?: never;
@@ -6519,6 +6545,18 @@ export interface operations {
                             createdAt: string;
                             /** @description `<platform>:<counterparty id>` (an IGSID, a PSID, or a WhatsApp wa_id in digits), scoped to accountId: with accountId it identifies one conversation. Pass it to listMessages to read that conversation. Null when the counterparty is unknown; optional so clients built before it existed still type-check. */
                             conversationKey?: string | null;
+                            /** @description The Instagram story this message replies to or mentions; null for every other message. Optional so clients built before it existed still type-check. */
+                            story?: {
+                                /**
+                                 * @description `reply` to one of the account's stories, or a `mention` of the account in someone else's story.
+                                 * @enum {string}
+                                 */
+                                type: "reply" | "mention";
+                                /** @description The story's id. Pass a reply's story id as storyId to listMessages to read every reply to that story. */
+                                id: string | null;
+                                /** @description Instagram's link to the story; it stops working when the story expires. */
+                                url: string | null;
+                            } | null;
                         }[];
                         errors: {
                             /** @enum {string} */
@@ -6565,6 +6603,18 @@ export interface operations {
                             createdAt: string;
                             /** @description `<platform>:<counterparty id>` (an IGSID, a PSID, or a WhatsApp wa_id in digits), scoped to accountId: with accountId it identifies one conversation. Pass it to listMessages to read that conversation. Null when the counterparty is unknown; optional so clients built before it existed still type-check. */
                             conversationKey?: string | null;
+                            /** @description The Instagram story this message replies to or mentions; null for every other message. Optional so clients built before it existed still type-check. */
+                            story?: {
+                                /**
+                                 * @description `reply` to one of the account's stories, or a `mention` of the account in someone else's story.
+                                 * @enum {string}
+                                 */
+                                type: "reply" | "mention";
+                                /** @description The story's id. Pass a reply's story id as storyId to listMessages to read every reply to that story. */
+                                id: string | null;
+                                /** @description Instagram's link to the story; it stops working when the story expires. */
+                                url: string | null;
+                            } | null;
                         }[];
                         errors: {
                             /** @enum {string} */
@@ -6719,6 +6769,18 @@ export interface operations {
                         createdAt: string;
                         /** @description `<platform>:<counterparty id>` (an IGSID, a PSID, or a WhatsApp wa_id in digits), scoped to accountId: with accountId it identifies one conversation. Pass it to listMessages to read that conversation. Null when the counterparty is unknown; optional so clients built before it existed still type-check. */
                         conversationKey?: string | null;
+                        /** @description The Instagram story this message replies to or mentions; null for every other message. Optional so clients built before it existed still type-check. */
+                        story?: {
+                            /**
+                             * @description `reply` to one of the account's stories, or a `mention` of the account in someone else's story.
+                             * @enum {string}
+                             */
+                            type: "reply" | "mention";
+                            /** @description The story's id. Pass a reply's story id as storyId to listMessages to read every reply to that story. */
+                            id: string | null;
+                            /** @description Instagram's link to the story; it stops working when the story expires. */
+                            url: string | null;
+                        } | null;
                     };
                 };
             };
