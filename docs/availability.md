@@ -14,7 +14,7 @@ The SDK types the whole public contract, but not every operation is live on ever
 | `bluesky` | Connect, profile, publishing | — |
 | `linkedin` | Connect (personal profile or Page), profile, publishing, analytics | — |
 | `meta_ads` | Connect, Page selection, and every `client.ads` operation | — |
-| `tiktok_ads` | — | Connect and every `client.ads` operation |
+| `tiktok_ads` | Connect and every `client.ads` operation TikTok supports | — |
 | `linkedin_ads` | Connect and the `client.ads` operations LinkedIn supports | — |
 
 A publication (`client.publications`) posts to each target with that platform's publishing availability above.
@@ -23,7 +23,7 @@ A publication (`client.publications`) posts to each target with that platform's 
 
 ## Runtime signals
 
-- **Ads.** On a deployment without TikTok Ads (production today), `client.ads` calls for that network answer `404 not_found`, and `startConnection` with `platform: 'tiktok_ads'` answers `422 provider_not_configured`.
+- **Ads.** On a deployment that does not offer TikTok Ads, `client.ads` calls for that network answer `404 not_found`, and `startConnection` with `platform: 'tiktok_ads'` answers `422 provider_not_configured`.
 - **Instagram and Facebook.** Publishing, analytics, and comments depend on the permissions the account granted. Read the account's `capabilities`, `missingPermissions`, and `missingResources` before calling; a call without them throws `PermissionRequiredError` (`permission_required`).
 - **LinkedIn.** Adeli's LinkedIn app is on LinkedIn's Development Tier: production and beta share an app-wide limit of 500 LinkedIn calls a day and 100 per member, and LinkedIn answers `429` once a limit is reached. Analytics come from a snapshot Adeli refreshes at most every six hours: read `fetchedAt`, and `stale: true` means LinkedIn rate-limited the refresh. A personal profile's post insights cover only posts published through Adeli; others answer `404 post_not_found`.
 - **Other platforms.** A capability the account was not granted reports `false` in `capabilities` and fails with `permission_required`.
