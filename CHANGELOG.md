@@ -1,5 +1,15 @@
 # @adeli/sdk
 
+## 0.6.0
+
+### Minor Changes
+
+- 1e1b7bd: Meta Ads: `ads.createCampaign` accepts full Meta campaigns (objective, budget, schedule, bid strategy, targeting, image, video or carousel creatives, Instagram identity, existing campaign or ad set, `validateOnly`); `ads.updateAdGroup`, `ads.listAdTargeting` and `ads.getAdInsights` serve Meta; new `ads.updateCampaign`, `ads.deleteAdGroup`, `ads.deleteAd`, `ads.estimateAdReach` and `ads.listAdInstagramAccounts`.
+
+### Patch Changes
+
+- cf2f062: TikTok Ads is now available on the production API: `startConnection` with `platform: 'tiktok_ads'` and the `client.ads` operations TikTok supports. No code changes; the README platform matrix and `docs/availability.md` mark it as production.
+
 ## 0.5.0
 
 ### Minor Changes
