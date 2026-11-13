@@ -845,7 +845,7 @@ export interface paths {
         };
         /**
          * Get an ad account
-         * @description Meta only.
+         * @description Meta only. Served from a copy at most five minutes old.
          */
         get: operations["getAdAccount"];
         put?: never;
@@ -869,7 +869,7 @@ export interface paths {
         };
         /**
          * Campaigns, ad sets (TikTok ad groups, LinkedIn campaigns), and ads for an ad account
-         * @description For LinkedIn, `campaigns` are campaign groups, `adSets` are campaigns, and `ads` are creatives.
+         * @description For LinkedIn, `campaigns` are campaign groups, `adSets` are campaigns, and `ads` are creatives. Meta trees are served from a copy at most five minutes old: `fetchedAt` is when Meta was asked, and `stale: true` marks an older copy served because Meta was rate limiting. Any change made through Adeli clears the copy.
          */
         get: operations["getAdTree"];
         put?: never;
@@ -889,7 +889,7 @@ export interface paths {
         };
         /**
          * Ad performance insights
-         * @description A daily series (`points`), or with `breakdown` totals split by one dimension (`rows`). Meta points and rows also carry reach, CTR, CPC, CPM, every action and its value (`actions`, `actionValues`, `costPerAction`), `conversionValue`, `roas`, and `results`/`costPerResult` for conversions or the `resultActionType` asked for.
+         * @description A daily series (`points`), or with `breakdown` totals split by one dimension (`rows`). Meta points and rows also carry reach, CTR, CPC, CPM, every action and its value (`actions`, `actionValues`, `costPerAction`), `conversionValue`, `roas`, and `results`/`costPerResult` for conversions or the `resultActionType` asked for. Meta reports are served from a copy: five minutes for ranges that reach the last two days, an hour within the last 28 days (while Meta may still restate conversions), a day for older ranges. `fetchedAt` is when Meta was asked; `stale: true` marks an older copy served because Meta was rate limiting.
          */
         get: operations["getAdInsights"];
         put?: never;
@@ -909,7 +909,7 @@ export interface paths {
         };
         /**
          * List lead forms or leads from a lead form
-         * @description Meta only.
+         * @description Meta only. Forms are served from a copy at most fifteen minutes old; leads are always read from Meta and never stored.
          */
         get: operations["listAdLeads"];
         put?: never;
@@ -931,7 +931,7 @@ export interface paths {
         put?: never;
         /**
          * Create a paused campaign
-         * @description Meta: a body with `objective` builds a full campaign — objective, daily or lifetime budget, schedule, bid strategy, targeting and a new image, video or carousel creative, or a boosted Page or Instagram post — optionally inside an existing campaign or ad set; `validateOnly: true` checks it with Meta, creates nothing and answers 200 with the steps checked. A body without `objective` boosts a Page post. TikTok creates a campaign, ad group and video ad; LinkedIn sponsors a post by the ad account's Page as a campaign group, campaign and creative, all drafts. Everything is created paused or as a draft: nothing spends until setAdStatus activates it.
+         * @description Meta: a body with `objective` builds a full campaign — objective, daily or lifetime budget, schedule, bid strategy, targeting and a new image, video or carousel creative, or a boosted Page or Instagram post — optionally inside an existing campaign or ad set; `validateOnly: true` checks it with Meta, creates nothing and answers 200 with the steps checked. A body without `objective` boosts a Page post. TikTok creates a campaign, ad group and video ad; LinkedIn sponsors a post by the ad account's Page as a campaign group, campaign and creative, all drafts. Everything is created paused or as a draft: nothing spends until setAdStatus activates it. Meta: at most 30 campaigns per ad account per five minutes and 100 per day (`429 ads_change_limited`, before the Idempotency-Key is used, so the same key can be retried). Meta: changes to one ad account are spaced a couple of seconds apart and answer `429 ads_change_limited` (with `Retry-After`) when too many are queued. A status or budget equal to the current one is accepted without calling Meta. One object's status, or budget, may change four times an hour. A budget increase of more than 50% answers `409 confirmation_required` until `confirmLargeChange: true` is sent after the user confirms the amount. `422 ads_writes_paused` means Adeli has paused this workspace's ad changes.
          */
         post: operations["createCampaign"];
         delete?: never;
@@ -956,7 +956,7 @@ export interface paths {
         head?: never;
         /**
          * Change a Meta campaign's name, budget, bid strategy or spend cap
-         * @description Meta only. A budget or bid strategy applies to Advantage campaign budget (CBO) campaigns; one that budgets per ad set returns 400, so change it on the ad set. `spendCap: null` removes the cap.
+         * @description Meta only. A budget or bid strategy applies to Advantage campaign budget (CBO) campaigns; one that budgets per ad set returns 400, so change it on the ad set. `spendCap: null` removes the cap. Meta: changes to one ad account are spaced a couple of seconds apart and answer `429 ads_change_limited` (with `Retry-After`) when too many are queued. A status or budget equal to the current one is accepted without calling Meta. One object's status, or budget, may change four times an hour. A budget increase of more than 50% answers `409 confirmation_required` until `confirmLargeChange: true` is sent after the user confirms the amount. `422 ads_writes_paused` means Adeli has paused this workspace's ad changes.
          */
         patch: operations["updateCampaign"];
         trace?: never;
@@ -980,7 +980,7 @@ export interface paths {
         head?: never;
         /**
          * Change an ad set (TikTok ad group, LinkedIn campaign)
-         * @description Meta: name, daily or lifetime budget (the type it already has), bid, start and end dates, and targeting (which replaces the whole spec). TikTok and LinkedIn: daily budget, end date or name.
+         * @description Meta: name, daily or lifetime budget (the type it already has), bid, start and end dates, and targeting (which replaces the whole spec). TikTok and LinkedIn: daily budget, end date or name. Meta: changes to one ad account are spaced a couple of seconds apart and answer `429 ads_change_limited` (with `Retry-After`) when too many are queued. A status or budget equal to the current one is accepted without calling Meta. One object's status, or budget, may change four times an hour. A budget increase of more than 50% answers `409 confirmation_required` until `confirmLargeChange: true` is sent after the user confirms the amount. `422 ads_writes_paused` means Adeli has paused this workspace's ad changes.
          */
         patch: operations["updateAdGroup"];
         trace?: never;
@@ -1055,7 +1055,7 @@ export interface paths {
         get?: never;
         /**
          * Pause or activate a campaign, ad set (ad group), or ad
-         * @description LinkedIn: activating a draft campaign group Adeli created activates its creative, campaign and group, in that order.
+         * @description LinkedIn: activating a draft campaign group Adeli created activates its creative, campaign and group, in that order. Meta: changes to one ad account are spaced a couple of seconds apart and answer `429 ads_change_limited` (with `Retry-After`) when too many are queued. A status or budget equal to the current one is accepted without calling Meta. One object's status, or budget, may change four times an hour. A budget increase of more than 50% answers `409 confirmation_required` until `confirmLargeChange: true` is sent after the user confirms the amount. `422 ads_writes_paused` means Adeli has paused this workspace's ad changes.
          */
         put: operations["setAdStatus"];
         post?: never;
@@ -8866,7 +8866,7 @@ export interface operations {
                 profileId?: string;
                 /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
                 platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
-                /** @description Optional boolean string; `true` bypasses the cached list, while `false` (or omission) uses the cache. */
+                /** @description Optional boolean string; `true` re-reads the list, at most once a minute (a list read within the last minute is returned as is), while `false` (or omission) uses the cached list. */
                 refresh?: "true" | "false";
             };
             header?: never;
@@ -9154,6 +9154,8 @@ export interface operations {
                 profileId?: string;
                 /** @description Needed only when the profile has more than one ad network connected and no `accountId` is given. */
                 platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
+                /** @description Meta: `true` re-reads from Meta instead of Adeli's stored copy, at most once a minute. Use it only when something just changed outside Adeli; Adeli's own changes clear the copy. */
+                refresh?: "true" | "false";
             };
             header?: never;
             path: {
@@ -9430,6 +9432,8 @@ export interface operations {
                 adAccountId: string;
                 since?: string;
                 until?: string;
+                /** @description Meta: `true` re-reads from Meta instead of Adeli's stored copy, at most once a minute. Use it only when something just changed outside Adeli; Adeli's own changes clear the copy. */
+                refresh?: "true" | "false";
             };
             header?: never;
             path?: never;
@@ -9525,6 +9529,8 @@ export interface operations {
                         };
                         /** Format: date-time */
                         fetchedAt: string;
+                        /** @constant */
+                        stale?: true;
                     };
                 };
             };
@@ -9624,6 +9630,8 @@ export interface operations {
                 resultActionType?: string;
                 since?: string;
                 until?: string;
+                /** @description Meta: `true` re-reads from Meta instead of Adeli's stored copy, at most once a minute. Use it only when something just changed outside Adeli; Adeli's own changes clear the copy. */
+                refresh?: "true" | "false";
             };
             header?: never;
             path?: never;
@@ -9680,6 +9688,8 @@ export interface operations {
                         };
                         /** Format: date-time */
                         fetchedAt: string;
+                        /** @constant */
+                        stale?: true;
                     } | {
                         /** @constant */
                         platform: "meta_ads";
@@ -9725,6 +9735,8 @@ export interface operations {
                         };
                         /** Format: date-time */
                         fetchedAt: string;
+                        /** @constant */
+                        stale?: true;
                     } | {
                         /** @enum {string} */
                         platform: "meta_ads" | "tiktok_ads" | "linkedin_ads";
@@ -9887,6 +9899,8 @@ export interface operations {
                 platform?: "meta_ads" | "tiktok_ads" | "linkedin_ads";
                 /** @description Omit to list forms; pass a form id to list its leads. */
                 formId?: string;
+                /** @description Meta: `true` re-reads from Meta instead of Adeli's stored copy, at most once a minute. Use it only when something just changed outside Adeli; Adeli's own changes clear the copy. */
+                refresh?: "true" | "false";
             };
             header?: never;
             path?: never;
@@ -10760,6 +10774,7 @@ export interface operations {
                     /** @enum {string} */
                     bidStrategy?: "lowest_cost" | "bid_cap" | "cost_cap" | "min_roas";
                     spendCap?: number | null;
+                    confirmLargeChange?: boolean;
                 };
             };
         };
@@ -11060,6 +11075,7 @@ export interface operations {
                         /** @default false */
                         advantageAudience?: boolean;
                     };
+                    confirmLargeChange?: boolean;
                 } | {
                     adAccountId: string;
                     name?: string;

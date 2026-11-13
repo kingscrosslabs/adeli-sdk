@@ -5,7 +5,7 @@
 Generated from `src/operations.ts` metadata, AST-extracted resource method declarations, and the checked-in verified public docs mapping `openapi/docs-links.json`; this file is not hand-maintained.
 
 - Contract status: **candidate-unreleased**
-- Candidate OpenAPI SHA-256: `39ba6edb4cd0cdad5ce8beb3f7bdc77177f036483eeb02109d41b0b887d5dede`
+- Candidate OpenAPI SHA-256: `01e4aaaedc9c4353a42442fb7551d2cd245459442782be5e68549c4c38d5033c`
 - Public endpoint documentation: https://www.tryadeli.com/docs/
 
 | Resource | Method signature | HTTP | Path | Endpoint docs |
