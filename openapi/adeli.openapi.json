@@ -18826,7 +18826,7 @@
                 "false"
               ]
             },
-            "description": "Optional boolean string; `true` bypasses the cached list, while `false` (or omission) uses the cache."
+            "description": "Optional boolean string; `true` re-reads the list, at most once a minute (a list read within the last minute is returned as is), while `false` (or omission) uses the cached list."
           }
         ],
         "responses": {
@@ -19489,7 +19489,7 @@
       "get": {
         "operationId": "getAdAccount",
         "summary": "Get an ad account",
-        "description": "Meta only.",
+        "description": "Meta only. Served from a copy at most five minutes old.",
         "tags": [
           "Ads"
         ],
@@ -19537,6 +19537,19 @@
               ]
             },
             "description": "Needed only when the profile has more than one ad network connected and no `accountId` is given."
+          },
+          {
+            "name": "refresh",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "description": "Meta: `true` re-reads from Meta instead of Adeli's stored copy, at most once a minute. Use it only when something just changed outside Adeli; Adeli's own changes clear the copy."
           }
         ],
         "responses": {
@@ -20138,7 +20151,7 @@
       "get": {
         "operationId": "getAdTree",
         "summary": "Campaigns, ad sets (TikTok ad groups, LinkedIn campaigns), and ads for an ad account",
-        "description": "For LinkedIn, `campaigns` are campaign groups, `adSets` are campaigns, and `ads` are creatives.",
+        "description": "For LinkedIn, `campaigns` are campaign groups, `adSets` are campaigns, and `ads` are creatives. Meta trees are served from a copy at most five minutes old: `fetchedAt` is when Meta was asked, and `stale: true` marks an older copy served because Meta was rate limiting. Any change made through Adeli clears the copy.",
         "tags": [
           "Ads"
         ],
@@ -20203,6 +20216,19 @@
               "type": "string",
               "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
             }
+          },
+          {
+            "name": "refresh",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "description": "Meta: `true` re-reads from Meta instead of Adeli's stored copy, at most once a minute. Use it only when something just changed outside Adeli; Adeli's own changes clear the copy."
           }
         ],
         "responses": {
@@ -20621,6 +20647,10 @@
                       "type": "string",
                       "format": "date-time",
                       "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    },
+                    "stale": {
+                      "type": "boolean",
+                      "const": true
                     }
                   },
                   "required": [
@@ -20723,7 +20753,7 @@
       "get": {
         "operationId": "getAdInsights",
         "summary": "Ad performance insights",
-        "description": "A daily series (`points`), or with `breakdown` totals split by one dimension (`rows`). Meta points and rows also carry reach, CTR, CPC, CPM, every action and its value (`actions`, `actionValues`, `costPerAction`), `conversionValue`, `roas`, and `results`/`costPerResult` for conversions or the `resultActionType` asked for.",
+        "description": "A daily series (`points`), or with `breakdown` totals split by one dimension (`rows`). Meta points and rows also carry reach, CTR, CPC, CPM, every action and its value (`actions`, `actionValues`, `costPerAction`), `conversionValue`, `roas`, and `results`/`costPerResult` for conversions or the `resultActionType` asked for. Meta reports are served from a copy: five minutes for ranges that reach the last two days, an hour within the last 28 days (while Meta may still restate conversions), a day for older ranges. `fetchedAt` is when Meta was asked; `stale: true` marks an older copy served because Meta was rate limiting.",
         "tags": [
           "Ads"
         ],
@@ -20870,6 +20900,19 @@
               "type": "string",
               "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
             }
+          },
+          {
+            "name": "refresh",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "description": "Meta: `true` re-reads from Meta instead of Adeli's stored copy, at most once a minute. Use it only when something just changed outside Adeli; Adeli's own changes clear the copy."
           }
         ],
         "responses": {
@@ -21078,6 +21121,10 @@
                           "type": "string",
                           "format": "date-time",
                           "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                        },
+                        "stale": {
+                          "type": "boolean",
+                          "const": true
                         }
                       },
                       "required": [
@@ -21301,6 +21348,10 @@
                           "type": "string",
                           "format": "date-time",
                           "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                        },
+                        "stale": {
+                          "type": "boolean",
+                          "const": true
                         }
                       },
                       "required": [
@@ -21714,7 +21765,7 @@
       "get": {
         "operationId": "listAdLeads",
         "summary": "List lead forms or leads from a lead form",
-        "description": "Meta only.",
+        "description": "Meta only. Forms are served from a copy at most fifteen minutes old; leads are always read from Meta and never stored.",
         "tags": [
           "Ads"
         ],
@@ -21761,6 +21812,19 @@
               "type": "string"
             },
             "description": "Omit to list forms; pass a form id to list its leads."
+          },
+          {
+            "name": "refresh",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "description": "Meta: `true` re-reads from Meta instead of Adeli's stored copy, at most once a minute. Use it only when something just changed outside Adeli; Adeli's own changes clear the copy."
           }
         ],
         "responses": {
@@ -22043,7 +22107,7 @@
       "post": {
         "operationId": "createCampaign",
         "summary": "Create a paused campaign",
-        "description": "Meta: a body with `objective` builds a full campaign — objective, daily or lifetime budget, schedule, bid strategy, targeting and a new image, video or carousel creative, or a boosted Page or Instagram post — optionally inside an existing campaign or ad set; `validateOnly: true` checks it with Meta, creates nothing and answers 200 with the steps checked. A body without `objective` boosts a Page post. TikTok creates a campaign, ad group and video ad; LinkedIn sponsors a post by the ad account's Page as a campaign group, campaign and creative, all drafts. Everything is created paused or as a draft: nothing spends until setAdStatus activates it.",
+        "description": "Meta: a body with `objective` builds a full campaign — objective, daily or lifetime budget, schedule, bid strategy, targeting and a new image, video or carousel creative, or a boosted Page or Instagram post — optionally inside an existing campaign or ad set; `validateOnly: true` checks it with Meta, creates nothing and answers 200 with the steps checked. A body without `objective` boosts a Page post. TikTok creates a campaign, ad group and video ad; LinkedIn sponsors a post by the ad account's Page as a campaign group, campaign and creative, all drafts. Everything is created paused or as a draft: nothing spends until setAdStatus activates it. Meta: at most 30 campaigns per ad account per five minutes and 100 per day (`429 ads_change_limited`, before the Idempotency-Key is used, so the same key can be retried). Meta: changes to one ad account are spaced a couple of seconds apart and answer `429 ads_change_limited` (with `Retry-After`) when too many are queued. A status or budget equal to the current one is accepted without calling Meta. One object's status, or budget, may change four times an hour. A budget increase of more than 50% answers `409 confirmation_required` until `confirmLargeChange: true` is sent after the user confirms the amount. `422 ads_writes_paused` means Adeli has paused this workspace's ad changes.",
         "tags": [
           "Ads"
         ],
@@ -24883,7 +24947,7 @@
       "patch": {
         "operationId": "updateCampaign",
         "summary": "Change a Meta campaign's name, budget, bid strategy or spend cap",
-        "description": "Meta only. A budget or bid strategy applies to Advantage campaign budget (CBO) campaigns; one that budgets per ad set returns 400, so change it on the ad set. `spendCap: null` removes the cap.",
+        "description": "Meta only. A budget or bid strategy applies to Advantage campaign budget (CBO) campaigns; one that budgets per ad set returns 400, so change it on the ad set. `spendCap: null` removes the cap. Meta: changes to one ad account are spaced a couple of seconds apart and answer `429 ads_change_limited` (with `Retry-After`) when too many are queued. A status or budget equal to the current one is accepted without calling Meta. One object's status, or budget, may change four times an hour. A budget increase of more than 50% answers `409 confirmation_required` until `confirmLargeChange: true` is sent after the user confirms the amount. `422 ads_writes_paused` means Adeli has paused this workspace's ad changes.",
         "tags": [
           "Ads"
         ],
@@ -24991,6 +25055,9 @@
                         "type": "null"
                       }
                     ]
+                  },
+                  "confirmLargeChange": {
+                    "type": "boolean"
                   }
                 },
                 "required": [
@@ -25443,7 +25510,7 @@
       "patch": {
         "operationId": "updateAdGroup",
         "summary": "Change an ad set (TikTok ad group, LinkedIn campaign)",
-        "description": "Meta: name, daily or lifetime budget (the type it already has), bid, start and end dates, and targeting (which replaces the whole spec). TikTok and LinkedIn: daily budget, end date or name.",
+        "description": "Meta: name, daily or lifetime budget (the type it already has), bid, start and end dates, and targeting (which replaces the whole spec). TikTok and LinkedIn: daily budget, end date or name. Meta: changes to one ad account are spaced a couple of seconds apart and answer `429 ads_change_limited` (with `Retry-After`) when too many are queued. A status or budget equal to the current one is accepted without calling Meta. One object's status, or budget, may change four times an hour. A budget increase of more than 50% answers `409 confirmation_required` until `confirmLargeChange: true` is sent after the user confirms the amount. `422 ads_writes_paused` means Adeli has paused this workspace's ad changes.",
         "tags": [
           "Ads"
         ],
@@ -25963,6 +26030,9 @@
                           "locations"
                         ],
                         "additionalProperties": false
+                      },
+                      "confirmLargeChange": {
+                        "type": "boolean"
                       }
                     },
                     "required": [
@@ -27203,7 +27273,7 @@
       "put": {
         "operationId": "setAdStatus",
         "summary": "Pause or activate a campaign, ad set (ad group), or ad",
-        "description": "LinkedIn: activating a draft campaign group Adeli created activates its creative, campaign and group, in that order.",
+        "description": "LinkedIn: activating a draft campaign group Adeli created activates its creative, campaign and group, in that order. Meta: changes to one ad account are spaced a couple of seconds apart and answer `429 ads_change_limited` (with `Retry-After`) when too many are queued. A status or budget equal to the current one is accepted without calling Meta. One object's status, or budget, may change four times an hour. A budget increase of more than 50% answers `409 confirmation_required` until `confirmLargeChange: true` is sent after the user confirms the amount. `422 ads_writes_paused` means Adeli has paused this workspace's ad changes.",
         "tags": [
           "Ads"
         ],
