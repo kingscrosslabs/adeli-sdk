@@ -3833,6 +3833,7 @@
       "get": {
         "operationId": "listPosts",
         "summary": "List posts",
+        "description": "One page of posts across the filtered accounts, newest first: `limit` posts (default 25, at most 100), with posts waiting in a scheduled publication first on the page without a `cursor`. Pass `nextCursor` back as `cursor` for the next, older page; it is null once every account is exhausted. Each request reads at most one page from each provider, so a page can hold fewer than `limit` posts while `nextCursor` is set. A cursor is bound to the filter and limit it was made with (`400 invalid_cursor` otherwise).",
         "tags": [
           "Posts"
         ],
@@ -3875,6 +3876,27 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,4096}$"
+            },
+            "description": "nextCursor from the previous page, toward older posts. Only valid with the same platform, accountId, profileId and limit."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "description": "Posts per page, 1–100. Defaults to 25."
           }
         ],
         "responses": {
@@ -4101,12 +4123,20 @@
                           "message"
                         ]
                       }
+                    },
+                    "nextCursor": {
+                      "description": "Pass as cursor for the next, older page; null when every account is exhausted.",
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     }
                   },
                   "required": [
                     "status",
                     "posts",
-                    "errors"
+                    "errors",
+                    "nextCursor"
                   ]
                 }
               }
@@ -4335,12 +4365,20 @@
                           "message"
                         ]
                       }
+                    },
+                    "nextCursor": {
+                      "description": "Pass as cursor for the next, older page; null when every account is exhausted.",
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     }
                   },
                   "required": [
                     "status",
                     "posts",
-                    "errors"
+                    "errors",
+                    "nextCursor"
                   ]
                 }
               }
@@ -15984,6 +16022,469 @@
                     "profileId",
                     "insights",
                     "fetchedAt"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The connection lacks a permission or provider-confirmed resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionRequiredError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Profile, account, or object not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The connected account cannot perform this operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/instagram/post-insights": {
+      "get": {
+        "operationId": "getInstagramPostInsights",
+        "summary": "Instagram post insights",
+        "description": "Per-post views, reach, likes, comments, shares, saves and interactions, plus watch time and skip rate for reels and replies and navigation for stories, for up to 50 posts by id or a page of the newest posts in a window. Served from Adeli's store, which a background sync keeps current: figures are lifetime, organic only (`totalViews`, `totalLikes` and `totalComments` include ads and are reported for Facebook-host accounts only), and Meta may revise them for up to 48 hours. Each post carries `fetchedAt` and per-metric `warnings`; `sync` says whether a refresh is running. Watch time is in milliseconds, with `…Sec` conveniences.",
+        "tags": [
+          "Analytics"
+        ],
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "profileId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "postIds",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Comma-separated Instagram media ids (providerId from list_posts), at most 50. Cannot be combined with since or until."
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Only posts published at or after this ISO 8601 date or date-time."
+          },
+          {
+            "name": "until",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Only posts published before this ISO 8601 date or date-time. Pass nextUntil here for the next, older page."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            },
+            "description": "Posts per page, 1–500. Defaults to 25."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "platform": {
+                      "type": "string",
+                      "const": "instagram"
+                    },
+                    "accountId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "profileId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "posts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "postId": {
+                            "type": "string"
+                          },
+                          "mediaType": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "mediaProductType": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "publishedAt": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "permalink": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "metrics": {
+                            "type": "object",
+                            "properties": {
+                              "views": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "reach": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "likes": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "comments": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "shares": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "saves": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "totalInteractions": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "profileVisits": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "follows": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "replies": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "navigation": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "avgWatchTimeMs": {
+                                "description": "Reels: average watch time, in milliseconds as Meta reports it.",
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "totalWatchTimeMs": {
+                                "description": "Reels: total watch time, in milliseconds.",
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "avgWatchTimeSec": {
+                                "description": "avgWatchTimeMs in seconds, to one decimal place.",
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "totalWatchTimeSec": {
+                                "description": "totalWatchTimeMs in seconds, to one decimal place.",
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "skipRate": {
+                                "description": "Reels: percentage of views that skipped in the first three seconds.",
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "crosspostedViews": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "totalViews": {
+                                "description": "Facebook-host accounts only; includes ads and boosts.",
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "totalLikes": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "totalComments": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "views",
+                              "reach",
+                              "likes",
+                              "comments",
+                              "shares",
+                              "saves",
+                              "totalInteractions",
+                              "profileVisits",
+                              "follows",
+                              "replies",
+                              "navigation",
+                              "avgWatchTimeMs",
+                              "totalWatchTimeMs",
+                              "avgWatchTimeSec",
+                              "totalWatchTimeSec",
+                              "skipRate",
+                              "crosspostedViews",
+                              "totalViews",
+                              "totalLikes",
+                              "totalComments"
+                            ]
+                          },
+                          "warnings": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "metric": {
+                                  "type": "string"
+                                },
+                                "reason": {
+                                  "type": "string",
+                                  "enum": [
+                                    "pending",
+                                    "not_returned",
+                                    "unsupported_for_account",
+                                    "not_enough_viewers",
+                                    "unavailable",
+                                    "rate_limited"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "metric",
+                                "reason"
+                              ]
+                            }
+                          },
+                          "fetchedAt": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "description": "When Adeli read these figures from Instagram; null when not read yet."
+                          }
+                        },
+                        "required": [
+                          "postId",
+                          "mediaType",
+                          "mediaProductType",
+                          "publishedAt",
+                          "permalink",
+                          "metrics",
+                          "warnings",
+                          "fetchedAt"
+                        ]
+                      }
+                    },
+                    "notFound": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Requested ids that are not this account's posts."
+                    },
+                    "nextUntil": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "description": "Pass as until for the next, older page; null on the last page or with postIds."
+                    },
+                    "sync": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "fresh",
+                            "refreshing",
+                            "pending",
+                            "backoff"
+                          ]
+                        },
+                        "lastSyncedAt": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "pendingPosts": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991,
+                          "description": "Posts in this response whose figures are not read yet or are due a refresh."
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "lastSyncedAt",
+                        "pendingPosts"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "platform",
+                    "accountId",
+                    "profileId",
+                    "posts",
+                    "notFound",
+                    "nextUntil",
+                    "sync"
                   ]
                 }
               }
@@ -30403,12 +30904,20 @@
                 "message"
               ]
             }
+          },
+          "nextCursor": {
+            "description": "Pass as cursor for the next, older page; null when every account is exhausted.",
+            "type": [
+              "string",
+              "null"
+            ]
           }
         },
         "required": [
           "status",
           "posts",
-          "errors"
+          "errors",
+          "nextCursor"
         ]
       },
       "MessagesAggregate": {

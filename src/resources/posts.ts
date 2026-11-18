@@ -85,6 +85,7 @@ type Platform = NonNullable<CreateMediaUploadsBody['platform']>;
 
 export class PostsResource {
   constructor(private readonly transport: Transport) {}
+  /** One page of posts, newest first (25 by default, `limit` up to 100). Pass `nextCursor` as `cursor` for older posts, or use `iteratePosts`. */
   listPosts(args: { readonly query?: PostsQuery } = {}, options: RequestOptions = {}): Promise<ApiResponse<PostListResponse>> {
     return this.transport.request({ operation: operations.listPosts, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs });
   }
