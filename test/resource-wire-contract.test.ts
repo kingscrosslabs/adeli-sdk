@@ -73,7 +73,7 @@ function wireResponse(operationId: string, _status?: string): unknown {
     case 'getAccount': case 'updateAccount': return account;
     case 'disconnectAccount': return { id, disconnected: true, revocationFailed: false };
     case 'refreshAccounts': return { status: 'partial', accounts: [{ id, accountId: id, profileId: id, platform: 'youtube', refreshed: true, expiresAt: '2025-01-02T00:00:00.000Z' }], errors: [errorRecord] };
-    case 'listPosts': return { status: 'partial', posts: [post], errors: [errorRecord] };
+    case 'listPosts': return { status: 'partial', posts: [post], errors: [errorRecord], nextCursor: 'next-page' };
     case 'createMediaUploads': return { uploads: [{ clientId: '0', uploadId: 'staged', method: 'PUT', url: 'https://s3.example/0', headers: { 'content-type': 'video/mp4' }, expiresAt: '2026-10-26T12:00:00.000Z' }] };
     case 'createPost':
       if (_status === '201') return post;
@@ -108,6 +108,7 @@ function wireResponse(operationId: string, _status?: string): unknown {
     case 'getTikTokAccountAnalytics': return { platform: 'tiktok', accountId: id, profileId: id, profile: { openId: 'open', username: null, displayName: null, avatarUrl: null, profileDeepLink: null, bioDescription: null, isVerified: null, isBusinessAccount: null }, analytics: { followers: 0, following: null, likes: null, videos: null }, fetchedAt: profile.updatedAt };
     case 'getTikTokAccountInsights': return { platform: 'tiktok', accountId: id, profileId: id, isBusinessAccount: null, startDate: '2025-01-01', endDate: '2025-01-02', daily: [], audience: { ages: [], genders: [], countries: [], cities: [] }, fetchedAt: profile.updatedAt };
     case 'getTikTokVideoInsights': return { platform: 'tiktok', accountId: id, profileId: id, videos: [], fetchedAt: profile.updatedAt };
+    case 'getInstagramPostInsights': return { platform: 'instagram', accountId: id, profileId: id, posts: [], notFound: [], nextUntil: null, sync: { status: 'fresh', lastSyncedAt: profile.updatedAt, pendingPosts: 0 } };
     case 'getYouTubeChannelInsights': return { platform: 'youtube', accountId: id, profileId: id, channel: { channelId: 'channel', title: 'Channel', handle: null, avatarUrl: null, subscribers: null, views: null, videos: null }, insights: { startDate: '2025-01-01', endDate: '2025-01-02', daily: [], topVideos: [], audience: { ageGender: [], countries: [] } }, fetchedAt: profile.updatedAt };
     case 'getLinkedInAccountInsights': return { platform: 'linkedin', accountId: id, profileId: id, targetType: 'organization', followers: 10, startDate: '2025-01-01', endDate: '2025-01-02', daily: [], unavailable: [], fetchedAt: profile.updatedAt, stale: false };
     case 'getLinkedInPostInsights': return { platform: 'linkedin', accountId: id, profileId: id, targetType: 'member', posts: [], fetchedAt: profile.updatedAt };
@@ -146,7 +147,7 @@ type WireCase = { id: string; call: (options: RequestOptions) => Promise<ApiResp
 function jsonBody(body: Record<string, unknown>): ExpectedBody { return body; }
 function requireRequest(value: Request | undefined, id: string): Request { if (value === undefined) throw new Error(`${id}: fetch was not called`); return value; }
 // Request expectations are deliberately written independently of operations metadata; the registry is only a coverage allow-list.
-test('all 76 registered operations preserve exact wire requests and response envelopes', async () => {
+test('all 77 registered operations preserve exact wire requests and response envelopes', async () => {
   let currentFixture: WireCase | undefined;
   let returnUnauthorized = false;
   const unauthorizedDetails = { reason: 'wire-contract', nested: { preserved: true } };
@@ -172,7 +173,7 @@ test('all 76 registered operations preserve exact wire requests and response env
     { id: 'updateAccount', call: (o) => client.accounts.updateAccount({ path: { profileId: id, accountId: id }, body: { xCapabilities: { analytics: false, inbox: true } } }, o), method: 'PATCH', path: `/api/v1/profiles/${id}/accounts/${id}`, body: jsonBody({ xCapabilities: { analytics: false, inbox: true } }), status: 200, response: wireResponse('updateAccount') },
     { id: 'disconnectAccount', call: (o) => client.accounts.disconnectAccount({ path: { profileId: id, accountId: id } }, o), method: 'DELETE', path: `/api/v1/profiles/${id}/accounts/${id}`, status: 200, response: wireResponse('disconnectAccount') },
     { id: 'refreshAccounts', call: (o) => client.accounts.refreshAccounts({ path: { profileId: id } }, o), method: 'POST', path: `/api/v1/profiles/${id}/accounts/refresh`, status: 207, response: wireResponse('refreshAccounts') },
-    { id: 'listPosts', call: (o) => client.posts.listPosts({ query: { platform: 'x', accountId: id, profileId: id } }, o), method: 'GET', path: '/api/v1/posts', query: `platform=x&accountId=${id}&profileId=${id}`, status: 207, response: wireResponse('listPosts') },
+    { id: 'listPosts', call: (o) => client.posts.listPosts({ query: { platform: 'x', accountId: id, profileId: id, limit: 10, cursor: 'c1' } }, o), method: 'GET', path: '/api/v1/posts', query: `platform=x&accountId=${id}&profileId=${id}&limit=10&cursor=c1`, status: 207, response: wireResponse('listPosts') },
     { id: 'createMediaUploads', call: (o) => client.posts.createMediaUploads({ body: { profileId: id, platform: 'youtube', files: [{ clientId: '0', purpose: 'post_media', contentType: 'video/mp4', size: 1 }] } }, o), method: 'POST', path: '/api/v1/media/uploads', body: jsonBody({ profileId: id, platform: 'youtube', files: [{ clientId: '0', purpose: 'post_media', contentType: 'video/mp4', size: 1 }] }), status: 201, response: wireResponse('createMediaUploads') },
     { id: 'createPost', call: (o) => client.posts.createPost({ body: { platform: 'x', accountId: id, text: 'hello', media: [{ url: 'https://media.example/a.jpg' }] } }, o), method: 'POST', path: '/api/v1/posts', body: jsonBody({ platform: 'x', accountId: id, text: 'hello', media: [{ url: 'https://media.example/a.jpg' }] }), status: 207, response: wireResponse('createPost') },
     { id: 'uploadYouTubeVideo', call: (o) => client.posts.uploadYouTubeVideo({ body: { platform: 'youtube', accountId: id, video: { upload_id: 'staged' }, title: 'v', privacy_status: 'private', made_for_kids: false } }, o), method: 'POST', path: '/api/v1/posts/youtube', body: jsonBody({ platform: 'youtube', accountId: id, video: { upload_id: 'staged' }, title: 'v', privacy_status: 'private', made_for_kids: false }), status: 202, response: wireResponse('uploadYouTubeVideo') },
@@ -204,6 +205,7 @@ test('all 76 registered operations preserve exact wire requests and response env
     { id: 'getTikTokAccountAnalytics', call: (o) => client.analytics.getTikTokAccountAnalytics({ query: { accountId: id, profileId: id } }, o), method: 'GET', path: '/api/v1/analytics/tiktok/account-analytics', query: `accountId=${id}&profileId=${id}`, status: 200, response: wireResponse('getTikTokAccountAnalytics') },
     { id: 'getTikTokAccountInsights', call: (o) => client.analytics.getTikTokAccountInsights({ query: { accountId: id, profileId: id, startDate: '2025-01-01', endDate: '2025-01-02' } }, o), method: 'GET', path: '/api/v1/analytics/tiktok/account-insights', query: `accountId=${id}&profileId=${id}&startDate=2025-01-01&endDate=2025-01-02`, status: 200, response: wireResponse('getTikTokAccountInsights') },
     { id: 'getTikTokVideoInsights', call: (o) => client.analytics.getTikTokVideoInsights({ query: { accountId: id, profileId: id, videoIds: 'v1' } }, o), method: 'GET', path: '/api/v1/analytics/tiktok/video-insights', query: `accountId=${id}&profileId=${id}&videoIds=v1`, status: 200, response: wireResponse('getTikTokVideoInsights') },
+    { id: 'getInstagramPostInsights', call: (o) => client.analytics.getInstagramPostInsights({ query: { accountId: id, profileId: id, postIds: '1790,1791' } }, o), method: 'GET', path: '/api/v1/analytics/instagram/post-insights', query: `accountId=${id}&profileId=${id}&postIds=1790%2C1791`, status: 200, response: wireResponse('getInstagramPostInsights') },
     { id: 'getYouTubeChannelInsights', call: (o) => client.analytics.getYouTubeChannelInsights({ query: { accountId: id, profileId: id, startDate: '2025-01-01', endDate: '2025-01-02' } }, o), method: 'GET', path: '/api/v1/analytics/youtube/channel-insights', query: `accountId=${id}&profileId=${id}&startDate=2025-01-01&endDate=2025-01-02`, status: 200, response: wireResponse('getYouTubeChannelInsights') },
     { id: 'getYouTubeVideoInsights', call: (o) => client.analytics.getYouTubeVideoInsights({ query: { accountId: id, profileId: id, videoIds: 'v1' } }, o), method: 'GET', path: '/api/v1/analytics/youtube/video-insights', query: `accountId=${id}&profileId=${id}&videoIds=v1`, status: 200, response: wireResponse('getYouTubeVideoInsights') },
     { id: 'getLinkedInAccountInsights', call: (o) => client.analytics.getLinkedInAccountInsights({ query: { accountId: id, profileId: id, days: 7 } }, o), method: 'GET', path: '/api/v1/analytics/linkedin/account-insights', query: `accountId=${id}&profileId=${id}&days=7`, status: 200, response: wireResponse('getLinkedInAccountInsights') },
@@ -239,7 +241,7 @@ test('all 76 registered operations preserve exact wire requests and response env
   const { operations } = await import('../src/operations.js');
   expect(new Set(cases.map((item) => item.id))).toEqual(new Set(Object.keys(operations)));
   expect(cases).toHaveLength(Object.keys(operations).length);
-  expect(declaredSuccessPairs()).toHaveLength(87);
+  expect(declaredSuccessPairs()).toHaveLength(88);
   for (const fixture of cases) {
     for (const status of successStatuses(fixture.id)) {
       delete state.request;

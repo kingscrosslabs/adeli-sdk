@@ -4,6 +4,7 @@ import type { Transport } from '../core/transport.js';
 import { operations } from '../operations.js';
 
 export type InstagramAccountInsightsQuery = JsonQuery<'getInstagramAccountInsights'>;
+export type InstagramPostInsightsQuery = JsonQuery<'getInstagramPostInsights'>;
 export type FacebookPageMetricsQuery = JsonQuery<'getFacebookPageMetrics'>;
 export type TikTokAccountAnalyticsQuery = JsonQuery<'getTikTokAccountAnalytics'>;
 export type TikTokAccountInsightsQuery = JsonQuery<'getTikTokAccountInsights'>;
@@ -13,6 +14,9 @@ export type YouTubeVideoInsightsQuery = JsonQuery<'getYouTubeVideoInsights'>;
 export type LinkedInAccountInsightsQuery = JsonQuery<'getLinkedInAccountInsights'>;
 export type LinkedInPostInsightsQuery = JsonQuery<'getLinkedInPostInsights'>;
 export type InstagramAccountInsightsResponse = SuccessBody<'getInstagramAccountInsights'>;
+export type InstagramPostInsightsResponse = SuccessBody<'getInstagramPostInsights'>;
+/** One post's insights: metrics by media type, warnings for null metrics, and when Adeli read them. */
+export type InstagramPostInsights = InstagramPostInsightsResponse['posts'][number];
 export type FacebookPageMetricsResponse = SuccessBody<'getFacebookPageMetrics'>;
 export type TikTokAccountAnalyticsResponse = SuccessBody<'getTikTokAccountAnalytics'>;
 export type TikTokAccountInsightsResponse = SuccessBody<'getTikTokAccountInsights'>;
@@ -25,6 +29,12 @@ export type LinkedInPostInsightsResponse = SuccessBody<'getLinkedInPostInsights'
 export class AnalyticsResource {
   constructor(private readonly transport: Transport) {}
   getInstagramAccountInsights(args: { readonly query: InstagramAccountInsightsQuery }, options: RequestOptions = {}): Promise<ApiResponse<InstagramAccountInsightsResponse>> { return this.transport.request({ operation: operations.getInstagramAccountInsights, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs }); }
+  /**
+   * Per-post Instagram insights from Adeli's store: up to 50 posts by `postIds`, or the newest
+   * `limit` (up to 500) within `since`/`until`, paged with `nextUntil`. Reels add watch time.
+   * `sync.status` says whether a background refresh is running; read again later rather than in a loop.
+   */
+  getInstagramPostInsights(args: { readonly query: InstagramPostInsightsQuery }, options: RequestOptions = {}): Promise<ApiResponse<InstagramPostInsightsResponse>> { return this.transport.request({ operation: operations.getInstagramPostInsights, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs }); }
   getFacebookPageMetrics(args: { readonly query?: FacebookPageMetricsQuery }, options: RequestOptions = {}): Promise<ApiResponse<FacebookPageMetricsResponse>> { return this.transport.request({ operation: operations.getFacebookPageMetrics, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs }); }
   getTikTokAccountAnalytics(args: { readonly query: TikTokAccountAnalyticsQuery }, options: RequestOptions = {}): Promise<ApiResponse<TikTokAccountAnalyticsResponse>> { return this.transport.request({ operation: operations.getTikTokAccountAnalytics, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs }); }
   getTikTokAccountInsights(args: { readonly query: TikTokAccountInsightsQuery }, options: RequestOptions = {}): Promise<ApiResponse<TikTokAccountInsightsResponse>> { return this.transport.request({ operation: operations.getTikTokAccountInsights, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs }); }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CancellationError, MalformedResponseError, TimeoutError, type ApiResponse } from '@adeli/sdk';
-import { iterateCommentPages, iterateComments, iterateConversation, iterateConversationPages, waitForConnection, waitForFacebookPost, waitForInstagramPost, waitForPublication, waitForTikTokPost, waitForYouTubeVideo } from '@adeli/sdk/helpers';
+import { iterateCommentPages, iterateComments, iterateConversation, iterateConversationPages, iteratePostPages, iteratePosts, waitForConnection, waitForFacebookPost, waitForInstagramPost, waitForPublication, waitForTikTokPost, waitForYouTubeVideo } from '@adeli/sdk/helpers';
 
 const response = <T>(data: T): ApiResponse<T> => ({ data, status: 200, headers: new Headers({ 'x-test': 'yes' }) });
 const connection = (status: string): ApiResponse<any> => response({ id: 'session', profileId: 'profile', platform: 'facebook', status });
@@ -370,5 +370,36 @@ describe('conversation iterators', () => {
     controller.abort();
     await expect(request).rejects.toBeInstanceOf(CancellationError);
     await expect(iterateConversationPages(client, { query }, { timeoutMs: 5 }).next()).rejects.toBeInstanceOf(TimeoutError);
+  });
+});
+
+describe('post iterators', () => {
+  const postPage = (ids: string[], nextCursor: string | null): ApiResponse<any> => response({ status: 'complete', posts: ids.map((id) => ({ id, platform: 'instagram', accountId: 'account', profileId: 'profile' })), errors: [], nextCursor });
+
+  it('follows nextCursor to the end, keeps the query, and yields each post once', async () => {
+    const seen: unknown[] = [];
+    const pagesByCursor: Record<string, ApiResponse<any>> = { start: postPage(['p1', 'p2'], 'c2'), c2: postPage(['p2', 'p3'], null) };
+    const client = { posts: { listPosts: async (args: { query?: any }) => { seen.push({ ...args.query }); return pagesByCursor[args.query?.cursor ?? 'start']!; } } };
+    const ids = [];
+    for await (const post of iteratePosts(client, { query: { profileId: 'profile', limit: 2 } })) ids.push(post.id);
+    expect(ids).toEqual(['p1', 'p2', 'p3']);
+    expect(seen).toEqual([{ profileId: 'profile', limit: 2 }, { profileId: 'profile', limit: 2, cursor: 'c2' }]);
+  });
+
+  it('yields whole pages, stops on a repeated cursor and at maxPages', async () => {
+    const repeating = { posts: { listPosts: async () => postPage(['p1'], 'same') } };
+    const pages = [];
+    for await (const page of iteratePostPages(repeating, {}, { maxPages: 5 })) pages.push(page);
+    expect(pages).toHaveLength(2);
+    let calls = 0;
+    const endless = { posts: { listPosts: async () => { calls += 1; return postPage([`p${calls}`], `c${calls}`); } } };
+    const bounded = [];
+    for await (const page of iteratePostPages(endless, {}, { maxPages: 3 })) bounded.push(page);
+    expect(bounded).toHaveLength(3);
+  });
+
+  it('rejects a malformed page', async () => {
+    const client = { posts: { listPosts: async () => response({ status: 'complete', posts: [{}], errors: [], nextCursor: null }) } };
+    await expect(iteratePostPages(client as any).next()).rejects.toBeInstanceOf(MalformedResponseError);
   });
 });

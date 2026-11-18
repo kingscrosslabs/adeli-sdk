@@ -59,6 +59,7 @@
     "getTikTokAccountAnalytics": [{"method":"GET","path":"/api/v1/analytics/tiktok/account-analytics","href":"/docs/api/analytics/tiktok-account-analytics"}],
     "getTikTokAccountInsights": [{"method":"GET","path":"/api/v1/analytics/tiktok/account-insights","href":"/docs/api/analytics/tiktok-account-insights"}],
     "getTikTokVideoInsights": [{"method":"GET","path":"/api/v1/analytics/tiktok/video-insights","href":"/docs/api/analytics/tiktok-post-insights"}],
+    "getInstagramPostInsights": [{"method":"GET","path":"/api/v1/analytics/instagram/post-insights","href":"/docs/api/analytics/instagram-post-insights"}],
     "getYouTubeChannelInsights": [{"method":"GET","path":"/api/v1/analytics/youtube/channel-insights","href":"/docs/api/analytics/youtube-channel-insights"}],
     "getYouTubeVideoInsights": [{"method":"GET","path":"/api/v1/analytics/youtube/video-insights","href":"/docs/api/analytics/youtube-video-insights"}],
     "getLinkedInAccountInsights": [{"method":"GET","path":"/api/v1/analytics/linkedin/account-insights","href":"/docs/api/analytics/linkedin-account-insights"}],

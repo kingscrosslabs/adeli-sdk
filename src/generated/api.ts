@@ -181,7 +181,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List posts */
+        /**
+         * List posts
+         * @description One page of posts across the filtered accounts, newest first: `limit` posts (default 25, at most 100), with posts waiting in a scheduled publication first on the page without a `cursor`. Pass `nextCursor` back as `cursor` for the next, older page; it is null once every account is exhausted. Each request reads at most one page from each provider, so a page can hold fewer than `limit` posts while `nextCursor` is set. A cursor is bound to the filter and limit it was made with (`400 invalid_cursor` otherwise).
+         */
         get: operations["listPosts"];
         put?: never;
         /**
@@ -639,6 +642,26 @@ export interface paths {
         };
         /** Instagram account insights */
         get: operations["getInstagramAccountInsights"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/analytics/instagram/post-insights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Instagram post insights
+         * @description Per-post views, reach, likes, comments, shares, saves and interactions, plus watch time and skip rate for reels and replies and navigation for stories, for up to 50 posts by id or a page of the newest posts in a window. Served from Adeli's store, which a background sync keeps current: figures are lifetime, organic only (`totalViews`, `totalLikes` and `totalComments` include ads and are reported for Facebook-host accounts only), and Meta may revise them for up to 48 hours. Each post carries `fetchedAt` and per-metric `warnings`; `sync` says whether a refresh is running. Watch time is in milliseconds, with `…Sec` conveniences.
+         */
+        get: operations["getInstagramPostInsights"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1529,6 +1552,8 @@ export interface components {
                 message: string;
                 details?: unknown;
             }[];
+            /** @description Pass as cursor for the next, older page; null when every account is exhausted. */
+            nextCursor: string | null;
         };
         MessagesAggregate: {
             /** @enum {string} */
@@ -3095,6 +3120,10 @@ export interface operations {
                 platform?: "instagram" | "tiktok" | "tiktok_ads" | "facebook" | "meta_ads" | "whatsapp" | "youtube" | "x" | "bluesky" | "linkedin" | "linkedin_ads";
                 accountId?: string;
                 profileId?: string;
+                /** @description nextCursor from the previous page, toward older posts. Only valid with the same platform, accountId, profileId and limit. */
+                cursor?: string;
+                /** @description Posts per page, 1–100. Defaults to 25. */
+                limit?: number;
             };
             header?: never;
             path?: never;
@@ -3153,6 +3182,8 @@ export interface operations {
                             message: string;
                             details?: unknown;
                         }[];
+                        /** @description Pass as cursor for the next, older page; null when every account is exhausted. */
+                        nextCursor: string | null;
                     };
                 };
             };
@@ -3207,6 +3238,8 @@ export interface operations {
                             message: string;
                             details?: unknown;
                         }[];
+                        /** @description Pass as cursor for the next, older page; null when every account is exhausted. */
+                        nextCursor: string | null;
                     };
                 };
             };
@@ -7670,6 +7703,151 @@ export interface operations {
                         }[];
                         /** Format: date-time */
                         fetchedAt: string;
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connection lacks a permission or provider-confirmed resource */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PermissionRequiredError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connected account cannot perform this operation */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getInstagramPostInsights: {
+        parameters: {
+            query: {
+                accountId: string;
+                profileId?: string;
+                /** @description Comma-separated Instagram media ids (providerId from list_posts), at most 50. Cannot be combined with since or until. */
+                postIds?: string;
+                /** @description Only posts published at or after this ISO 8601 date or date-time. */
+                since?: string;
+                /** @description Only posts published before this ISO 8601 date or date-time. Pass nextUntil here for the next, older page. */
+                until?: string;
+                /** @description Posts per page, 1–500. Defaults to 25. */
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        platform: "instagram";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        posts: {
+                            postId: string;
+                            mediaType: string | null;
+                            mediaProductType: string | null;
+                            publishedAt: string | null;
+                            permalink: string | null;
+                            metrics: {
+                                views: number | null;
+                                reach: number | null;
+                                likes: number | null;
+                                comments: number | null;
+                                shares: number | null;
+                                saves: number | null;
+                                totalInteractions: number | null;
+                                profileVisits: number | null;
+                                follows: number | null;
+                                replies: number | null;
+                                navigation: number | null;
+                                /** @description Reels: average watch time, in milliseconds as Meta reports it. */
+                                avgWatchTimeMs: number | null;
+                                /** @description Reels: total watch time, in milliseconds. */
+                                totalWatchTimeMs: number | null;
+                                /** @description avgWatchTimeMs in seconds, to one decimal place. */
+                                avgWatchTimeSec: number | null;
+                                /** @description totalWatchTimeMs in seconds, to one decimal place. */
+                                totalWatchTimeSec: number | null;
+                                /** @description Reels: percentage of views that skipped in the first three seconds. */
+                                skipRate: number | null;
+                                crosspostedViews: number | null;
+                                /** @description Facebook-host accounts only; includes ads and boosts. */
+                                totalViews: number | null;
+                                totalLikes: number | null;
+                                totalComments: number | null;
+                            };
+                            warnings: {
+                                metric: string;
+                                /** @enum {string} */
+                                reason: "pending" | "not_returned" | "unsupported_for_account" | "not_enough_viewers" | "unavailable" | "rate_limited";
+                            }[];
+                            /** @description When Adeli read these figures from Instagram; null when not read yet. */
+                            fetchedAt: string | null;
+                        }[];
+                        /** @description Requested ids that are not this account's posts. */
+                        notFound: string[];
+                        /** @description Pass as until for the next, older page; null on the last page or with postIds. */
+                        nextUntil: string | null;
+                        sync: {
+                            /** @enum {string} */
+                            status: "fresh" | "refreshing" | "pending" | "backoff";
+                            lastSyncedAt: string | null;
+                            /** @description Posts in this response whose figures are not read yet or are due a refresh. */
+                            pendingPosts: number;
+                        };
                     };
                 };
             };

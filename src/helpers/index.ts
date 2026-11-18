@@ -14,3 +14,5 @@ export { DEFAULT_WEBHOOK_TOLERANCE_SECONDS, parseWebhookEvent, verifyWebhookSign
 export type { CommentCreatedEvent, InstagramCommentCreatedEvent, MessageAttachmentType, MessageCreatedAttachment, MessageCreatedEvent, MessageCreatedPlatform, MessageCreatedStory, MessagePostbackEvent, TikTokCommentCreatedEvent, UnknownWebhookEvent, VerifyWebhookSignatureInput, WebhookEvent, WebhookEventType, WebhookPayload, WebhookPlatform } from './webhooks.js';
 export { iterateConversation, iterateConversationPages } from './messages.js';
 export type { ConversationIteratorOptions, ConversationIteratorQuery, MessagesClient } from './messages.js';
+export { iteratePostPages, iteratePosts } from './posts.js';
+export type { PostIteratorOptions, PostIteratorQuery, PostsClient } from './posts.js';
