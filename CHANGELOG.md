@@ -1,5 +1,11 @@
 # @adeli/sdk
 
+## 0.9.0
+
+### Minor Changes
+
+- fc99a15: `startConnection` accepts Instagram `capabilities` and `forceReauth`, and connection sessions report `requestedPermissions`. New `InstagramCapabilities` presets (`engagement`, `publishing`, `all`) and the `InstagramConnectCapability` and `PermissionDescriptor` types make asking for only the permissions you need the easy path.
+
 ## 0.8.0
 
 ### Minor Changes
