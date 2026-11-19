@@ -17,6 +17,27 @@ export type ConnectionSessionError = NonNullable<ConnectionSession['error']>;
 export type CreateProfileBody = OperationJsonBody<'createProfile'>;
 export type UpdateProfileBody = OperationJsonBody<'updateProfile'>;
 export type StartConnectionBody = OperationJsonBody<'startConnection'>;
+/** A capability to ask Instagram for when connecting; see `InstagramCapabilities`. */
+export type InstagramConnectCapability = NonNullable<StartConnectionBody['capabilities']>[number];
+/** A permission a connect will ask for, or that an account was granted. */
+export type PermissionDescriptor = NonNullable<ConnectionSession['requestedPermissions']>[number];
+
+/**
+ * Presets for `startConnection`'s `capabilities` (Instagram only). Ask for what
+ * your product uses and the consent screen asks only for those permissions,
+ * which makes customers more likely to approve it.
+ *
+ * - `engagement`: read and reply to comments, read and send DMs, read posts.
+ *   No publishing or Insights. What a Comment to DM product needs.
+ * - `publishing`: read posts and publish. No comments, DMs or Insights.
+ * - `all`: everything, the same as leaving `capabilities` out.
+ */
+export const InstagramCapabilities = {
+  engagement: ['profile.read', 'feed.read', 'comments.read', 'comments.manage', 'inbox.read', 'inbox.send'],
+  publishing: ['profile.read', 'feed.read', 'post.publish'],
+  all: ['profile.read', 'feed.read', 'post.publish', 'analytics.read', 'post.analytics', 'comments.read', 'comments.manage', 'inbox.read', 'inbox.send'],
+} as const satisfies Record<string, readonly InstagramConnectCapability[]>;
+
 export type DeleteProfileResponse = OperationSuccessBody<'deleteProfile'>;
 export type ListProfilesResponse = OperationSuccessBody<'listProfiles'>;
 export type ProfilePath = OperationPath<'getProfile'>;

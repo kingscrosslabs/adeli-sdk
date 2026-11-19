@@ -1265,6 +1265,10 @@ export interface components {
             } | null;
             /** @enum {string} */
             authMethod?: "unified_login" | "instagram_login" | "facebook_login";
+            requestedPermissions?: {
+                code: string;
+                label: string;
+            }[];
             /** Format: uri */
             authUrl?: string;
         };
@@ -2088,6 +2092,8 @@ export interface operations {
                     /** @enum {string} */
                     authMethod?: "unified_login" | "instagram_login" | "facebook_login";
                     handle?: string;
+                    capabilities?: ("profile.read" | "feed.read" | "post.publish" | "analytics.read" | "post.analytics" | "comments.read" | "comments.manage" | "inbox.read" | "inbox.send")[];
+                    forceReauth?: boolean;
                 };
             };
         };
@@ -2116,6 +2122,10 @@ export interface operations {
                         } | null;
                         /** @enum {string} */
                         authMethod?: "unified_login" | "instagram_login" | "facebook_login";
+                        requestedPermissions?: {
+                            code: string;
+                            label: string;
+                        }[];
                         /** Format: uri */
                         authUrl?: string;
                     };
@@ -2224,6 +2234,10 @@ export interface operations {
                         } | null;
                         /** @enum {string} */
                         authMethod?: "unified_login" | "instagram_login" | "facebook_login";
+                        requestedPermissions?: {
+                            code: string;
+                            label: string;
+                        }[];
                         /** Format: uri */
                         authUrl?: string;
                     };
