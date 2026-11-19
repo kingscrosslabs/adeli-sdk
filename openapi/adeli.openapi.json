@@ -1040,6 +1040,27 @@
                     "type": "string",
                     "maxLength": 253,
                     "pattern": "^(?:did:(?:plc|web):[A-Za-z0-9._:%-]+|@?(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)$"
+                  },
+                  "capabilities": {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "profile.read",
+                        "feed.read",
+                        "post.publish",
+                        "analytics.read",
+                        "post.analytics",
+                        "comments.read",
+                        "comments.manage",
+                        "inbox.read",
+                        "inbox.send"
+                      ]
+                    }
+                  },
+                  "forceReauth": {
+                    "type": "boolean"
                   }
                 },
                 "required": [
@@ -1155,6 +1176,24 @@
                         "instagram_login",
                         "facebook_login"
                       ]
+                    },
+                    "requestedPermissions": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string"
+                          },
+                          "label": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "code",
+                          "label"
+                        ]
+                      }
                     },
                     "authUrl": {
                       "type": "string",
@@ -1373,6 +1412,24 @@
                         "instagram_login",
                         "facebook_login"
                       ]
+                    },
+                    "requestedPermissions": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string"
+                          },
+                          "label": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "code",
+                          "label"
+                        ]
+                      }
                     },
                     "authUrl": {
                       "type": "string",
@@ -29585,6 +29642,24 @@
               "instagram_login",
               "facebook_login"
             ]
+          },
+          "requestedPermissions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "code",
+                "label"
+              ]
+            }
           },
           "authUrl": {
             "type": "string",

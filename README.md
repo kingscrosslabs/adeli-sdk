@@ -103,6 +103,36 @@ await waitForConnection(
 );
 ```
 
+### Request only the permissions you need
+
+For Instagram, pass `capabilities` to ask only for what your product does. The consent screen then leaves out the rest, which makes customers more likely to approve it. `InstagramCapabilities` has presets:
+
+```ts
+import { InstagramCapabilities } from '@adeli/sdk';
+
+const session = await adeli.profiles.startConnection({
+  path: { profileId },
+  body: {
+    platform: 'instagram',
+    redirectUrl: 'https://example.com/connected',
+    // Comments and DMs only: no publishing, no Insights.
+    capabilities: [...InstagramCapabilities.engagement],
+    // Skip Instagram's password prompt when the browser is already logged in.
+    forceReauth: false,
+  },
+});
+
+session.data.requestedPermissions; // what the consent screen will ask for
+```
+
+| Preset | Capabilities | For |
+| --- | --- | --- |
+| `engagement` | `profile.read`, `feed.read`, `comments.read`, `comments.manage`, `inbox.read`, `inbox.send` | Comment and DM tools |
+| `publishing` | `profile.read`, `feed.read`, `post.publish` | Schedulers |
+| `all` | every capability | The same as leaving `capabilities` out |
+
+`profile.read` is always included. With Facebook Login, the three Page permissions it needs to find the account are always added, and a narrower request applies only where Adeli has the matching Facebook configuration; otherwise it asks for everything. An account then reports what it was granted in `capabilities`, and a call it wasn't granted throws `PermissionRequiredError` (`403 permission_required`). To add a permission later, start another connect with more capabilities; the `accountId` stays the same. See `examples/connect-instagram-minimal.ts`.
+
 ### Upload a video
 
 ```ts
