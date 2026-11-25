@@ -19,6 +19,11 @@ export type GetInstagramUserQuery = JsonQuery<'getInstagramUser'>;
 export type InstagramUserResponse = SuccessBody<'getInstagramUser'>;
 /** Someone who messaged an Instagram account. `isFollowing` is whether they follow it; null when Instagram does not say. */
 export type InstagramMessagingUser = InstagramUserResponse['user'];
+export type GetInstagramConversationPath = Path<'getInstagramConversation'>;
+export type GetInstagramConversationQuery = JsonQuery<'getInstagramConversation'>;
+export type InstagramConversationResponse = SuccessBody<'getInstagramConversation'>;
+/** One message of an Instagram conversation read live. `direction` is `outbound` when the connected account sent it. */
+export type InstagramConversationMessage = InstagramConversationResponse['messages'][number];
 
 export class MessagesResource {
   constructor(private readonly transport: Transport) {}
@@ -49,5 +54,16 @@ export class MessagesResource {
    */
   getInstagramUser(args: { readonly path: GetInstagramUserPath; readonly query: GetInstagramUserQuery }, options: RequestOptions = {}): Promise<ApiResponse<InstagramUserResponse>> {
     return this.transport.request({ operation: operations.getInstagramUser, path: args.path, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs });
+  }
+  /**
+   * Read the newest messages (`limit`, default 5, at most 20) of an Instagram
+   * account's conversation with one person, live, newest first. `igsid` is a
+   * `message.created` `from.id`, a `message.postback` `senderId`, or the id you
+   * messaged. A postback button tap also appears as an inbound message whose
+   * text is the button's title, so this finds a tap whose webhook never came.
+   * No conversation is `conversationId: null` and `messages: []`. Never cached.
+   */
+  getInstagramConversation(args: { readonly path: GetInstagramConversationPath; readonly query: GetInstagramConversationQuery }, options: RequestOptions = {}): Promise<ApiResponse<InstagramConversationResponse>> {
+    return this.transport.request({ operation: operations.getInstagramConversation, path: args.path, query: args.query, signal: options.signal, timeoutMs: options.timeoutMs });
   }
 }

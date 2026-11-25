@@ -572,6 +572,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/messages/instagram/conversations/{igsid}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get an Instagram conversation's newest messages
+         * @description Reads the newest `limit` messages (default 5, at most 20) of the Instagram account's conversation with one person, live from Instagram, newest first. `direction` is outbound for messages the account sent. A tap on a postback button also appears here, as an inbound message whose text is the button's title, so a client can find a tap whose message.postback webhook never arrived. No conversation with the person is 200 with `conversationId: null` and no messages. Not cached.
+         */
+        get: operations["getInstagramConversation"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/webhooks": {
         parameters: {
             query?: never;
@@ -7326,6 +7346,113 @@ export interface operations {
             };
             /** @description The request conflicts with existing state */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connected account cannot perform this operation */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Invalid request or provider failure */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getInstagramConversation: {
+        parameters: {
+            query: {
+                accountId: string;
+                profileId?: string;
+                /** @description Newest messages to return, 1–20. Defaults to 5. */
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                /** @description The person's Instagram-scoped user id (IGSID): `message.created` `from.id` or `message.postback` `senderId`. */
+                igsid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        platform: "instagram";
+                        /** Format: uuid */
+                        accountId: string;
+                        /** Format: uuid */
+                        profileId: string;
+                        /** @description Instagram's id for the conversation. Null when the account has no conversation with this person. */
+                        conversationId: string | null;
+                        /** @description Newest first, at most limit. */
+                        messages: {
+                            /** @description Instagram's message id (mid). */
+                            id: string;
+                            /**
+                             * @description outbound when the connected account sent it.
+                             * @enum {string}
+                             */
+                            direction: "inbound" | "outbound";
+                            /** @description The sender's Instagram-scoped id, or the connected account's Instagram id on an outbound message. */
+                            fromId: string | null;
+                            /** @description The message text. Null for a message with no text, such as a photo or a story mention. */
+                            text: string | null;
+                            /** Format: date-time */
+                            createdAt: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request or provider failure */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description The connection lacks a permission or provider-confirmed resource */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PermissionRequiredError"];
+                };
+            };
+            /** @description Profile, account, or object not found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

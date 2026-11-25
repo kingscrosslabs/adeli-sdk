@@ -15392,6 +15392,231 @@
         }
       }
     },
+    "/api/v1/messages/instagram/conversations/{igsid}": {
+      "get": {
+        "operationId": "getInstagramConversation",
+        "summary": "Get an Instagram conversation's newest messages",
+        "description": "Reads the newest `limit` messages (default 5, at most 20) of the Instagram account's conversation with one person, live from Instagram, newest first. `direction` is outbound for messages the account sent. A tap on a postback button also appears here, as an inbound message whose text is the button's title, so a client can find a tap whose message.postback webhook never arrived. No conversation with the person is 200 with `conversationId: null` and no messages. Not cached.",
+        "tags": [
+          "Messages"
+        ],
+        "parameters": [
+          {
+            "name": "igsid",
+            "in": "path",
+            "required": true,
+            "description": "The person's Instagram-scoped user id (IGSID): `message.created` `from.id` or `message.postback` `senderId`.",
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{1,40}$"
+            }
+          },
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "profileId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20
+            },
+            "description": "Newest messages to return, 1–20. Defaults to 5."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "platform": {
+                      "type": "string",
+                      "const": "instagram"
+                    },
+                    "accountId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "profileId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "conversationId": {
+                      "description": "Instagram's id for the conversation. Null when the account has no conversation with this person.",
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "messages": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Instagram's message id (mid)."
+                          },
+                          "direction": {
+                            "type": "string",
+                            "enum": [
+                              "inbound",
+                              "outbound"
+                            ],
+                            "description": "outbound when the connected account sent it."
+                          },
+                          "fromId": {
+                            "description": "The sender's Instagram-scoped id, or the connected account's Instagram id on an outbound message.",
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "text": {
+                            "description": "The message text. Null for a message with no text, such as a photo or a story mention.",
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "direction",
+                          "fromId",
+                          "text",
+                          "createdAt"
+                        ]
+                      },
+                      "description": "Newest first, at most limit."
+                    }
+                  },
+                  "required": [
+                    "platform",
+                    "accountId",
+                    "profileId",
+                    "conversationId",
+                    "messages"
+                  ]
+                },
+                "examples": {
+                  "default": {
+                    "summary": "Example",
+                    "value": {
+                      "platform": "instagram",
+                      "accountId": "00000000-0000-4000-8000-000000000002",
+                      "profileId": "00000000-0000-4000-8000-000000000001",
+                      "conversationId": "aWdfZAG06MTpJR01lc3NhZA2VUaHJlYWQ6MTc5MDAwMDAwMDAwMDAwMDI",
+                      "messages": [
+                        {
+                          "id": "aWdfZAG1faXRlbToxOklHTWVzc2FnZAUlEOjM",
+                          "direction": "inbound",
+                          "fromId": "1790000000000002",
+                          "text": "Send me the link",
+                          "createdAt": "2026-11-25T15:21:04.000Z"
+                        },
+                        {
+                          "id": "aWdfZAG1faXRlbToxOklHTWVzc2FnZAUlEOjI",
+                          "direction": "outbound",
+                          "fromId": "17841400000000009",
+                          "text": "Thanks for commenting! Tap below for the link.",
+                          "createdAt": "2026-11-25T15:20:31.000Z"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The connection lacks a permission or provider-confirmed resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionRequiredError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Profile, account, or object not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The connected account cannot perform this operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid request or provider failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/webhooks": {
       "get": {
         "operationId": "listWebhooks",

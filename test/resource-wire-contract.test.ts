@@ -103,6 +103,7 @@ function wireResponse(operationId: string, _status?: string): unknown {
     case 'sendMessage': return message;
     case 'sendInstagramMessage': return { ...message, platform: 'instagram', providerId: 'instagram_message_1', type: 'buttons', recipient: 'igsid-1', sender: 'igsid-business' };
     case 'getInstagramUser': return { platform: 'instagram', accountId: id, profileId: id, user: { id: '1796', username: 'maya.makes', name: null, followerCount: null, isFollowing: true, isFollowedByAccount: null } };
+    case 'getInstagramConversation': return { platform: 'instagram', accountId: id, profileId: id, conversationId: 'conversation-1', messages: [{ id: 'mid-2', direction: 'inbound', fromId: '1796', text: 'Get the guide', createdAt: '2026-11-25T15:21:04.000Z' }, { id: 'mid-1', direction: 'outbound', fromId: 'igsid-business', text: null, createdAt: '2026-11-25T15:20:31.000Z' }] };
     case 'getInstagramAccountInsights': return { platform: 'instagram', accountId: id, profileId: id, insights: [{ name: 'reach', title: 'Reach', period: 'day', total_value: { value: 0 }, values: [{ value: 0, end_time: '2025-01-01T00:00:00.000Z' }] }], fetchedAt: profile.updatedAt };
     case 'getFacebookPageMetrics': return { platform: 'facebook', accountId: id, profileId: id, page: { id: 'page-1', name: null, username: null, category: null, link: null }, metrics: { followers: null, fans: 0, recentPosts: 0, recentPostLikes: 0, recentPostComments: 0, recentPostShares: 0 }, insights: null, insightsUnavailable: 'permission_missing', fetchedAt: profile.updatedAt };
     case 'getTikTokAccountAnalytics': return { platform: 'tiktok', accountId: id, profileId: id, profile: { openId: 'open', username: null, displayName: null, avatarUrl: null, profileDeepLink: null, bioDescription: null, isVerified: null, isBusinessAccount: null }, analytics: { followers: 0, following: null, likes: null, videos: null }, fetchedAt: profile.updatedAt };
@@ -200,6 +201,7 @@ test('all 77 registered operations preserve exact wire requests and response env
     { id: 'sendMessage', call: (o) => client.messages.sendMessage({ body: { platform: 'whatsapp', accountId: id, profileId: id, recipient: '+15555550123', text: 'hello' } }, o), method: 'POST', path: '/api/v1/messages', body: jsonBody({ platform: 'whatsapp', accountId: id, profileId: id, recipient: '+15555550123', text: 'hello' }), status: 201, response: wireResponse('sendMessage') },
     { id: 'sendInstagramMessage', call: (o) => client.messages.sendInstagramMessage({ body: { accountId: id, profileId: id, recipient: { commentId: 'comment-1' }, text: 'hello', buttons: [{ type: 'postback', title: 'Yes', payload: 'yes' }, { type: 'url', title: 'Shop', url: 'https://shop.example/' }] } }, o), method: 'POST', path: '/api/v1/messages/instagram', body: jsonBody({ accountId: id, profileId: id, recipient: { commentId: 'comment-1' }, text: 'hello', buttons: [{ type: 'postback', title: 'Yes', payload: 'yes' }, { type: 'url', title: 'Shop', url: 'https://shop.example/' }] }), status: 201, response: wireResponse('sendInstagramMessage') },
     { id: 'getInstagramUser', call: (o) => client.messages.getInstagramUser({ path: { igsid: '1796' }, query: { accountId: id, profileId: id } }, o), method: 'GET', path: '/api/v1/messages/instagram/users/1796', query: `accountId=${id}&profileId=${id}`, status: 200, response: wireResponse('getInstagramUser') },
+    { id: 'getInstagramConversation', call: (o) => client.messages.getInstagramConversation({ path: { igsid: '1796' }, query: { accountId: id, profileId: id, limit: 3 } }, o), method: 'GET', path: '/api/v1/messages/instagram/conversations/1796', query: `accountId=${id}&profileId=${id}&limit=3`, status: 200, response: wireResponse('getInstagramConversation') },
     { id: 'getInstagramAccountInsights', call: (o) => client.analytics.getInstagramAccountInsights({ query: { accountId: id, profileId: id } }, o), method: 'GET', path: '/api/v1/analytics/instagram/account-insights', query: `accountId=${id}&profileId=${id}`, status: 200, response: wireResponse('getInstagramAccountInsights') },
     { id: 'getFacebookPageMetrics', call: (o) => client.analytics.getFacebookPageMetrics({ query: { accountId: id, profileId: id } }, o), method: 'GET', path: '/api/v1/analytics/facebook/page-metrics', query: `accountId=${id}&profileId=${id}`, status: 200, response: wireResponse('getFacebookPageMetrics') },
     { id: 'getTikTokAccountAnalytics', call: (o) => client.analytics.getTikTokAccountAnalytics({ query: { accountId: id, profileId: id } }, o), method: 'GET', path: '/api/v1/analytics/tiktok/account-analytics', query: `accountId=${id}&profileId=${id}`, status: 200, response: wireResponse('getTikTokAccountAnalytics') },
@@ -241,7 +243,7 @@ test('all 77 registered operations preserve exact wire requests and response env
   const { operations } = await import('../src/operations.js');
   expect(new Set(cases.map((item) => item.id))).toEqual(new Set(Object.keys(operations)));
   expect(cases).toHaveLength(Object.keys(operations).length);
-  expect(declaredSuccessPairs()).toHaveLength(88);
+  expect(declaredSuccessPairs()).toHaveLength(89);
   for (const fixture of cases) {
     for (const status of successStatuses(fixture.id)) {
       delete state.request;
@@ -320,6 +322,13 @@ test('comment responses carry the nullable authorId through listComments and Ins
 test('Instagram user reads surface the consent error', async () => {
   const client = new Adeli({ apiKey: key, baseURL, fetch: async () => new Response(JSON.stringify({ error: { code: 'user_consent_required', message: 'Instagram shares this person\'s profile only after they have sent the account a message or tapped one of its buttons', details: null } }), { status: 409, headers: { 'content-type': 'application/json' } }) });
   await expect(client.messages.getInstagramUser({ path: { igsid: '1796' }, query: { accountId: id } })).rejects.toMatchObject({ status: 409, code: 'user_consent_required' });
+});
+
+test('Instagram conversation reads type their messages and accept an empty conversation', async () => {
+  const client = new Adeli({ apiKey: key, baseURL, fetch: async () => new Response(JSON.stringify({ platform: 'instagram', accountId: id, profileId: id, conversationId: null, messages: [] }), { status: 200, headers: { 'content-type': 'application/json' } }) });
+  const read = await client.messages.getInstagramConversation({ path: { igsid: '1796' }, query: { accountId: id } });
+  validateSuccess('getInstagramConversation', '200', read.data);
+  expect(read.data).toEqual({ platform: 'instagram', accountId: id, profileId: id, conversationId: null, messages: [] });
 });
 
 test('Instagram private-reply conflicts surface their documented error codes', async () => {
