@@ -5,7 +5,7 @@
 Generated from `src/operations.ts` metadata, AST-extracted resource method declarations, and the checked-in verified public docs mapping `openapi/docs-links.json`; this file is not hand-maintained.
 
 - Contract status: **candidate-unreleased**
-- Candidate OpenAPI SHA-256: `04e4c294fd8d3692e92f413fa0dfe4061faa57696dc05b6d8066d07a0f28169f`
+- Candidate OpenAPI SHA-256: `882e0d3d0cacf2e036a2a2c721d2b0cc0a1e3ae584aef7ef21e4a33a02d0c9ea`
 - Public endpoint documentation: https://www.tryadeli.com/docs/
 
 | Resource | Method signature | HTTP | Path | Endpoint docs |
@@ -51,6 +51,7 @@ Generated from `src/operations.ts` metadata, AST-extracted resource method decla
 | messages | `sendMessage(args: { readonly body: SendMessageBody }, options: RequestOptions = {}): Promise<ApiResponse<SentMessage>>` | POST | `/messages` | [api/messages/send-message](https://www.tryadeli.com/docs/api/messages/send-message) |
 | messages | `sendInstagramMessage(args: { readonly body: SendInstagramMessageBody }, options: RequestOptions = {}): Promise<ApiResponse<SentInstagramMessage>>` | POST | `/messages/instagram` | [api/messages/send-instagram-message](https://www.tryadeli.com/docs/api/messages/send-instagram-message) |
 | messages | `getInstagramUser(args: { readonly path: GetInstagramUserPath; readonly query: GetInstagramUserQuery }, options: RequestOptions = {}): Promise<ApiResponse<InstagramUserResponse>>` | GET | `/messages/instagram/users/{igsid}` | [api/messages/get-instagram-user](https://www.tryadeli.com/docs/api/messages/get-instagram-user) |
+| messages | `getInstagramConversation(args: { readonly path: GetInstagramConversationPath; readonly query: GetInstagramConversationQuery }, options: RequestOptions = {}): Promise<ApiResponse<InstagramConversationResponse>>` | GET | `/messages/instagram/conversations/{igsid}` | [api/messages/get-instagram-conversation](https://www.tryadeli.com/docs/api/messages/get-instagram-conversation) |
 | analytics | `getInstagramAccountInsights(args: { readonly query: InstagramAccountInsightsQuery }, options: RequestOptions = {}): Promise<ApiResponse<InstagramAccountInsightsResponse>>` | GET | `/analytics/instagram/account-insights` | [api/analytics/instagram-account-insights](https://www.tryadeli.com/docs/api/analytics/instagram-account-insights) |
 | analytics | `getFacebookPageMetrics(args: { readonly query?: FacebookPageMetricsQuery }, options: RequestOptions = {}): Promise<ApiResponse<FacebookPageMetricsResponse>>` | GET | `/analytics/facebook/page-metrics` | [api/analytics/facebook-page-metrics](https://www.tryadeli.com/docs/api/analytics/facebook-page-metrics) |
 | analytics | `getTikTokAccountAnalytics(args: { readonly query: TikTokAccountAnalyticsQuery }, options: RequestOptions = {}): Promise<ApiResponse<TikTokAccountAnalyticsResponse>>` | GET | `/analytics/tiktok/account-analytics` | [api/analytics/tiktok-account-analytics](https://www.tryadeli.com/docs/api/analytics/tiktok-account-analytics) |
